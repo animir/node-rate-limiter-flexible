@@ -1,0 +1,29 @@
+{
+  "name": "rate-limiter-flexible",
+  "version": "0.0.1",
+  "description": "Flexible API rate limiter for distributed node.js applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/animir/node-rate-limiter-flexible.git"
+  },
+  "keywords": [
+    "rate-limits",
+    "rate-limiting",
+    "rate-limiter",
+    "cluster",
+    "redis"
+  ],
+  "author": "animir <animirr@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/animir/node-rate-limiter-flexible/issues"
+  },
+  "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
+  "engines": {
+    "node": "^10.0.0"
+  },
+}
