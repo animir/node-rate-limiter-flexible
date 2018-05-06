@@ -6,7 +6,7 @@ It uses fixed window to limit requests.
 
 ## Installation
 
-`npm i --save animir/node-rate-limiter-flexible`
+`npm i rate-limiter-flexible`
 
 ## Usage
 
