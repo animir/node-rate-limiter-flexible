@@ -25,5 +25,5 @@
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
   "engines": {
     "node": "^10.0.0"
-  },
+  }
 }
