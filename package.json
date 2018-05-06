@@ -1,7 +1,7 @@
 {
   "name": "rate-limiter-flexible",
   "version": "0.0.1",
-  "description": "Flexible API rate limiter for distributed node.js applications",
+  "description": "Flexible API rate limiter backed by Redis for distributed node.js applications",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

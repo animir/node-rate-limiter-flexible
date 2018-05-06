@@ -1,3 +1,3 @@
-const RateLimiter = require('./src/RateLimiter');
+const RateLimiter = require('./lib/RateLimiter');
 
 module.exports.RateLimiter = RateLimiter;
