@@ -67,13 +67,13 @@ Arguments:
 * `key` is usually IP address or some unique client id
 * `rate` number of points consumed. `default: 1`
 
-### rateLimiter.penalty(key, rate)
+### rateLimiter.penalty(key, rate = 1)
 
 Fine `key` by `rate` number of points.
 
 Doesn't return anything
 
-### rateLimiter.reward(key, rate)
+### rateLimiter.reward(key, rate = 1)
 
 Reward `key` by `rate` number of points.
 
