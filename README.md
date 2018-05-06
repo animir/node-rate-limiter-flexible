@@ -36,6 +36,8 @@ rateLimiter.consume(remoteAddress)
       
       // Depending on results it allows to fine
       rateLimiter.penalty(remoteAddress, 3);
+      // or rise limit by rewarding some points
+      rateLimiter.reward(remoteAddress, 2);
     })
     .catch((err, msBeforeReset) => {
       if (err) {
@@ -68,5 +70,11 @@ Arguments:
 ### rateLimiter.penalty(key, rate)
 
 Fine `key` by `rate` number of points.
+
+Doesn't return anything
+
+### rateLimiter.reward(key, rate)
+
+Reward `key` by `rate` number of points.
 
 Doesn't return anything
