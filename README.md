@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/animir/node-rate-limiter-flexible/badge.svg?branch=master)](https://coveralls.io/r/animir/node-rate-limiter-flexible?branch=master)
+
 ## node-rate-limiter-flexible
 
 Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment.
@@ -38,11 +40,12 @@ rateLimiter.consume(remoteAddress)
       // or rise number of points for current duration
       rateLimiter.reward(remoteAddress, 2);
     })
-    .catch((err, msBeforeReset) => {
-      if (err) {
+    .catch((err) => {
+      if (err instanceof Error) {
         // Some Redis error
         // Decide what to do with it on your own
       } else {
+        const msBeforeReset = err;
         // Can't consume
         // If there is no error, rateLimiter promise rejected with number of ms before next request allowed
         const secs = Math.round(msBeforeReset / 1000) || 1;
