@@ -1,8 +1,7 @@
 ## node-rate-limiter-flexible
 
 Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment.
-Backed on native Promises
-It uses fixed window to limit requests.
+Backed on native Promises. It uses fixed window to limit requests.
 
 ## Installation
 
@@ -24,7 +23,7 @@ redisClient.on('error', (err) => {
 });
 
 const opts = {
-  limit: 5, // Number of request(s)
+  points: 5, // Number of points
   duration: 5, // Per second(s)
 };
 
@@ -36,7 +35,7 @@ rateLimiter.consume(remoteAddress)
       
       // Depending on results it allows to fine
       rateLimiter.penalty(remoteAddress, 3);
-      // or rise limit by rewarding some points
+      // or rise number of points for current duration
       rateLimiter.reward(remoteAddress, 2);
     })
     .catch((err, msBeforeReset) => {
@@ -55,26 +54,26 @@ rateLimiter.consume(remoteAddress)
 
 ## API
 
-### rateLimiter.consume(key, rate)
+### rateLimiter.consume(key, points = 1)
 
 Returns Promise, which: 
 * resolved when point(s) is consumed, so action can be done
 * rejected when some Redis error happened. Callback is `(err)`
 * rejected when there is no points to be consumed. 
-Callback is `(err, msBeforeReset)`, where `msBeforeReset` is number of ms before next allowed request
+Callback is `(err, msBeforeReset)`, where `err` is `null` and `msBeforeReset` is number of ms before next allowed action
 
 Arguments:
 * `key` is usually IP address or some unique client id
-* `rate` number of points consumed. `default: 1`
+* `points` number of points consumed. `default: 1`
 
-### rateLimiter.penalty(key, rate = 1)
+### rateLimiter.penalty(key, points = 1)
 
-Fine `key` by `rate` number of points.
+Fine `key` by `points` number of points.
 
 Doesn't return anything
 
-### rateLimiter.reward(key, rate = 1)
+### rateLimiter.reward(key, points = 1)
 
-Reward `key` by `rate` number of points.
+Reward `key` by `points` number of points.
 
 Doesn't return anything
