@@ -41,15 +41,14 @@ rateLimiter.consume(remoteAddress)
       // or rise number of points for current duration
       rateLimiter.reward(remoteAddress, 2);
     })
-    .catch((err) => {
-      if (err instanceof Error) {
+    .catch((rejRes) => {
+      if (rejRes instanceof Error) {
         // Some Redis error
         // Decide what to do with it on your own
       } else {
-        const msBeforeReset = err;
         // Can't consume
         // If there is no error, rateLimiter promise rejected with number of ms before next request allowed
-        const secs = Math.round(msBeforeReset / 1000) || 1;
+        const secs = Math.round(rejRes.msBeforeNext / 1000) || 1;
         res.set('Retry-After', String(secs));
         res.status(429).send('Too Many Requests');
       }
@@ -58,13 +57,23 @@ rateLimiter.consume(remoteAddress)
 
 ## API
 
+### RateLimiterRes object
+
+Both Promise resolve and reject returns object of `RateLimiterRes` class if there is no any error.
+Object attributes:
+```javascript
+RateLimiterRes = {
+    msBeforeNext: 250, // Number of milliseconds before next action can be done
+    points: 0 // Number of left points in current duration 
+}
+````
+
 ### rateLimiter.consume(key, points = 1)
 
 Returns Promise, which: 
 * resolved when point(s) is consumed, so action can be done
-* rejected when some Redis error happened. Callback is `(err)`
-* rejected when there is no points to be consumed. 
-Callback is `(err, msBeforeReset)`, where `err` is `null` and `msBeforeReset` is number of ms before next allowed action
+* rejected when some Redis error happened, where reject reason `rejRes` is Error object
+* rejected when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 
 Arguments:
 * `key` is usually IP address or some unique client id
