@@ -95,7 +95,7 @@ Fine `key` by `points` number of points.
 
 Note: Depending on time penalty may go to next durations
 
-Doesn't return anything
+Returns Promise
 
 ### rateLimiter.reward(key, points = 1)
 
@@ -103,4 +103,4 @@ Reward `key` by `points` number of points.
 
 Note: Depending on time reward may go to next durations
 
-Doesn't return anything
+Returns Promise
