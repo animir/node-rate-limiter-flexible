@@ -28,6 +28,7 @@ redisClient.on('error', (err) => {
 const opts = {
   points: 5, // Number of points
   duration: 5, // Per second(s)
+  execEvenly: false
 };
 
 const rateLimiter = new RateLimiter(redisClient, opts);
@@ -57,9 +58,9 @@ rateLimiter.consume(remoteAddress)
 
 ## Options
 
-* `points` Maximum number of points can be consumed over duration
-* `duration` Number of seconds before points are reset 
-* `execEvenly` Delay action to be executed evenly over duration
+* `points` `Default: 4` Maximum number of points can be consumed over duration
+* `duration` `Default: 1` Number of seconds before points are reset 
+* `execEvenly` `Default: false` Delay action to be executed evenly over duration
 First action in duration is executed without delay.
 All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
 It allows to cut off load peaks.
