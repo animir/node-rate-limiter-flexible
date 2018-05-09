@@ -55,6 +55,16 @@ rateLimiter.consume(remoteAddress)
     });
 ```
 
+## Options
+
+* `points` Maximum number of points can be consumed over duration
+* `duration` Number of seconds before points are reset 
+* `execEvenly` Delay action to be executed evenly over duration
+First action in duration is executed without delay.
+All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
+It allows to cut off load peaks.
+Note: it isn't recommended to use it for long duration, as it may delay action for too long
+
 ## API
 
 ### RateLimiterRes object
@@ -64,7 +74,7 @@ Object attributes:
 ```javascript
 RateLimiterRes = {
     msBeforeNext: 250, // Number of milliseconds before next action can be done
-    points: 0 // Number of left points in current duration 
+    remainingPoints: 0 // Number of remaining points in current duration 
 }
 ````
 
@@ -83,10 +93,14 @@ Arguments:
 
 Fine `key` by `points` number of points.
 
+Note: Depending on time penalty may go to next durations
+
 Doesn't return anything
 
 ### rateLimiter.reward(key, points = 1)
 
 Reward `key` by `points` number of points.
+
+Note: Depending on time reward may go to next durations
 
 Doesn't return anything

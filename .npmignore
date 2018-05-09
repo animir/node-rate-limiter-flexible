@@ -1,0 +1,5 @@
+.gitignore
+.npmignore
+.travis.yml
+test
+coverage
