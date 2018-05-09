@@ -4,7 +4,11 @@
 ## node-rate-limiter-flexible
 
 Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment.
-Backed on native Promises. It uses fixed window to limit requests.
+Backed on native Promises. 
+
+It uses fixed window to limit requests.
+
+Actions can be done evenly over duration window to cut off picks
 
 ## Installation
 
