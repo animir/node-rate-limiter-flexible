@@ -1,3 +1,7 @@
-const RateLimiter = require('./lib/RateLimiter');
+const RateLimiterRedis = require('./lib/RateLimiterRedis');
+const RateLimiterMemory = require('./lib/RateLimiterMemory');
 
-module.exports.RateLimiter = RateLimiter;
+module.exports = {
+  RateLimiterRedis,
+  RateLimiterMemory
+};

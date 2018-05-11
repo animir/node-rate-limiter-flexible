@@ -3,12 +3,18 @@
 
 ## node-rate-limiter-flexible
 
-Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment.
-Backed on native Promises. 
+Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment. 
 
 It uses fixed window to limit requests.
 
-Actions can be done evenly over duration window to cut off picks
+Advantages: 
+* backed on native Promises
+* actions can be done evenly over duration window to cut off picks
+* no race conditions
+* covered by tests
+* no prod dependencies
+* Redis errors don't result to broken app if `inMemoryLimiter` set up
+* useful `penalty` and `reward` methods to change limits on some results of an action
 
 ## Installation
 
@@ -16,11 +22,13 @@ Actions can be done evenly over duration window to cut off picks
 
 ## Usage
 
+### RateLimiterRedis
+
 Redis client must be created with offline queue switched off
 
 ```javascript
 const redis = require('redis');
-const { RateLimiter } = require('rate-limiter-flexible');
+const { RateLimiterRedis, RateLimiterMemory } = require('rate-limiter-flexible');
 
 const redisClient = redis.createClient({ enable_offline_queue: false });
 
@@ -30,34 +38,59 @@ redisClient.on('error', (err) => {
 });
 
 const opts = {
+  redis: redisClient,
   points: 5, // Number of points
   duration: 5, // Per second(s)
-  execEvenly: false
+  execEvenly: false,
+  inMemoryLimiter: new RateLimiterMemory( // It will be used only on Redis error as insurance
+    {
+      points: 1, // 1 is fair if you have 5 workers and 1 cluster
+      duration: 5,
+      execEvenly: false,
+    })
 };
 
-const rateLimiter = new RateLimiter(redisClient, opts);
+const rateLimiterRedis = new RateLimiterRedis(opts);
 
-rateLimiter.consume(remoteAddress)
+rateLimiterRedis.consume(remoteAddress)
     .then(() => {
       // ... Some app logic here ...
       
       // Depending on results it allows to fine
-      rateLimiter.penalty(remoteAddress, 3);
+      rateLimiterRedis.penalty(remoteAddress, 3);
       // or rise number of points for current duration
-      rateLimiter.reward(remoteAddress, 2);
+      rateLimiterRedis.reward(remoteAddress, 2);
     })
     .catch((rejRes) => {
       if (rejRes instanceof Error) {
         // Some Redis error
-        // Decide what to do with it on your own
+        // Never happen if `inMemoryLimiter` set up
+        // Decide what to do with it in other case
       } else {
         // Can't consume
-        // If there is no error, rateLimiter promise rejected with number of ms before next request allowed
+        // If there is no error, rateLimiterRedis promise rejected with number of ms before next request allowed
         const secs = Math.round(rejRes.msBeforeNext / 1000) || 1;
         res.set('Retry-After', String(secs));
         res.status(429).send('Too Many Requests');
       }
     });
+```
+
+### RateLimiterMemory
+
+It manages limits in **current process memory**, so keep it in mind when use it in cluster
+
+```javascript
+const rateLimiter = new RateLimiterMemory( // It will be used only on Redis error as insurance
+{
+  points: 1, // 1 is fair if you have 5 workers and 1 cluster
+  duration: 5,
+  execEvenly: false,
+});
+    
+// Usage is the same as for RateLimiterRedis
+// Except: it never rejects Promise with Error    
+    
 ```
 
 ## Options
@@ -69,6 +102,12 @@ First action in duration is executed without delay.
 All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
 It allows to cut off load peaks.
 Note: it isn't recommended to use it for long duration, as it may delay action for too long
+* `inMemoryLimiter` `Default: undefined` RateLimiterMemory object to store limits in process memory, when Redis comes up with any error.
+Be careful when use it in cluster or in distributed app.
+It may result to floating number of allowed actions. 
+If an action with a same `key` is launched on one worker several times in sequence, limiter will reach out of points soon. 
+Omit it if you want strictly use Redis and deal with errors from it
+
 
 ## API
 
@@ -87,7 +126,7 @@ RateLimiterRes = {
 
 Returns Promise, which: 
 * resolved when point(s) is consumed, so action can be done
-* rejected when some Redis error happened, where reject reason `rejRes` is Error object
+* only for RateLimiterRedis: rejected when some Redis error happened, where reject reason `rejRes` is Error object
 * rejected when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 
 Arguments:
