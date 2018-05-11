@@ -169,7 +169,7 @@ Arguments:
 
 ### rateLimiter.penalty(key, points = 1)
 
-Fine `key` by `points` number of points.
+Fine `key` by `points` number of points for **one duration**.
 
 Note: Depending on time penalty may go to next durations
 
@@ -177,7 +177,7 @@ Returns Promise
 
 ### rateLimiter.reward(key, points = 1)
 
-Reward `key` by `points` number of points.
+Reward `key` by `points` number of points for **one duration**.
 
 Note: Depending on time reward may go to next durations
 
