@@ -16,6 +16,40 @@ Advantages:
 * Redis errors don't result to broken app if `inMemoryLimiter` set up
 * useful `penalty` and `reward` methods to change limits on some results of an action
 
+### Benchmark
+
+By `bombardier -c 1000 -l -d 10s -r 2500 -t 5s http://127.0.0.1:3000/pricing`
+
+```text
+Statistics        Avg      Stdev        Max
+  Reqs/sec      2491.79     801.92    9497.25
+  Latency        8.62ms    11.69ms   177.96ms
+  Latency Distribution
+     50%     5.41ms
+     75%     7.65ms
+     90%    15.07ms
+     95%    27.24ms
+     99%    70.85ms
+  HTTP codes:
+    1xx - 0, 2xx - 25025, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+```
+
+Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+
+Endpoint is limited by `RateLimiterRedis` with config:
+
+```javascript
+new RateLimiterRedis(
+  {
+    redis: redisClient,
+    points: 1000,
+    duration: 1,
+  },
+);
+```
+
+
 ## Installation
 
 `npm i rate-limiter-flexible`
