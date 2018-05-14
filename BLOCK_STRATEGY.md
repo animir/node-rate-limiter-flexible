@@ -26,6 +26,7 @@ Block strategy algorithm developed with specificity rate limiter in mind:
 
 There is simple Express 4.x endpoint, 
 which launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+**Note:** Benchmark is done in local environment, so production will be much faster.
 
 ```javascript
 router.get('/', (req, res, next) => {
