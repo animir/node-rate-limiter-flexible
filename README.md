@@ -12,7 +12,7 @@ Flexible rate limiter and DDoS protector with Redis as broker allows to control 
 It uses fixed window to limit requests.
 
 Advantages:
-* block strategy against really powerful DDoS attacks (like 30k requests per sec) 
+* block strategy against really powerful DDoS attacks (like 30k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/blob/master/BLOCK_STRATEGY.md)
 * backed on native Promises
 * actions can be done evenly over duration window to cut off picks
 * no race conditions
