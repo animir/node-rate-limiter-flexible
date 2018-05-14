@@ -208,7 +208,7 @@ Returns Promise
 
 Block strategy is against DDoS attacks.
 Redis is quite fast. It can process over 10k requests per second.
-However, performance still depends on amount of requests per seconds.
+However, performance still depends on amount of requests per second.
 
 We don't want latency to become 3, 5 or more seconds.
 RateLimiterRedis provides a block strategy to avoid too many requests to Redis during DDoS attack.
@@ -223,4 +223,4 @@ Anyway it allows to avoid over load of Redis
 Block strategy algorithm developed with specificity rate limiter in mind:
 * it doesn't use `setTimeout` to expire blocked keys, so doesn't overload Event Loop
 * blocked keys expired on adding a new blocked key to sorted array by just one `slice` operation
-* checking if key blocked is just `for` loop
+* checking if key blocked is just `for` loop through all not expired blocks
