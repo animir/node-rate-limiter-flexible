@@ -3,11 +3,12 @@
 
 ## node-rate-limiter-flexible
 
-Flexible rate limiter with Redis as broker allows to control requests rate in cluster or distributed environment. 
+Flexible rate limiter and DDoS protector with Redis as broker allows to control requests rate in cluster or distributed environment. 
 
 It uses fixed window to limit requests.
 
-Advantages: 
+Advantages:
+* block strategy against really powerful DDoS attacks (like 30k requests per sec) 
 * backed on native Promises
 * actions can be done evenly over duration window to cut off picks
 * no race conditions
@@ -76,6 +77,8 @@ const opts = {
   points: 5, // Number of points
   duration: 5, // Per second(s)
   execEvenly: false,
+  blockOnPointsConsumed: 10, // If 10 points consumed in current duration
+  blockDuration: 30, // block for 30 seconds in current process memory
   inMemoryLimiter: new RateLimiterMemory( // It will be used only on Redis error as insurance
     {
       points: 1, // 1 is fair if you have 5 workers and 1 cluster
@@ -130,16 +133,28 @@ const rateLimiter = new RateLimiterMemory( // It will be used only on Redis erro
 ## Options
 
 * `points` `Default: 4` Maximum number of points can be consumed over duration
-* `duration` `Default: 1` Number of seconds before points are reset 
+
+* `duration` `Default: 1` Number of seconds before points are reset
+
 * `execEvenly` `Default: false` Delay action to be executed evenly over duration
 First action in duration is executed without delay.
 All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
 It allows to cut off load peaks.
 Note: it isn't recommended to use it for long duration, as it may delay action for too long
-* `inMemoryLimiter` `Default: undefined` RateLimiterMemory object to store limits in process memory, when Redis comes up with any error.
+
+* `blockOnPointsConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis.
+Blocking works in **current process memory**. 
+Redis is quite fast, however, it may be significantly slowed down on dozens of thousands requests.
+
+* `blockDuration` `Default: 0` Block key for `blockDuration` seconds, 
+if `blockOnPointsConsumed` or more points are consumed 
+
+* `inMemoryLimiter` `Default: undefined` RateLimiterMemory object to store limits in process memory, 
+when Redis comes up with any error.
 Be careful when use it in cluster or in distributed app.
 It may result to floating number of allowed actions. 
-If an action with a same `key` is launched on one worker several times in sequence, limiter will reach out of points soon. 
+If an action with a same `key` is launched on one worker several times in sequence, 
+limiter will reach out of points soon. 
 Omit it if you want strictly use Redis and deal with errors from it
 
 
@@ -162,6 +177,7 @@ Returns Promise, which:
 * resolved when point(s) is consumed, so action can be done
 * only for RateLimiterRedis: rejected when some Redis error happened, where reject reason `rejRes` is Error object
 * rejected when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
+* rejected when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
 
 Arguments:
 * `key` is usually IP address or some unique client id
@@ -182,3 +198,25 @@ Reward `key` by `points` number of points for **one duration**.
 Note: Depending on time reward may go to next durations
 
 Returns Promise
+
+
+## Block Strategy
+
+Block strategy is against DDoS attacks.
+Redis is quite fast. It can process over 10k requests per second.
+However, performance still depends on amount of requests per seconds.
+
+We don't want latency to become 3, 5 or more seconds.
+RateLimiterRedis provides a block strategy to avoid too many requests to Redis during DDoS attack.
+
+It can be activated with setup `blockOnPointsConsumed` and `blockDuration` options.
+If some actions consume `blockOnPointsConsumed` points, RateLimiterRedis starts using **current process memory** for them
+All blocked actions with certain key don't request Redis anymore until block expires.
+
+Note for distributed apps: DDoS requests still can request to Redis if not all NodeJS workers blocked appropriate keys.
+Anyway it allows to avoid over load of Redis
+
+Block strategy algorithm developed with specificity rate limiter in mind:
+* it doesn't use `setTimeout` to expire blocked keys, so doesn't overload Event Loop
+* blocked keys expired on adding a new blocked key to sorted array by just one `slice` operation
+* checking if key blocked is just `for` loop
