@@ -105,21 +105,19 @@ const rateLimiter = new RateLimiterRedis(
 Result:
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1995.36     598.72   10464.86
-  Latency       13.23ms    71.15ms      1.78s
+  Reqs/sec      2000.48     770.61   11560.37
+  Latency        8.46ms    15.40ms   321.88ms
   Latency Distribution
-     50%     4.36ms
-     75%     6.76ms
-     90%    17.60ms
-     95%    41.47ms
-     99%   106.19ms
+     50%     4.39ms
+     75%     6.73ms
+     90%    14.62ms
+     95%    31.82ms
+     99%    86.29ms
   HTTP codes:
-    1xx - 0, 2xx - 25, 3xx - 0, 4xx - 59600, 5xx - 0
+    1xx - 0, 2xx - 25, 3xx - 0, 4xx - 59898, 5xx - 0
 ```
 
 #### Conclusion
 
-* Reqs/sec is the same for both in average
-* Latency is smaller with Block Strategy. 
-It will be same or larger for Block Strategy depending amount of different keys
-* Number of requests to Redis less on 58k roughly
+* Latency is smaller with Block Strategy
+* Number of requests to Redis less on 59k roughly
