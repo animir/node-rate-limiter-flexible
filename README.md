@@ -18,7 +18,7 @@ Advantages:
 * no race conditions
 * covered by tests
 * no prod dependencies
-* Redis errors don't result to broken app if `inMemoryLimiter` set up
+* Redis errors don't result to broken app if `insuranceLimiter` set up
 * useful `penalty` and `reward` methods to change limits on some results of an action
 
 ### Benchmark
@@ -84,7 +84,9 @@ const opts = {
   execEvenly: false,
   blockOnPointsConsumed: 10, // If 10 points consumed in current duration
   blockDuration: 30, // block for 30 seconds in current process memory
-  inMemoryLimiter: new RateLimiterMemory( // It will be used only on Redis error as insurance
+  // It will be used only on Redis error as insurance
+  // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
+  insuranceLimiter: new RateLimiterMemory(
     {
       points: 1, // 1 is fair if you have 5 workers and 1 cluster
       duration: 5,
@@ -99,14 +101,16 @@ rateLimiterRedis.consume(remoteAddress)
       // ... Some app logic here ...
       
       // Depending on results it allows to fine
-      rateLimiterRedis.penalty(remoteAddress, 3);
+      rateLimiterRedis.penalty(remoteAddress, 3)
+        .then((remainingPoints) => {});
       // or rise number of points for current duration
       rateLimiterRedis.reward(remoteAddress, 2);
+        .then((remainingPoints) => {});
     })
     .catch((rejRes) => {
       if (rejRes instanceof Error) {
         // Some Redis error
-        // Never happen if `inMemoryLimiter` set up
+        // Never happen if `insuranceLimiter` set up
         // Decide what to do with it in other case
       } else {
         // Can't consume
@@ -125,7 +129,7 @@ It manages limits in **current process memory**, so keep it in mind when use it 
 ```javascript
 const rateLimiter = new RateLimiterMemory( // It will be used only on Redis error as insurance
 {
-  points: 1, // 1 is fair if you have 5 workers and 1 cluster
+  points: 1, // 1 is fair if you have 5 workers and 1 cluster, all workers will limit it to 5 in sum
   duration: 5,
   execEvenly: false,
 });
@@ -154,9 +158,10 @@ Redis is quite fast, however, it may be significantly slowed down on dozens of t
 * `blockDuration` `Default: 0` Block key for `blockDuration` seconds, 
 if `blockOnPointsConsumed` or more points are consumed 
 
-* `inMemoryLimiter` `Default: undefined` RateLimiterMemory object to store limits in process memory, 
+* `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
 when Redis comes up with any error.
-Be careful when use it in cluster or in distributed app.
+Additional RateLimiterRedis or RateLimiterMemory can be used as insurance.
+Be careful when use RateLimiterMemory in cluster or in distributed app.
 It may result to floating number of allowed actions. 
 If an action with a same `key` is launched on one worker several times in sequence, 
 limiter will reach out of points soon. 
@@ -194,7 +199,7 @@ Fine `key` by `points` number of points for **one duration**.
 
 Note: Depending on time penalty may go to next durations
 
-Returns Promise
+Returns Promise, where result is consumed points in current duration
 
 ### rateLimiter.reward(key, points = 1)
 
@@ -202,4 +207,4 @@ Reward `key` by `points` number of points for **one duration**.
 
 Note: Depending on time reward may go to next durations
 
-Returns Promise
+Returns Promise, where result is consumed points in current duration
