@@ -33,6 +33,6 @@
     "coveralls": "^3.0.1",
     "istanbul": "^0.4.5",
     "mocha": "^5.1.1",
-    "redis-mock": "^0.21.0"
+    "redis-mock": "animir/redis-mock"
   }
 }
