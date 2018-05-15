@@ -104,7 +104,7 @@ rateLimiterRedis.consume(remoteAddress)
       rateLimiterRedis.penalty(remoteAddress, 3)
         .then((consumedPoints) => {});
       // or rise number of points for current duration
-      rateLimiterRedis.reward(remoteAddress, 2);
+      rateLimiterRedis.reward(remoteAddress, 2)
         .then((consumedPoints) => {});
     })
     .catch((rejRes) => {
