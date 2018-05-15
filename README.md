@@ -79,6 +79,7 @@ redisClient.on('error', (err) => {
 
 const opts = {
   redis: redisClient,
+  keyPrefix: 'rlflx', // useful for multiple limiters
   points: 5, // Number of points
   duration: 5, // Per second(s)
   execEvenly: false,
@@ -129,6 +130,7 @@ It manages limits in **current process memory**, so keep it in mind when use it 
 ```javascript
 const rateLimiter = new RateLimiterMemory( // It will be used only on Redis error as insurance
 {
+  keyPrefix: 'rlflx',
   points: 1, // 1 is fair if you have 5 workers and 1 cluster, all workers will limit it to 5 in sum
   duration: 5,
   execEvenly: false,
@@ -140,6 +142,8 @@ const rateLimiter = new RateLimiterMemory( // It will be used only on Redis erro
 ```
 
 ## Options
+
+* `keyPrefix` `Default: 'rlflx''` If you need to create several limiters for different purpose
 
 * `points` `Default: 4` Maximum number of points can be consumed over duration
 
