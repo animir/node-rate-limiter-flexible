@@ -216,6 +216,8 @@ Returns Promise, where result is consumed points in current duration
 
 ## Contribution
 
-Make sure you've launched `npm run eslint`, before creating PR
+Make sure you've launched `npm run eslint`, before creating PR.
+
+You can try to run `npm run eslint-fix` to fix some issues.
 
 Appreciated, feel free!
