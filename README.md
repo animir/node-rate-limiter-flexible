@@ -8,7 +8,7 @@
 
 ## node-rate-limiter-flexible
 
-Flexible rate limiter and DDoS protector with Redis as broker allows to control requests rate in cluster or distributed environment. 
+Flexible rate limiter and anti-DDoS protector with Redis as broker allows to control requests rate in cluster or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
