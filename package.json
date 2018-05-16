@@ -6,7 +6,9 @@
   "scripts": {
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha lib/**/**.test.js",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
-    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
+    "eslint": "node_modules/eslint/bin/eslint.js --quiet lib/*",
+    "eslint-fix": "node_modules/eslint/bin/eslint.js --fix lib/*"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,11 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-security": "^1.4.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.1.1",
     "redis-mock": "^0.22.0"

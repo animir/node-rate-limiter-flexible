@@ -213,3 +213,9 @@ Reward `key` by `points` number of points for **one duration**.
 Note: Depending on time reward may go to next durations
 
 Returns Promise, where result is consumed points in current duration
+
+## Contribution
+
+Make sure you've launched `npm run eslint`, before creating PR
+
+Appreciated, feel free!

@@ -1,0 +1,27 @@
+{
+  "plugins": [
+    "node",
+    "security"
+  ],
+  "extends": [
+    "plugin:node/recommended",
+    "plugin:security/recommended",
+    "eslint:recommended",
+    "airbnb-base"
+  ],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "radix": ["error", "as-needed"],
+    "consistent-return": "off",
+    "class-methods-use-this": "off",
+    "max-len": ["error", { "code": 140 }],
+    "node/no-unpublished-require": ["error", {
+      "allowModules": ["mocha", "chai", "redis-mock"]
+    }]
+  }
+}
