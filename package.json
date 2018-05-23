@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
   "engines": {
-    "node": "^10.0.0"
+    "node": "^6.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
