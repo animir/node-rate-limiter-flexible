@@ -27,6 +27,8 @@ Advantages:
 
 By `bombardier -c 1000 -l -d 10s -r 2500 -t 5s http://127.0.0.1:3000/pricing`
 
+Test with 1000 concurrent requests with maximum 2500 requests per sec during 10 seconds
+
 ```text
 Statistics        Avg      Stdev        Max
   Reqs/sec      2491.79     801.92    9497.25
