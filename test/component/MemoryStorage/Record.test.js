@@ -1,6 +1,6 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
-const Record = require('./Record');
+const Record = require('../../../lib/component/MemoryStorage/Record');
 
 describe('MemoryStorage Record', () => {
   let record;

@@ -1,6 +1,6 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
-const RateLimiterMemory = require('./RateLimiterMemory');
+const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
 describe('RateLimiterMemory with fixed window', function () {
   this.timeout(5000);

@@ -1,7 +1,7 @@
 const cluster = require('cluster');
 const { describe, it, after } = require('mocha');
 const { expect } = require('chai');
-const { RateLimiterClusterMaster, RateLimiterCluster } = require('./RateLimiterCluster');
+const { RateLimiterClusterMaster, RateLimiterCluster } = require('../lib/RateLimiterCluster');
 
 if (cluster.isMaster) {
   describe('RateLimiterCluster with fixed window', function () {

@@ -1,6 +1,6 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
-const RateLimiterRes = require('./RateLimiterRes');
+const RateLimiterRes = require('../lib/RateLimiterRes');
 
 describe('RateLimiterRes response object', () => {
   let rateLimiterRes;

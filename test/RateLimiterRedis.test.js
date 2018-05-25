@@ -1,6 +1,6 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
-const RateLimiterRedis = require('./RateLimiterRedis');
+const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redisMock = require('redis-mock');
 
 describe('RateLimiterRedis with fixed window', function () {

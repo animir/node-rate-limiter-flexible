@@ -4,7 +4,7 @@
   "description": "Flexible API rate limiter backed by Redis for distributed node.js applications",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha lib/**/**.test.js",
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha --recursive",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "eslint": "node_modules/eslint/bin/eslint.js --quiet lib/*",

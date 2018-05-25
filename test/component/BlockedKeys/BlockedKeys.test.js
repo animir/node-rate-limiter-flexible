@@ -1,6 +1,6 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
-const BlockedKeys = require('./BlockedKeys');
+const BlockedKeys = require('../../../lib/component/BlockedKeys/BlockedKeys');
 
 describe('BlockedKeys', () => {
   let blockedKeys;
