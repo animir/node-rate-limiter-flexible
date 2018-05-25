@@ -224,9 +224,9 @@ RateLimiterRes = {
 ### rateLimiter.consume(key, points = 1)
 
 Returns Promise, which: 
-* **resolved** when point(s) is consumed, so action can be done
+* **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
 * only for RateLimiterRedis if `insuranceLimiter` isn't setup: **rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 * **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 * **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
 
@@ -240,7 +240,11 @@ Fine `key` by `points` number of points for **one duration**.
 
 Note: Depending on time penalty may go to next durations
 
-Returns Promise, where result is consumed points in current duration
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
+**rejected** when some Redis error happened, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
 
 ### rateLimiter.reward(key, points = 1)
 
@@ -248,7 +252,11 @@ Reward `key` by `points` number of points for **one duration**.
 
 Note: Depending on time reward may go to next durations
 
-Returns Promise, where result is consumed points in current duration
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
+**rejected** when some Redis error happened, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Contribution
 
