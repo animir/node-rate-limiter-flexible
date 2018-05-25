@@ -8,7 +8,8 @@
 
 ## node-rate-limiter-flexible
 
-Flexible rate limiter and anti-DDoS protector with Redis as broker allows to control requests rate in cluster or distributed environment. 
+Flexible rate limiter and anti-DDoS protector works in process 
+_Memory_, _Cluster_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
@@ -16,6 +17,7 @@ It uses **fixed window** as it is much faster than rolling window.
 Advantages:
 * block strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/blob/master/BLOCK_STRATEGY.md)
 * backed on native Promises
+* works in Cluster without additional software
 * actions can be done evenly over duration window to cut off picks
 * no race conditions
 * covered by tests
@@ -25,37 +27,24 @@ Advantages:
 
 ### Benchmark
 
+Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+
 By `bombardier -c 1000 -l -d 10s -r 2500 -t 5s http://127.0.0.1:3000/pricing`
 
 Test with 1000 concurrent requests with maximum 2500 requests per sec during 10 seconds
 
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      2491.79     801.92    9497.25
-  Latency        8.62ms    11.69ms   177.96ms
+  Reqs/sec      1994.83     439.72    5377.15
+  Latency        6.09ms     5.06ms    88.44ms
   Latency Distribution
-     50%     5.41ms
-     75%     7.65ms
-     90%    15.07ms
-     95%    27.24ms
-     99%    70.85ms
+     50%     4.98ms
+     75%     6.65ms
+     90%     9.33ms
+     95%    13.65ms
+     99%    34.27ms
   HTTP codes:
-    1xx - 0, 2xx - 25025, 3xx - 0, 4xx - 0, 5xx - 0
-    others - 0
-```
-
-Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
-
-Endpoint is limited by `RateLimiterRedis` with config:
-
-```javascript
-new RateLimiterRedis(
-  {
-    redis: redisClient,
-    points: 1000,
-    duration: 1,
-  },
-);
+    1xx - 0, 2xx - 59997, 3xx - 0, 4xx - 0, 5xx - 0
 ```
 
 Note: Performance will be much better on real servers, as for this benchmark everything was launched on one machine
@@ -87,6 +76,8 @@ const opts = {
   points: 5, // Number of points
   duration: 5, // Per second(s)
   execEvenly: false,
+  
+  // Redis specific
   blockOnPointsConsumed: 10, // If 10 points consumed in current duration
   blockDuration: 30, // block for 30 seconds in current process memory
   // It will be used only on Redis error as insurance
@@ -127,6 +118,40 @@ rateLimiterRedis.consume(remoteAddress)
     });
 ```
 
+### RateLimiterCluster
+
+Note: it doesn't work with PM2 yet
+
+RateLimiterCluster performs limiting using IPC. 
+Each request is sent to master process, which handles all the limits, then master send results back to worker.
+
+[See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/blob/master/CLUSTER.md)
+
+```javascript
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+const { RateLimiterClusterMaster, RateLimiterCluster } = require('rate-limiter-flexible');
+
+if (cluster.isMaster) {
+  // Doesn't require any options, it is only storage and messages handler
+  new RateLimiterClusterMaster();
+
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+} else {
+  const rateLimiter = new RateLimiterCluster({
+    keyPrefix: 'myclusterlimiter', // Must be unique for each limiter
+    points: 100,
+    duration: 1,
+    timeoutMs: 3000 // Promise is rejected, if master doesn't answer for 3 secs
+  });
+  
+  // Usage is the same as for RateLimiterRedis
+}  
+    
+```
+
 ### RateLimiterMemory
 
 It manages limits in **current process memory**, so keep it in mind when use it in cluster
@@ -159,6 +184,8 @@ All next allowed actions in current duration are delayed by formula `msBeforeDur
 It allows to cut off load peaks.
 Note: it isn't recommended to use it for long duration, as it may delay action for too long
 
+#### Options specific to Redis
+
 * `blockOnPointsConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis.
 Blocking works in **current process memory**. 
 Redis is quite fast, however, it may be significantly slowed down on dozens of thousands requests.
@@ -174,6 +201,11 @@ It may result to floating number of allowed actions.
 If an action with a same `key` is launched on one worker several times in sequence, 
 limiter will reach out of points soon. 
 Omit it if you want strictly use Redis and deal with errors from it
+
+#### Options specific to Cluster
+
+* `timeoutMs` `Default: 5000` Timeout for communication between worker and master over IPC. 
+If master doesn't response in time, promise is rejected with Error
 
 
 ## API
@@ -192,10 +224,11 @@ RateLimiterRes = {
 ### rateLimiter.consume(key, points = 1)
 
 Returns Promise, which: 
-* resolved when point(s) is consumed, so action can be done
-* only for RateLimiterRedis: rejected when some Redis error happened, where reject reason `rejRes` is Error object
-* rejected when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
-* rejected when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
+* **resolved** when point(s) is consumed, so action can be done
+* only for RateLimiterRedis if `insuranceLimiter` isn't setup: **rejected** when some Redis error happened, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
+* **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
+* **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
 
 Arguments:
 * `key` is usually IP address or some unique client id
