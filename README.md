@@ -244,7 +244,7 @@ Returns Promise, which:
 * **resolved** with `RateLimiterRes`
 * only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
 **rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ### rateLimiter.reward(key, points = 1)
 
@@ -256,7 +256,7 @@ Returns Promise, which:
 * **resolved** with `RateLimiterRes`
 * only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
 **rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeotMs` exceeded, where reject reason `rejRes` is Error object
+* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Contribution
 
