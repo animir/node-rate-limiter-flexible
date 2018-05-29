@@ -93,15 +93,15 @@ const opts = {
 const rateLimiterRedis = new RateLimiterRedis(opts);
 
 rateLimiterRedis.consume(remoteAddress)
-    .then(() => {
+    .then((rateLimiterRes) => {
       // ... Some app logic here ...
       
       // Depending on results it allows to fine
       rateLimiterRedis.penalty(remoteAddress, 3)
-        .then((consumedPoints) => {});
+        .then((rateLimiterRes) => {});
       // or rise number of points for current duration
       rateLimiterRedis.reward(remoteAddress, 2)
-        .then((consumedPoints) => {});
+        .then((rateLimiterRes) => {});
     })
     .catch((rejRes) => {
       if (rejRes instanceof Error) {
