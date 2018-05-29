@@ -57,13 +57,22 @@ Note: Performance will be much better on real servers, as for this benchmark eve
 
 ### RateLimiterRedis
 
-Redis client must be created with offline queue switched off
+It supports both `redis` and `ioredis` clients.
+
+Redis client must be created with offline queue switched off.
 
 ```javascript
 const redis = require('redis');
-const { RateLimiterRedis, RateLimiterMemory } = require('rate-limiter-flexible');
-
 const redisClient = redis.createClient({ enable_offline_queue: false });
+
+const Redis = require('ioredis');
+const redisClient = new Redis({
+  options: {
+    enableOfflineQueue: false
+  }
+});
+
+const { RateLimiterRedis, RateLimiterMemory } = require('rate-limiter-flexible');
 
 // It is recommended to process Redis errors and setup some reconnection strategy
 redisClient.on('error', (err) => {
