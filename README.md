@@ -269,7 +269,7 @@ Returns Promise, which:
 
 ## Contribution
 
-Make sure you've launched `npm run eslint`, before creating PR.
+Make sure you've launched `npm run eslint` before creating PR, all errors have to be fixed.
 
 You can try to run `npm run eslint-fix` to fix some issues.
 
