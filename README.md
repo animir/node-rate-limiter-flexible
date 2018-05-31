@@ -29,9 +29,9 @@ Advantages:
 
 Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
 
-By `bombardier -c 1000 -l -d 10s -r 2500 -t 5s http://127.0.0.1:3000/pricing`
+By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:3000/pricing`
 
-Test with 1000 concurrent requests with maximum 2500 requests per sec during 10 seconds
+Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
 
 ```text
 Statistics        Avg      Stdev        Max
