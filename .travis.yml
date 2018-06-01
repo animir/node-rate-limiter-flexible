@@ -4,9 +4,6 @@ node_js:
   - "8"
   - "9"
   - "10"
-cache:
-  directories:
-    – node_modules
 script:
   - npm run eslint
 after_success: 'npm run coveralls'
