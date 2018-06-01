@@ -9,7 +9,7 @@
 ## node-rate-limiter-flexible
 
 Flexible rate limiter and anti-DDoS protector works in process 
-_Memory_, _Cluster_ or _Redis_ allows to control requests rate in single process or distributed environment. 
+_Memory_, _Cluster_, _MongoDB_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
@@ -22,7 +22,7 @@ Advantages:
 * no race conditions
 * covered by tests
 * no prod dependencies
-* Redis errors don't result to broken app if `insuranceLimiter` set up
+* Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
 * useful `penalty` and `reward` methods to change limits on some results of an action
 
 ### Benchmark
@@ -127,6 +127,61 @@ rateLimiterRedis.consume(remoteAddress)
     });
 ```
 
+### RateLimiterMongo
+
+It supports `mongodb` native and `mongoose` packages
+[See RateLimiterMongo benchmark here](https://github.com/animir/node-rate-limiter-flexible/blob/master/MONGO.md)
+
+```javascript
+const { RateLimiterMongo } = require('rate-limiter-flexible');
+const mongoose = require('mongoose');
+
+const mongoOpts = {
+  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+  reconnectInterval: 100, // Reconnect every 100ms
+};
+
+mongoose.createConnection('mongodb://localhost:27017/' + RateLimiterMongo.getDbName(), mongoOpts)
+  .then((mongo) => {
+    const opts = {
+      mongo: mongo,
+      points: 10, // Number of points
+      duration: 1, // Per second(s)
+    };
+  
+    const rateLimiterMongo = new RateLimiterMongo(opts);
+    // Usage is the same as for RateLimiterRedis
+  });
+
+// Or with native mongodb package
+
+const { MongoClient } = require('mongodb');
+
+const mongoOpts = {
+  useNewUrlParser: true,
+  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+  reconnectInterval: 100, // Reconnect every 100ms
+};
+
+MongoClient.connect(
+  'mongodb://localhost:27017',
+  mongoOpts
+).then((mongo) => {
+  const opts = {
+    mongo: mongo,
+    points: 10, // Number of points
+    duration: 1, // Per second(s)
+  };
+  
+  const rateLimiterMongo = new RateLimiterMongo(opts);
+      
+  // Usage is the same as for RateLimiterRedis
+  rateLimiterMongo.consume(remoteAddress)
+  .then(() => {})
+  .catch(() => {});
+});
+```
+
 ### RateLimiterCluster
 
 Note: it doesn't work with PM2 yet
@@ -226,7 +281,9 @@ Object attributes:
 ```javascript
 RateLimiterRes = {
     msBeforeNext: 250, // Number of milliseconds before next action can be done
-    remainingPoints: 0 // Number of remaining points in current duration 
+    remainingPoints: 0, // Number of remaining points in current duration 
+    consumedPoints: 5, // Number of consumed points in current duration 
+    isFirstInDuration: false, // action is first in current duration 
 }
 ````
 
