@@ -236,7 +236,7 @@ const rateLimiter = new RateLimiterMemory( // It will be used only on Redis erro
 
 ## Options
 
-* `keyPrefix` `Default: 'rlflx''` If you need to create several limiters for different purpose
+* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose
 
 * `points` `Default: 4` Maximum number of points can be consumed over duration
 
@@ -248,7 +248,7 @@ All next allowed actions in current duration are delayed by formula `msBeforeDur
 It allows to cut off load peaks.
 Note: it isn't recommended to use it for long duration, as it may delay action for too long
 
-#### Options specific to Redis
+#### Options specific to Redis and Mongo
 
 * `blockOnPointsConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis.
 Blocking works in **current process memory**. 
