@@ -54,7 +54,7 @@ describe('RateLimiterRedis with fixed window', function () {
       });
   });
 
-  it('can not consume more than maximum points', (done) => {
+  it('rejected when consume more than maximum points', (done) => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 1, duration: 5 });
     rateLimiter.consume(testKey, 2)

@@ -22,4 +22,14 @@ describe('RateLimiterRes response object', () => {
     rateLimiterRes.remainingPoints = 4;
     expect(rateLimiterRes.remainingPoints).to.equal(4);
   });
+
+  it('consumed points set and get', () => {
+    rateLimiterRes.consumedPoints = 5;
+    expect(rateLimiterRes.consumedPoints).to.equal(5);
+  });
+
+  it('isFirstInDuration set and get with cast', () => {
+    rateLimiterRes.isFirstInDuration = 1;
+    expect(rateLimiterRes.isFirstInDuration).to.equal(true);
+  });
 });

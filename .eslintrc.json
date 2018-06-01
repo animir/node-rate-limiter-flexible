@@ -22,6 +22,7 @@
     "max-len": ["error", { "code": 140 }],
     "node/no-unpublished-require": ["error", {
       "allowModules": ["mocha", "chai", "redis-mock"]
-    }]
+    }],
+    "node/no-unsupported-features": "off"
   }
 }

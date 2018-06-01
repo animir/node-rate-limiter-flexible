@@ -27,9 +27,6 @@
     "url": "https://github.com/animir/node-rate-limiter-flexible/issues"
   },
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
-  "engines": {
-    "node": "^6.0.0"
-  },
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
@@ -40,6 +37,7 @@
     "eslint-plugin-security": "^1.4.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.1.1",
-    "redis-mock": "^0.22.0"
+    "redis-mock": "^0.22.0",
+    "sinon": "^5.0.10"
   }
 }
