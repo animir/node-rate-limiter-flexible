@@ -51,7 +51,7 @@ MongoDb stores information for about 4 million keys in 256Mb.
 
 Here is a small test of MongoDb with different options:
 
-It processes 10k, 100k and 250k requests for 10k random keys.
+It processes 10k, 100k and 250k writes for 10k random keys for:
 
 #### MongoDB default settings
 
