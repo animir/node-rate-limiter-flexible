@@ -86,7 +86,7 @@ const opts = {
   duration: 5, // Per second(s)
   execEvenly: false,
   
-  // Redis specific
+  // Redis and Mongo specific
   blockOnPointsConsumed: 10, // If 10 points consumed in current duration
   blockDuration: 30, // block for 30 seconds in current process memory
   // It will be used only on Redis error as insurance
