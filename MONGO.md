@@ -2,7 +2,7 @@
 
 ### Benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:latest` and `mongo:jessie` Docker containers with 4 workers
 
 Endpoint is limited by `RateLimiterMongo` with config:
 
