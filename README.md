@@ -27,27 +27,35 @@ Advantages:
 
 ### Benchmark
 
-Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+Average latency of pure NodeJS endpoint limited by (all set up on one server):
+```text
+1. Memory   0.34 ms
+2. Cluster  0.69 ms
+3. Redis    2.45 ms
+4. Mongo    4.75 ms
+```
 
-By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:3000/pricing`
+#### RateLimiterRedis benchmark
+
+Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+
+By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
 
 Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
 
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1994.83     439.72    5377.15
-  Latency        6.09ms     5.06ms    88.44ms
+  Reqs/sec      2015.20     511.21   14570.19
+  Latency        2.45ms     7.51ms   138.41ms
   Latency Distribution
-     50%     4.98ms
-     75%     6.65ms
-     90%     9.33ms
-     95%    13.65ms
-     99%    34.27ms
+     50%     1.95ms
+     75%     2.16ms
+     90%     2.43ms
+     95%     2.77ms
+     99%     5.73ms
   HTTP codes:
-    1xx - 0, 2xx - 59997, 3xx - 0, 4xx - 0, 5xx - 0
+    1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
 ```
-
-Note: Performance will be much better on real servers, as for this benchmark everything was launched on one machine
 
 ## Installation
 

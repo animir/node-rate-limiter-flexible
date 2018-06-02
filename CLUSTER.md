@@ -2,7 +2,7 @@
 
 ### Benchmark
 
-Endpoint is simple Express 4.x route launched in `node:latest` and `redis:alpine` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers with 4 workers
 
 Endpoint is limited by `RateLimiterCluster` with config:
 
@@ -13,25 +13,25 @@ new RateLimiterCluster({
   });
 ```
 
-By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:3000/pricing`
+By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
 
 Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
 
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1997.87     429.40    3869.98
-  Latency        4.75ms     3.32ms    68.21ms
+  Reqs/sec      2024.57     234.52    2976.20
+  Latency      704.58us   165.65us     7.05ms
   Latency Distribution
-     50%     4.15ms
-     75%     5.43ms
-     90%     6.95ms
-     95%     8.79ms
-     99%    18.96ms
+     50%   669.00us
+     75%   843.00us
+     90%     1.02ms
+     95%     1.18ms
+     99%     1.60ms
   HTTP codes:
-    1xx - 0, 2xx - 15000, 3xx - 0, 4xx - 45014, 5xx - 0
+    1xx - 0, 2xx - 53458, 3xx - 0, 4xx - 6560, 5xx - 0
 ```
 
-It is a bit faster than RateLimiterRedis.
+Cluster limiter at least twice faster than RateLimiterRedis.
 
 ### How it works
 
