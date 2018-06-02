@@ -1,6 +1,6 @@
 {
   "name": "rate-limiter-flexible",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Flexible API rate limiter backed by Redis for distributed node.js applications",
   "main": "index.js",
   "scripts": {
