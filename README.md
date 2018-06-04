@@ -6,6 +6,8 @@
 [node-image]: https://img.shields.io/badge/node.js-%3E=_6.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 
+<img src="rlflx-logo-small.png" width="50" alt="Logo"/>
+
 ## node-rate-limiter-flexible
 
 Flexible rate limiter and anti-DDoS protector works in process 
