@@ -244,6 +244,20 @@ const rateLimiter = new RateLimiterMemory( // It will be used only on Redis erro
     
 ```
 
+### Express middleware
+
+```javascript
+const rateLimiterMiddleware = (req, res, next) => {
+  rateLimiter.consume(req.connection.remoteAddress)
+    .then(() => {
+      next();
+    })
+    .catch((rejRes) => {
+      res.status(429).send('Too Many Requests');
+    });
+};
+```
+
 ## Options
 
 * `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose
@@ -295,7 +309,7 @@ RateLimiterRes = {
     consumedPoints: 5, // Number of consumed points in current duration 
     isFirstInDuration: false, // action is first in current duration 
 }
-````
+```
 
 ### rateLimiter.consume(key, points = 1)
 
