@@ -258,6 +258,20 @@ const rateLimiterMiddleware = (req, res, next) => {
 };
 ```
 
+### Koa middleware
+
+```javascript
+app.use(async (ctx, next) => {
+  try {
+    await rateLimiter.consume(ctx.ip)
+    next()
+  } catch (rejRes) {
+    ctx.status = 429
+    ctx.body = 'Too Many Requests'
+  }
+})
+```
+
 ## Options
 
 * `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose
