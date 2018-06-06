@@ -169,7 +169,7 @@ describe('RateLimiterMongo with fixed window', function () {
         done(Error('have to reject'));
       })
       .catch(() => {
-        expect(rateLimiter._blockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
+        expect(rateLimiter._inmemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
         done();
       });
   });

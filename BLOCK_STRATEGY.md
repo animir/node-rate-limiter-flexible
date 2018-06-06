@@ -5,14 +5,14 @@ Redis is quite fast. It can process over 100k requests per second.
 However, performance still depends on amount of requests per second.
 
 We don't want latency to become 3, 5 or more seconds.
-RateLimiterRedis provides a block strategy to avoid too many requests to Redis during DDoS attack.
+Any limiter like Redis or Mongo extended from RateLimiterStoreAbstract provides a block strategy to avoid too many requests to Store during DDoS attack.
 
 It can be activated with setup `inmemoryBlockOnConsumed` and `inmemoryBlockDuration` options.
 If some actions consume `inmemoryBlockOnConsumed` points, RateLimiterRedis starts using **current process memory** for them
 All blocked actions with certain key don't request Redis anymore until block expires.
 
-Note for distributed apps: DDoS requests still can go to Redis if not all NodeJS workers blocked appropriate keys.
-Anyway, it allows to avoid over load of Redis
+Note for distributed apps: DDoS requests still can go to Store if not all NodeJS workers blocked appropriate keys.
+Anyway, it allows to avoid over load of Store
 
 Block strategy algorithm developed with specificity rate limiter in mind:
 * it doesn't use `setTimeout` to expire blocked keys, so doesn't overload Event Loop
