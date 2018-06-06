@@ -3,24 +3,23 @@ const { expect } = require('chai');
 const RateLimiterUnion = require('../lib/RateLimiterUnion');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
-describe('RateLimiterUnion with fixed window', function () {
+describe('RateLimiterUnion with fixed window', () => {
   const keyPrefix1 = 'limit1';
   const keyPrefix2 = 'limit2';
   let rateLimiter;
 
   beforeEach(() => {
-    rateLimiter = new RateLimiterUnion(
-      new RateLimiterMemory({
-        keyPrefix: keyPrefix1,
-        points: 1,
-        duration: 1,
-      }),
-      new RateLimiterMemory({
-        keyPrefix: keyPrefix2,
-        points: 2,
-        duration: 5,
-      }),
-    );
+    const limiter1 = new RateLimiterMemory({
+      keyPrefix: keyPrefix1,
+      points: 1,
+      duration: 1,
+    });
+    const limiter2 = new RateLimiterMemory({
+      keyPrefix: keyPrefix2,
+      points: 2,
+      duration: 5,
+    });
+    rateLimiter = new RateLimiterUnion(limiter1, limiter2);
   });
 
   it('does not allow to create union with limiters number less than 2', () => {
