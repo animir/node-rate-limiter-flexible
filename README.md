@@ -27,6 +27,18 @@ Advantages:
 * Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
 * useful `penalty` and `reward` methods to change limits on some results of an action
 
+### Links
+
+* [RateLimiterRedis](#ratelimiterredis)
+* [RateLimiterMongo](#ratelimitermongo)
+* [RateLimiterCluster](#ratelimitercluster)
+* [RateLimiterMemory](#ratelimitermemory)
+* [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
+* [Express middleware](#express-middleware)
+* [Koa middleware](#koa-middleware)
+* [Options](#options)
+* [API](#api)
+
 ### Benchmark
 
 Average latency of pure NodeJS endpoint limited by (all set up on one server):
@@ -244,6 +256,48 @@ const rateLimiter = new RateLimiterMemory( // It will be used only on Redis erro
     
 ```
 
+### RateLimiterUnion
+
+Combine 2 or more rate limiters to act as single
+
+Any rate limiters from this `rate-limiter-flexible` can be united
+
+Useful for authorization, which must be protected from password brute force
+
+For example, not more than once per second and only 5 points per minute
+
+`keyPrefix` is necessary as resolved and rejected results depend on it
+
+```javascript
+const limiter1 = new RateLimiterMemory({
+  keyPrefix: 'limit1',
+  points: 1,
+  duration: 1,
+});
+const limiter2 = new RateLimiterMemory({
+  keyPrefix: 'limit2',
+  points: 5,
+  duration: 60,
+});
+const rateLimiterUnion = new RateLimiterUnion(limiter1, limiter2);
+
+rateLimiterUnion.consume(remoteAddress)
+  .then((res) => {
+    // Returns object with 2 RateLimiterRes objects
+    res['limit1'].remainingPoints;
+    res['limit2'].remainingPoints;
+  })
+  .catch((rej) => {
+    /* Returns object with RateLimiterRes objects only for rejected limiters
+    * For example:
+    * { limit1: RateLimiterRes { ... } }
+    * 
+    * It may be Error if you use Redis, Mongo or Cluster without insurance 
+    * { limit2: Error }
+    */
+  });
+```
+
 ### Express middleware
 
 ```javascript
@@ -329,8 +383,8 @@ RateLimiterRes = {
 
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
-* only for RateLimiterRedis if `insuranceLimiter` isn't setup: **rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 * **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 * **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
 
@@ -346,9 +400,8 @@ Note: Depending on time penalty may go to next durations
 
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes`
-* only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
-**rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ### rateLimiter.reward(key, points = 1)
 
@@ -358,9 +411,8 @@ Note: Depending on time reward may go to next durations
 
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes`
-* only for RateLimiterRedis if `insuranceLimiter` isn't setup: 
-**rejected** when some Redis error happened, where reject reason `rejRes` is Error object
-* only for RateLimiterCluster: **rejected** when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterRedis if `insuranceLimiter` isn't setup: when some Redis error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Contribution
 
