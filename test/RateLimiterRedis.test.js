@@ -146,8 +146,8 @@ describe('RateLimiterRedis with fixed window', function () {
       redis: redisMockClient,
       points: 1,
       duration: 5,
-      blockOnPointsConsumed: 2,
-      blockDuration: 10,
+      inmemoryBlockOnConsumed: 2,
+      inmemoryBlockDuration: 10,
     });
     rateLimiter.consume(testKey)
       .then(() => {
@@ -171,8 +171,8 @@ describe('RateLimiterRedis with fixed window', function () {
       redis: redisMockClient,
       points: 1,
       duration: 1,
-      blockOnPointsConsumed: 2,
-      blockDuration: 2,
+      inmemoryBlockOnConsumed: 2,
+      inmemoryBlockDuration: 2,
     });
     // It blocks on the first consume as consumed points more than available
     rateLimiter.consume(testKey, 2)
@@ -194,11 +194,11 @@ describe('RateLimiterRedis with fixed window', function () {
       });
   });
 
-  it('throws error when blockOnPointsConsumed is not set, but blockDuration is set', (done) => {
+  it('throws error when inmemoryBlockOnConsumed is not set, but inmemoryBlockDuration is set', (done) => {
     try {
       const rateLimiter = new RateLimiterRedis({
         redis: redisMockClient,
-        blockDuration: 2,
+        inmemoryBlockDuration: 2,
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -207,12 +207,12 @@ describe('RateLimiterRedis with fixed window', function () {
     }
   });
 
-  it('throws error when blockOnPointsConsumed less or equal to points', (done) => {
+  it('throws error when inmemoryBlockOnConsumed less than points', (done) => {
     try {
       const rateLimiter = new RateLimiterRedis({
         redis: redisMockClient,
         points: 2,
-        blockOnPointsConsumed: 2,
+        inmemoryBlockOnConsumed: 1,
       });
       rateLimiter.reward('test');
     } catch (err) {

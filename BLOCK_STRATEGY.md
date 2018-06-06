@@ -7,8 +7,8 @@ However, performance still depends on amount of requests per second.
 We don't want latency to become 3, 5 or more seconds.
 RateLimiterRedis provides a block strategy to avoid too many requests to Redis during DDoS attack.
 
-It can be activated with setup `blockOnPointsConsumed` and `blockDuration` options.
-If some actions consume `blockOnPointsConsumed` points, RateLimiterRedis starts using **current process memory** for them
+It can be activated with setup `inmemoryBlockOnConsumed` and `inmemoryBlockDuration` options.
+If some actions consume `inmemoryBlockOnConsumed` points, RateLimiterRedis starts using **current process memory** for them
 All blocked actions with certain key don't request Redis anymore until block expires.
 
 Note for distributed apps: DDoS requests still can go to Redis if not all NodeJS workers blocked appropriate keys.
@@ -96,8 +96,8 @@ const rateLimiter = new RateLimiterRedis(
     redis: redisClient,
     points: 5,
     duration: 1,
-    blockOnPointsConsumed: 10,
-    blockDuration: 30,
+    inmemoryBlockOnConsumed: 10,
+    inmemoryBlockDuration: 30,
   },
 );
 ```

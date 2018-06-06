@@ -109,11 +109,11 @@ const opts = {
   execEvenly: false,
   
   // Redis and Mongo specific
-  blockOnPointsConsumed: 10, // If 10 points consumed in current duration
-  blockDuration: 30, // block for 30 seconds in current process memory
-  // It will be used only on Redis error as insurance
-  // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
+  inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
+  inmemoryBlockDuration: 30, // block for 30 seconds in current process memory
   insuranceLimiter: new RateLimiterMemory(
+    // It will be used only on Redis or Mongo error as insurance
+    // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
     {
       points: 1, // 1 is fair if you have 5 workers and 1 cluster
       duration: 5,
@@ -342,12 +342,12 @@ Note: it isn't recommended to use it for long duration, as it may delay action f
 
 #### Options specific to Redis and Mongo
 
-* `blockOnPointsConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis.
-Blocking works in **current process memory**. 
-Redis is quite fast, however, it may be significantly slowed down on dozens of thousands requests.
+* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis or Mongo.
+In-memory blocking works in **current process memory**. 
+Redis and Mongo are quite fast, however, they may be significantly slowed down on dozens of thousands requests.
 
-* `blockDuration` `Default: 0` Block key for `blockDuration` seconds, 
-if `blockOnPointsConsumed` or more points are consumed 
+* `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
+if `inmemoryBlockOnConsumed` or more points are consumed 
 
 * `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
 when Redis comes up with any error.

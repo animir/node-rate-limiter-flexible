@@ -161,8 +161,8 @@ describe('RateLimiterMongo with fixed window', function () {
       mongo: mongoClient,
       points: 2,
       duration: 5,
-      blockOnPointsConsumed: 10,
-      blockDuration: 10,
+      inmemoryBlockOnConsumed: 10,
+      inmemoryBlockDuration: 10,
     });
     rateLimiter.consume(testKey)
       .then(() => {
