@@ -72,16 +72,16 @@ const rateLimiter = new RateLimiterRedis(
 Result:
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      2006.80     745.77   18495.21
-  Latency       25.99ms   167.75ms      5.10s
+  Reqs/sec      1999.05     562.96   11243.01
+  Latency        7.29ms     8.71ms   146.95ms
   Latency Distribution
-     50%     6.55ms
-     75%    10.62ms
-     90%    29.05ms
-     95%    66.24ms
-     99%   195.91ms
+     50%     5.25ms
+     75%     7.20ms
+     90%    11.61ms
+     95%    18.73ms
+     99%    52.78ms
   HTTP codes:
-    1xx - 0, 2xx - 750, 3xx - 0, 4xx - 58675, 5xx - 0
+    1xx - 0, 2xx - 750, 3xx - 0, 4xx - 59261, 5xx - 0
 ```
 
 #### Setup Block Strategy
@@ -105,16 +105,16 @@ const rateLimiter = new RateLimiterRedis(
 Result:
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec      2000.48     770.61   11560.37
-  Latency        8.46ms    15.40ms   321.88ms
+  Reqs/sec      2002.56     773.42   11058.44
+  Latency        5.19ms    10.30ms   149.12ms
   Latency Distribution
-     50%     4.39ms
-     75%     6.73ms
-     90%    14.62ms
-     95%    31.82ms
-     99%    86.29ms
+     50%     2.99ms
+     75%     4.08ms
+     90%     5.86ms
+     95%    14.35ms
+     99%    60.55ms
   HTTP codes:
-    1xx - 0, 2xx - 25, 3xx - 0, 4xx - 59898, 5xx - 0
+    1xx - 0, 2xx - 25, 3xx - 0, 4xx - 59920, 5xx - 0
 ```
 
 #### Conclusion
