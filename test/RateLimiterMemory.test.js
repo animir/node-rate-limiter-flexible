@@ -107,4 +107,59 @@ describe('RateLimiterMemory with fixed window', function () {
 
     expect(rateLimiterMemory.getKey(testKey)).to.equal('test:key');
   });
+
+  it('blocks key for block duration when consumed more than points', (done) => {
+    const testKey = 'block';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 1, blockDuration: 2 });
+    rateLimiterMemory.consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch((rej) => {
+        expect(rej.msBeforeNext > 1000).to.equal(true);
+        done();
+      });
+  });
+
+  it('do not block key second time until block expires no matter how many points consumed', (done) => {
+    const testKey = 'donotblocktwice';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 1, blockDuration: 2 });
+    rateLimiterMemory.consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch(() => {
+        setTimeout(() => {
+          rateLimiterMemory.consume(testKey)
+            .then(() => {
+              done(Error('must not resolve'));
+            })
+            .catch((rej) => {
+              expect(rej.msBeforeNext < 1000).to.equal(true);
+              done();
+            });
+        }, 1001);
+      });
+  });
+
+  it('block expires in blockDuration seconds', (done) => {
+    const testKey = 'blockexpires';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 1, blockDuration: 2 });
+    rateLimiterMemory.consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch(() => {
+        setTimeout(() => {
+          rateLimiterMemory.consume(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(1);
+              done();
+            })
+            .catch(() => {
+              done(Error('must resolve'));
+            });
+        }, 2000);
+      });
+  });
 });

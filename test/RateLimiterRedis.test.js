@@ -140,8 +140,8 @@ describe('RateLimiterRedis with fixed window', function () {
       });
   });
 
-  it('block key when block options set up', (done) => {
-    const testKey = 'block';
+  it('block key in memory when inmemory block options set up', (done) => {
+    const testKey = 'blockmem';
     const rateLimiter = new RateLimiterRedis({
       redis: redisMockClient,
       points: 1,
@@ -165,8 +165,8 @@ describe('RateLimiterRedis with fixed window', function () {
       });
   });
 
-  it('expire blocked key', (done) => {
-    const testKey = 'block';
+  it('expire inmemory blocked key', (done) => {
+    const testKey = 'blockmem2';
     const rateLimiter = new RateLimiterRedis({
       redis: redisMockClient,
       points: 1,
@@ -323,5 +323,39 @@ describe('RateLimiterRedis with fixed window', function () {
     const rateLimiter = new RateLimiterRedis({ keyPrefix, redis: redisClientClosed });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
+  });
+
+  it('blocks key for block duration when consumed more than points', (done) => {
+    const testKey = 'block';
+    const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 1, duration: 1, blockDuration: 2 });
+    rateLimiter.consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch((rej) => {
+        expect(rej.msBeforeNext > 1000).to.equal(true);
+        done();
+      });
+  });
+
+  it('block expires in blockDuration seconds', (done) => {
+    const testKey = 'blockexpires';
+    const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 1, duration: 1, blockDuration: 2 });
+    rateLimiter.consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch(() => {
+        setTimeout(() => {
+          rateLimiter.consume(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(1);
+              done();
+            })
+            .catch(() => {
+              done(Error('must resolve'));
+            });
+        }, 2000);
+      });
   });
 });

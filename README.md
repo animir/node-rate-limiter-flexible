@@ -102,11 +102,15 @@ redisClient.on('error', (err) => {
 });
 
 const opts = {
+  // Basic options
   redis: redisClient,
-  keyPrefix: 'rlflx', // useful for multiple limiters
   points: 5, // Number of points
   duration: 5, // Per second(s)
-  execEvenly: false,
+  
+  // Custom
+  execEvenly: false, // Do not delay actions evenly
+  blockDuration: 0, // Do not block if consumed more than points
+  keyPrefix: 'rlflx', // must be unique for limiters with different purpose
   
   // Redis and Mongo specific
   inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
@@ -332,13 +336,16 @@ app.use(async (ctx, next) => {
 
 * `points` `Default: 4` Maximum number of points can be consumed over duration
 
-* `duration` `Default: 1` Number of seconds before points are reset
+* `duration` `Default: 1` Number of seconds before consumed points are reset
 
 * `execEvenly` `Default: false` Delay action to be executed evenly over duration
 First action in duration is executed without delay.
 All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
 It allows to cut off load peaks.
 Note: it isn't recommended to use it for long duration, as it may delay action for too long
+
+* `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
+block for `blockDuration` seconds. 
 
 #### Options specific to Redis and Mongo
 
