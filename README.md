@@ -363,7 +363,10 @@ Be careful when use RateLimiterMemory in cluster or in distributed app.
 It may result to floating number of allowed actions. 
 If an action with a same `key` is launched on one worker several times in sequence, 
 limiter will reach out of points soon. 
-Omit it if you want strictly use Redis and deal with errors from it
+Omit it if you want strictly deal with store errors
+
+**Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
+to same values as in parent to avoid unexpected behaviour
 
 #### Options specific to Cluster
 
