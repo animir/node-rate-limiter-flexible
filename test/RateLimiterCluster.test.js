@@ -101,6 +101,16 @@ if (cluster.isMaster) {
       });
       worker.send({ channel: 'mocha', test: 'reward' });
     });
+
+    it('block', (done) => {
+      worker.on('message', (msg) => {
+        if (msg && msg.channel === 'mocha' && msg.test === 'block') {
+          expect(msg.data._msBeforeNext > 1000).to.equal(true);
+          done();
+        }
+      });
+      worker.send({ channel: 'mocha', test: 'block' });
+    });
   });
 } else {
   let rateLimiterClusterWorker;
@@ -209,6 +219,16 @@ if (cluster.isMaster) {
             })
             .catch((rejRes) => {
               process.send({ channel: 'mocha', test: msg.test, data: rejRes });
+            });
+          break;
+        case 'block':
+          rateLimiterClusterWorker = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: msg.test });
+          rateLimiterClusterWorker.block(msg.test, 2)
+            .then((res) => {
+              process.send({ channel: 'mocha', test: msg.test, data: res });
+            })
+            .catch((rej) => {
+              process.send({ channel: 'mocha', test: msg.test, data: rej });
             });
           break;
         default:

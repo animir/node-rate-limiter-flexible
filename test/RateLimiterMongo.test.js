@@ -196,4 +196,30 @@ describe('RateLimiterMongo with fixed window', function () {
         done();
       });
   });
+
+  it('block using insuranceLimiter when Mongo error', (done) => {
+    const testKey = 'mongoerrorblock';
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
+      return Promise.reject(Error('Mongo error'));
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      mongo: mongoClient,
+      points: 1,
+      duration: 1,
+      blockDuration: 2,
+      insuranceLimiter: new RateLimiterMemory({
+        points: 1,
+        duration: 1,
+      }),
+    });
+    rateLimiter.block(testKey, 2)
+      .then((res) => {
+        expect(res.msBeforeNext > 1000).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
 });

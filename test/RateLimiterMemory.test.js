@@ -162,4 +162,18 @@ describe('RateLimiterMemory with fixed window', function () {
         }, 2000);
       });
   });
+
+  it('block custom key', (done) => {
+    const testKey = 'blockcustom';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    rateLimiterMemory.block(testKey, 2);
+    rateLimiterMemory.consume(testKey)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch((rej) => {
+        expect(rej.msBeforeNext > 1000).to.equal(true);
+        done();
+      });
+  });
 });

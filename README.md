@@ -25,7 +25,7 @@ Advantages:
 * covered by tests
 * no prod dependencies
 * Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
-* useful `penalty` and `reward` methods to change limits on some results of an action
+* useful `block`, `penalty` and `reward` methods
 
 ### Links
 
@@ -419,6 +419,15 @@ Note: Depending on time reward may go to next durations
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes`
 * **rejected** only for RateLimiterRedis if `insuranceLimiter` isn't setup: when some Redis error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+
+### rateLimiter.block(key, secDuration)
+
+Block `key` for `secDuration` seconds
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Contribution

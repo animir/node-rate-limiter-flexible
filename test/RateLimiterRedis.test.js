@@ -317,6 +317,30 @@ describe('RateLimiterRedis with fixed window', function () {
       .catch((rejRes) => { done(rejRes); });
   });
 
+  it('block using insuranceLimiter when RedisClient error', (done) => {
+    const testKey = 'rediserrorblock';
+
+    const rateLimiter = new RateLimiterRedis({
+      redis: redisClientClosed,
+      points: 1,
+      duration: 1,
+      insuranceLimiter: new RateLimiterRedis({
+        points: 1,
+        duration: 1,
+        redis: redisMockClient,
+      }),
+    });
+
+    rateLimiter.block(testKey, 2)
+      .then((res) => {
+        expect(res.msBeforeNext > 1000).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
@@ -356,6 +380,22 @@ describe('RateLimiterRedis with fixed window', function () {
               done(Error('must resolve'));
             });
         }, 2000);
+      });
+  });
+
+  it('block custom key', (done) => {
+    const testKey = 'blockcustom';
+    const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 1, duration: 1 });
+    rateLimiter.block(testKey, 2)
+      .then(() => {
+        rateLimiter.consume(testKey)
+          .then(() => {
+            done(Error('must not resolve'));
+          })
+          .catch((rej) => {
+            expect(rej.msBeforeNext > 1000).to.equal(true);
+            done();
+          });
       });
   });
 });
