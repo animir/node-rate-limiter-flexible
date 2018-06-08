@@ -1,4 +1,6 @@
-const { describe, it, beforeEach, before } = require('mocha');
+const {
+  describe, it, beforeEach, before,
+} = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterMongo = require('../lib/RateLimiterMongo');
@@ -36,7 +38,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 1,
+          points: 0,
           expire: 5000,
         },
       };
@@ -59,7 +61,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 2,
+          points: 0,
           expire: 5000,
         },
       };
@@ -82,7 +84,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 1,
+          points: 0,
           expire: 5000,
         },
       };
@@ -105,7 +107,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: -1,
+          points: 0,
           expire: 5000,
         },
       };
@@ -150,7 +152,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 11,
+          points: 10,
           expire: 5000,
         },
       };
@@ -179,14 +181,16 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 2,
+          points: 0,
           expire: 1000,
         },
       };
       return Promise.resolve(res);
     });
 
-    const rateLimiter = new RateLimiterMongo({ mongo: mongoClient, points: 1, duration: 1, blockDuration: 2 });
+    const rateLimiter = new RateLimiterMongo({
+      mongo: mongoClient, points: 1, duration: 1, blockDuration: 2,
+    });
     rateLimiter.consume(testKey, 2)
       .then(() => {
         done(Error('must not resolve'));
@@ -199,9 +203,7 @@ describe('RateLimiterMongo with fixed window', function () {
 
   it('block using insuranceLimiter when Mongo error', (done) => {
     const testKey = 'mongoerrorblock';
-    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
-      return Promise.reject(Error('Mongo error'));
-    });
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => Promise.reject(Error('Mongo error')));
 
     const rateLimiter = new RateLimiterMongo({
       mongo: mongoClient,
