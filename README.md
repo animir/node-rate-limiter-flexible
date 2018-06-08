@@ -167,19 +167,23 @@ const mongoOpts = {
   reconnectInterval: 100, // Reconnect every 100ms
 };
 
-mongoose.createConnection('mongodb://localhost:27017/' + RateLimiterMongo.getDbName(), mongoOpts)
-  .then((mongo) => {
-    const opts = {
-      mongo: mongo,
-      points: 10, // Number of points
-      duration: 1, // Per second(s)
-    };
-  
-    const rateLimiterMongo = new RateLimiterMongo(opts);
-    // Usage is the same as for RateLimiterRedis
-  });
+mongoose.connect('mongodb://127.0.0.1:27017/' + RateLimiterMongo.getDbName())
+  .catch((err) => {});
+const mongoConn = mongoose.connection;
+// Or
+const mongoConn = mongoose.createConnection('mongodb://127.0.0.1:27017/' + RateLimiterMongo.getDbName(), mongoOpts);
 
-// Or with native mongodb package
+const opts = {
+  mongo: mongoConn,
+  points: 10, // Number of points
+  duration: 1, // Per second(s)
+};
+  
+const rateLimiterMongo = new RateLimiterMongo(opts);
+    // Usage is the same as for RateLimiterRedis
+
+
+/* --- Or with native mongodb package --- */
 
 const { MongoClient } = require('mongodb');
 
@@ -189,24 +193,24 @@ const mongoOpts = {
   reconnectInterval: 100, // Reconnect every 100ms
 };
 
-MongoClient.connect(
+const mongoConn = MongoClient.connect(
   'mongodb://localhost:27017',
   mongoOpts
-).then((mongo) => {
-  const opts = {
-    mongo: mongo,
-    points: 10, // Number of points
-    duration: 1, // Per second(s)
-  };
-  
-  const rateLimiterMongo = new RateLimiterMongo(opts);
-      
-  // Usage is the same as for RateLimiterRedis
-  rateLimiterMongo.consume(remoteAddress)
-  .then(() => {})
-  .catch(() => {});
-});
+);
+
+const opts = {
+  mongo: mongoConn,
+  points: 10, // Number of points
+  duration: 1, // Per second(s)
+};
+
+const rateLimiterMongo = new RateLimiterMongo(opts);
+    // Usage is the same as for RateLimiterRedis
 ```
+
+Connection to Mongo takes milliseconds, so any method of rate limiter is rejected with Error, until connection established
+
+`insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established 
 
 ### RateLimiterCluster
 
@@ -357,13 +361,9 @@ Redis and Mongo are quite fast, however, they may be significantly slowed down o
 if `inmemoryBlockOnConsumed` or more points are consumed 
 
 * `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
-when Redis comes up with any error.
-Additional RateLimiterRedis or RateLimiterMemory can be used as insurance.
-Be careful when use RateLimiterMemory in cluster or in distributed app.
-It may result to floating number of allowed actions. 
-If an action with a same `key` is launched on one worker several times in sequence, 
-limiter will reach out of points soon. 
-Omit it if you want strictly deal with store errors
+when Redis or Mongo comes up with any error. 
+
+All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
 
 **Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
 to same values as in parent to avoid unexpected behaviour
