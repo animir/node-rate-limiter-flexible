@@ -224,4 +224,22 @@ describe('RateLimiterMongo with fixed window', function () {
         done(Error('must not reject'));
       });
   });
+
+  it('return correct data with _getRateLimiterRes', () => {
+    const rateLimiter = new RateLimiterMongo({ points: 5, mongo: mongoClient });
+
+    const res = rateLimiter._getRateLimiterRes('test', 1, {
+      value: {
+        points: 2,
+        expire: new Date(Date.now() + 1000).toISOString()
+      }
+    });
+
+    expect(
+      res.msBeforeNext <= 1000
+      && res.consumedPoints === 3
+      && res.isFirstInDuration === false
+      && res.remainingPoints === 2
+    ).to.equal(true);
+  });
 });
