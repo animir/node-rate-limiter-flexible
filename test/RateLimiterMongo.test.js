@@ -38,7 +38,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 0,
+          points: 1,
           expire: 5000,
         },
       };
@@ -61,7 +61,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 0,
+          points: 2,
           expire: 5000,
         },
       };
@@ -84,7 +84,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 0,
+          points: 1,
           expire: 5000,
         },
       };
@@ -107,7 +107,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 0,
+          points: -1,
           expire: 5000,
         },
       };
@@ -152,7 +152,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 10,
+          points: 11,
           expire: 5000,
         },
       };
@@ -181,7 +181,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
         value: {
-          points: 0,
+          points: 2,
           expire: 1000,
         },
       };
@@ -230,7 +230,7 @@ describe('RateLimiterMongo with fixed window', function () {
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       value: {
-        points: 2,
+        points: 3,
         expire: new Date(Date.now() + 1000).toISOString()
       }
     });
