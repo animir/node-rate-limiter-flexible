@@ -79,6 +79,8 @@ Statistics        Avg      Stdev        Max
 
 ### RateLimiterRedis
 
+Redis >=2.6.12
+
 It supports both `redis` and `ioredis` clients.
 
 Redis client must be created with offline queue switched off.
@@ -154,6 +156,8 @@ rateLimiterRedis.consume(remoteAddress)
 ```
 
 ### RateLimiterMongo
+
+MongoDB >=3.2
 
 It supports `mongodb` native and `mongoose` packages
 [See RateLimiterMongo benchmark here](https://github.com/animir/node-rate-limiter-flexible/blob/master/MONGO.md)
