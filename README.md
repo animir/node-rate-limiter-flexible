@@ -16,6 +16,8 @@ _Memory_, _Cluster_, _MongoDB_ or _Redis_ allows to control requests rate in sin
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
 
+:star: It is **STAR**ving, don't forget to feed the beast! :star:
+
 Advantages:
 * in-memory block strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/blob/master/BLOCK_STRATEGY.md)
 * backed on native Promises
