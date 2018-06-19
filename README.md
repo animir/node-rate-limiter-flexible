@@ -43,7 +43,9 @@ Advantages:
 
 ### Benchmark
 
-Average latency of pure NodeJS endpoint limited by (all set up on one server):
+Test pure NodeJS endpoint in cluster of 4 workers by 1000 concurrent clients with maximum 2000 requests per sec during 30 seconds.
+
+Average latency (all set up on one server):
 ```text
 1. Memory   0.34 ms
 2. Cluster  0.69 ms
