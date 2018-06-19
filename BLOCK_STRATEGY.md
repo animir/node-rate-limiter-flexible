@@ -1,6 +1,6 @@
-## Block Strategy
+## In-memory Block Strategy
 
-Block strategy is against DDoS attacks.
+In-memory Block Strategy is against DDoS attacks.
 Redis is quite fast. It can process over 100k requests per second.
 However, performance still depends on amount of requests per second.
 
@@ -14,7 +14,7 @@ All blocked actions with certain key don't request Redis anymore until block exp
 Note for distributed apps: DDoS requests still can go to Store if not all NodeJS workers blocked appropriate keys.
 Anyway, it allows to avoid over load of Store
 
-Block strategy algorithm developed with specificity rate limiter in mind:
+In-memory Block strategy algorithm developed with specificity rate limiter in mind:
 * it doesn't use `setTimeout` to expire blocked keys, so doesn't overload Event Loop
 * blocked keys expired in two cases:
     1. if `key` is blocked, it launches collect of expired blocked keys. 
@@ -55,7 +55,7 @@ The same benchmarking setting for both tests:
 
 
 
-#### Without Block Strategy
+#### Without In-memory Block Strategy
 
 5 points per second to consume
 
@@ -84,7 +84,7 @@ Statistics        Avg      Stdev        Max
     1xx - 0, 2xx - 750, 3xx - 0, 4xx - 59261, 5xx - 0
 ```
 
-#### Setup Block Strategy
+#### Setup In-memory Block Strategy
 
 5 points per second to consume
 
@@ -119,5 +119,5 @@ Statistics        Avg      Stdev        Max
 
 #### Conclusion
 
-* Latency is smaller with Block Strategy
+* Latency is smaller with In-memory Block Strategy
 * Number of requests to Redis less on 59k roughly
