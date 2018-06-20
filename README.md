@@ -11,7 +11,7 @@
 ## node-rate-limiter-flexible
 
 Flexible rate limiter and anti-DDoS protector works in process 
-_Memory_, _Cluster_, _MongoDB_ or _Redis_ allows to control requests rate in single process or distributed environment. 
+_Memory_, _Cluster_, _MongoDB_, _MySQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
@@ -33,6 +33,7 @@ Advantages:
 
 * [RateLimiterRedis](#ratelimiterredis)
 * [RateLimiterMongo](#ratelimitermongo)
+* [RateLimiterMySQL](#ratelimitermysql)
 * [RateLimiterCluster](#ratelimitercluster)
 * [RateLimiterMemory](#ratelimitermemory)
 * [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
@@ -43,14 +44,20 @@ Advantages:
 
 ### Benchmark
 
-Test pure NodeJS endpoint in cluster of 4 workers by 1000 concurrent clients with maximum 2000 requests per sec during 30 seconds.
+Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server by 
 
-Average latency (all set up on one server):
+1000 concurrent clients with maximum 2000 requests per sec during 30 seconds.
+
 ```text
 1. Memory   0.34 ms
 2. Cluster  0.69 ms
 3. Redis    2.45 ms
 4. Mongo    4.75 ms
+```
+
+500 concurrent clients with maximum 1000 req per sec during 30 seconds
+```text
+5. MySQL    11.10 ms
 ```
 
 #### RateLimiterRedis benchmark
@@ -122,7 +129,7 @@ const opts = {
   inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
   inmemoryBlockDuration: 30, // block for 30 seconds in current process memory
   insuranceLimiter: new RateLimiterMemory(
-    // It will be used only on Redis or Mongo error as insurance
+    // It will be used only on Redis, Mongo or MySQL error as insurance
     // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
     {
       points: 1, // 1 is fair if you have 5 workers and 1 cluster
@@ -218,7 +225,40 @@ const rateLimiterMongo = new RateLimiterMongo(opts);
 
 Connection to Mongo takes milliseconds, so any method of rate limiter is rejected with Error, until connection established
 
-`insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established 
+`insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established
+
+### RateLimiterMySQL
+
+It supports `mysql2` and `mysql` node packages.
+
+MySQL connection have to be created with allowed `multipleStatementes`.
+
+Limits data, which expired more than an hour ago, are removed every 5 minutes by `setTimeout`.
+
+[Read more about RateLimiterMySQL here](https://github.com/animir/node-rate-limiter-flexible/blob/master/MYSQL.md)
+
+```javascript
+  const mysql = require('mysql2');
+  const client = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'secret',
+    multipleStatements: true // it is required by limiter
+  });
+
+  const opts = {
+    storeClient: client,
+    dbName: 'mydb',
+    tableName: 'mytable', // all limiters store data in one table
+    points: 5, // Number of points
+    duration: 1, // Per second(s)
+  };
+
+  const rateLimiter = new RateLimiterMySQL(opts);
+    // Usage is the same as for RateLimiterRedis
+```
+
+Connection to MySQL takes milliseconds, so any method of rate limiter is rejected with Error, until connection is established
 
 ### RateLimiterCluster
 
@@ -259,7 +299,7 @@ if (cluster.isMaster) {
 It manages limits in **current process memory**, so keep it in mind when use it in cluster
 
 ```javascript
-const rateLimiter = new RateLimiterMemory( // It will be used only on Redis error as insurance
+const rateLimiter = new RateLimiterMemory(
 {
   keyPrefix: 'rlflx',
   points: 1, // 1 is fair if you have 5 workers and 1 cluster, all workers will limit it to 5 in sum
@@ -308,7 +348,7 @@ rateLimiterUnion.consume(remoteAddress)
     * For example:
     * { limit1: RateLimiterRes { ... } }
     * 
-    * It may be Error if you use Redis, Mongo or Cluster without insurance 
+    * It may be Error if you use Redis, Mongo, MySQL or Cluster without insurance 
     * { limit2: Error }
     */
   });
@@ -359,22 +399,31 @@ Note: it isn't recommended to use it for long duration, as it may delay action f
 * `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
 block for `blockDuration` seconds. 
 
-#### Options specific to Redis and Mongo
+#### Options specific to Redis, Mongo, MySQL
 
-* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis or Mongo.
+* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
 In-memory blocking works in **current process memory**. 
-Redis and Mongo are quite fast, however, they may be significantly slowed down on dozens of thousands requests.
+Redis, MySQL and Mongo are quite fast, however, they may be significantly slowed down on dozens of thousands requests.
 
 * `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
 if `inmemoryBlockOnConsumed` or more points are consumed 
 
 * `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
-when Redis or Mongo comes up with any error. 
+when Redis, MySQL or Mongo comes up with any error. 
 
 All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
 
 **Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
 to same values as in parent to avoid unexpected behaviour
+
+#### Options specific to MySQL
+
+* `storeClient` `Required` Have to be `mysql2` or `mysql` connection
+
+* `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
+
+* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
+All limits for all limiters are stored in one table if custom name is set.
 
 #### Options specific to Cluster
 
@@ -401,7 +450,7 @@ RateLimiterRes = {
 
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
-* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for Redis, Mongo and MySQL if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 * **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 * **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
