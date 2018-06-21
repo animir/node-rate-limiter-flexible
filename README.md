@@ -26,7 +26,7 @@ Advantages:
 * no race conditions
 * covered by tests
 * no prod dependencies
-* Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
+* MySQL, Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
 * useful `block`, `penalty` and `reward` methods
 
 ### Links
