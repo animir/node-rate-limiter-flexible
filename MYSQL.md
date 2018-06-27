@@ -50,6 +50,7 @@ Statistics        Avg      Stdev        Max
 
 #### Connection pool 100
 
+```text
 Statistics        Avg      Stdev        Max
   Reqs/sec       995.90     305.88    6329.55
   Latency        6.96ms     8.64ms   165.23ms
@@ -61,3 +62,4 @@ Statistics        Avg      Stdev        Max
      99%    44.62ms
   HTTP codes:
     1xx - 0, 2xx - 27099, 3xx - 0, 4xx - 2884, 5xx - 0
+```
