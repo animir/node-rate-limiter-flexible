@@ -57,7 +57,7 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 500 concurrent clients with maximum 1000 req per sec during 30 seconds
 ```text
-5. MySQL    11.10 ms
+5. MySQL    6.96 ms (with connection pool)
 ```
 
 #### RateLimiterRedis benchmark
