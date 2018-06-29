@@ -26,7 +26,7 @@ Advantages:
 * no race conditions
 * covered by tests
 * no prod dependencies
-* MySQL, Redis and Mongo errors don't result to broken app if `insuranceLimiter` set up
+* database errors don't result to broken app if `insuranceLimiter` set up
 * useful `block`, `penalty` and `reward` methods
 
 ### Links
@@ -34,6 +34,7 @@ Advantages:
 * [RateLimiterRedis](#ratelimiterredis)
 * [RateLimiterMongo](#ratelimitermongo)
 * [RateLimiterMySQL](#ratelimitermysql)
+* [RateLimiterPostgreSQL]((https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md))
 * [RateLimiterCluster](#ratelimitercluster)
 * [RateLimiterMemory](#ratelimitermemory)
 * [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
@@ -57,34 +58,128 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 500 concurrent clients with maximum 1000 req per sec during 30 seconds
 ```text
-5. MySQL    6.96 ms (with connection pool 100)
-```
-
-#### RateLimiterRedis benchmark
-
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
-
-By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
-
-Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
-
-```text
-Statistics        Avg      Stdev        Max
-  Reqs/sec      2015.20     511.21   14570.19
-  Latency        2.45ms     7.51ms   138.41ms
-  Latency Distribution
-     50%     1.95ms
-     75%     2.16ms
-     90%     2.43ms
-     95%     2.77ms
-     99%     5.73ms
-  HTTP codes:
-    1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
+5. MySQL      6.96 ms (with connection pool 100)
+6. PostgreSQL 8.44 ms (with connection pool)
 ```
 
 ## Installation
 
 `npm i rate-limiter-flexible`
+
+`yarn add rate-limiter-flexible`
+
+## Options
+
+* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose. 
+
+    Note: for some limiters it should correspond to Storage requirements for tables or collections name,
+     as `keyPrefix` may be used as their name.
+
+* `points` `Default: 4` Maximum number of points can be consumed over duration
+
+* `duration` `Default: 1` Number of seconds before consumed points are reset
+
+* `execEvenly` `Default: false` Delay action to be executed evenly over duration
+First action in duration is executed without delay.
+All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
+It allows to cut off load peaks.
+Note: it isn't recommended to use it for long duration, as it may delay action for too long
+
+* `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
+block for `blockDuration` seconds. 
+
+#### Options specific to Redis, Mongo, MySQL, PostgreSQL
+
+* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
+In-memory blocking works in **current process memory**. 
+Any database or key-value storage may be significantly slowed down on dozens of thousands requests.
+
+* `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
+if `inmemoryBlockOnConsumed` or more points are consumed 
+
+* `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
+when database comes up with any error. 
+
+All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
+
+**Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
+to same values as in parent to avoid unexpected behaviour
+
+#### Options specific to MySQL and PostgreSQL
+
+* `storeClient` `Required` Have to be `pg`, `mysql2` or `mysql` pool or connection
+
+* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
+All limits for all limiters are stored in one table if custom name is set.
+
+#### Options specific to MySQL
+
+* `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
+
+#### Options specific to Cluster
+
+* `timeoutMs` `Default: 5000` Timeout for communication between worker and master over IPC. 
+If master doesn't response in time, promise is rejected with Error
+
+
+## API
+
+### RateLimiterRes object
+
+Both Promise resolve and reject returns object of `RateLimiterRes` class if there is no any error.
+Object attributes:
+```javascript
+RateLimiterRes = {
+    msBeforeNext: 250, // Number of milliseconds before next action can be done
+    remainingPoints: 0, // Number of remaining points in current duration 
+    consumedPoints: 5, // Number of consumed points in current duration 
+    isFirstInDuration: false, // action is first in current duration 
+}
+```
+
+### rateLimiter.consume(key, points = 1)
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+* **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
+* **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
+
+Arguments:
+* `key` is usually IP address or some unique client id
+* `points` number of points consumed. `default: 1`
+
+### rateLimiter.penalty(key, points = 1)
+
+Fine `key` by `points` number of points for **one duration**.
+
+Note: Depending on time penalty may go to next durations
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+
+### rateLimiter.reward(key, points = 1)
+
+Reward `key` by `points` number of points for **one duration**.
+
+Note: Depending on time reward may go to next durations
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+
+### rateLimiter.block(key, secDuration)
+
+Block `key` for `secDuration` seconds
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes`
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Usage
 
@@ -125,11 +220,11 @@ const opts = {
   blockDuration: 0, // Do not block if consumed more than points
   keyPrefix: 'rlflx', // must be unique for limiters with different purpose
   
-  // Redis and Mongo specific
+  // Database limiters specific
   inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
   inmemoryBlockDuration: 30, // block for 30 seconds in current process memory
   insuranceLimiter: new RateLimiterMemory(
-    // It will be used only on Redis, Mongo or MySQL error as insurance
+    // It will be used only on database error as insurance
     // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
     {
       points: 1, // 1 is fair if you have 5 workers and 1 cluster
@@ -164,6 +259,28 @@ rateLimiterRedis.consume(remoteAddress)
         res.status(429).send('Too Many Requests');
       }
     });
+```
+
+#### RateLimiterRedis benchmark
+
+Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+
+By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
+
+Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
+
+```text
+Statistics        Avg      Stdev        Max
+  Reqs/sec      2015.20     511.21   14570.19
+  Latency        2.45ms     7.51ms   138.41ms
+  Latency Distribution
+     50%     1.95ms
+     75%     2.16ms
+     90%     2.43ms
+     95%     2.77ms
+     99%     5.73ms
+  HTTP codes:
+    1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
 ```
 
 ### RateLimiterMongo
@@ -348,7 +465,7 @@ rateLimiterUnion.consume(remoteAddress)
     * For example:
     * { limit1: RateLimiterRes { ... } }
     * 
-    * It may be Error if you use Redis, Mongo, MySQL or Cluster without insurance 
+    * It may be Error if you use any limiter without insurance except Memory 
     * { limit2: Error }
     */
   });
@@ -381,114 +498,6 @@ app.use(async (ctx, next) => {
   }
 })
 ```
-
-## Options
-
-* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose
-
-* `points` `Default: 4` Maximum number of points can be consumed over duration
-
-* `duration` `Default: 1` Number of seconds before consumed points are reset
-
-* `execEvenly` `Default: false` Delay action to be executed evenly over duration
-First action in duration is executed without delay.
-All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
-It allows to cut off load peaks.
-Note: it isn't recommended to use it for long duration, as it may delay action for too long
-
-* `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
-block for `blockDuration` seconds. 
-
-#### Options specific to Redis, Mongo, MySQL
-
-* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
-In-memory blocking works in **current process memory**. 
-Redis, MySQL and Mongo are quite fast, however, they may be significantly slowed down on dozens of thousands requests.
-
-* `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
-if `inmemoryBlockOnConsumed` or more points are consumed 
-
-* `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
-when Redis, MySQL or Mongo comes up with any error. 
-
-All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
-
-**Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
-to same values as in parent to avoid unexpected behaviour
-
-#### Options specific to MySQL
-
-* `storeClient` `Required` Have to be `mysql2` or `mysql` connection
-
-* `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
-
-* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
-All limits for all limiters are stored in one table if custom name is set.
-
-#### Options specific to Cluster
-
-* `timeoutMs` `Default: 5000` Timeout for communication between worker and master over IPC. 
-If master doesn't response in time, promise is rejected with Error
-
-
-## API
-
-### RateLimiterRes object
-
-Both Promise resolve and reject returns object of `RateLimiterRes` class if there is no any error.
-Object attributes:
-```javascript
-RateLimiterRes = {
-    msBeforeNext: 250, // Number of milliseconds before next action can be done
-    remainingPoints: 0, // Number of remaining points in current duration 
-    consumedPoints: 5, // Number of consumed points in current duration 
-    isFirstInDuration: false, // action is first in current duration 
-}
-```
-
-### rateLimiter.consume(key, points = 1)
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
-* **rejected** only for Redis, Mongo and MySQL if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-* **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
-* **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
-
-Arguments:
-* `key` is usually IP address or some unique client id
-* `points` number of points consumed. `default: 1`
-
-### rateLimiter.penalty(key, points = 1)
-
-Fine `key` by `points` number of points for **one duration**.
-
-Note: Depending on time penalty may go to next durations
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.reward(key, points = 1)
-
-Reward `key` by `points` number of points for **one duration**.
-
-Note: Depending on time reward may go to next durations
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for RateLimiterRedis if `insuranceLimiter` isn't setup: when some Redis error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.block(key, secDuration)
-
-Block `key` for `secDuration` seconds
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for Redis and Mongo if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
 ## Contribution
 
