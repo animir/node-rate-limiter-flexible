@@ -11,7 +11,7 @@
 ## node-rate-limiter-flexible
 
 Flexible rate limiter and anti-DDoS protector works in process 
-_Memory_, _Cluster_, _MongoDB_, _MySQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
+_Memory_, _Cluster_, _MongoDB_, _MySQL_, _PostgreSQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/blob/master/COMPARE_ROLLING.md)
@@ -100,9 +100,9 @@ if `inmemoryBlockOnConsumed` or more points are consumed
 * `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
 when database comes up with any error. 
 
-All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
+    All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
 
-**Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
+    **Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
 to same values as in parent to avoid unexpected behaviour
 
 #### Options specific to MySQL and PostgreSQL
