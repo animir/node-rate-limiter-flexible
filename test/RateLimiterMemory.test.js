@@ -176,4 +176,30 @@ describe('RateLimiterMemory with fixed window', function () {
         done();
       });
   });
+
+  it('get by key', (done) => {
+    const testKey = 'get';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5 });
+    rateLimiterMemory.consume(testKey)
+      .then(() => {
+        rateLimiterMemory.get(testKey)
+          .then((res) => {
+            expect(res.remainingPoints).to.equal(1);
+            done();
+          });
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('get resolves null if key is not set', (done) => {
+    const testKey = 'getbynotexistingkey';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5 });
+    rateLimiterMemory.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      });
+  });
 });
