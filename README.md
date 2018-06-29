@@ -34,7 +34,7 @@ Advantages:
 * [RateLimiterRedis](#ratelimiterredis)
 * [RateLimiterMongo](#ratelimitermongo)
 * [RateLimiterMySQL](#ratelimitermysql)
-* [RateLimiterPostgreSQL]((https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md))
+* [RateLimiterPostgreSQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md)
 * [RateLimiterCluster](#ratelimitercluster)
 * [RateLimiterMemory](#ratelimitermemory)
 * [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
