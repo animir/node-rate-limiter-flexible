@@ -6,6 +6,8 @@ PostgreSQL >= 9.5
 
 Note: It isn't recommended to use it with more than 200-300 limited actions per second.
 
+It works with `pg` and `sequelize`.
+
 It is recommended to use pool of connections.
 
 By default, RateLimiterPostgres creates separate table by `keyPrefix` for every limiter.
@@ -73,6 +75,28 @@ rateLimiter.consume(userIdOrIp)
     }
   });
 ```
+
+Sequelize option
+
+```javascript
+  // sequelize is connected postgres instance 
+  sequelize.connectionManager.getConnection()
+    .then((connection) => {
+      const opts = {
+        storeClient: connection,
+        tableName: 'mytable',
+        points: 5, // Number of points
+        duration: 1, // Per second(s)
+      };
+
+      const rateLimiter = new RateLimiterPostgres(opts);
+      
+      /* ... */
+     })
+    .catch((err) => {
+      
+    });
+``` 
 
 ### Benchmark
 
