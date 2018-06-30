@@ -6,7 +6,7 @@ PostgreSQL >= 9.5
 
 Note: It isn't recommended to use it with more than 200-300 limited actions per second.
 
-It works with `pg` and `sequelize`.
+It works with `pg`, `knex` and `sequelize`.
 
 It is recommended to use pool of connections.
 
@@ -76,7 +76,28 @@ rateLimiter.consume(userIdOrIp)
   });
 ```
 
-Sequelize option
+### Knex option
+
+```javascript
+  knex.client.acquireRawConnection()
+    .then((connection) => {
+      const opts = {
+        storeClient: connection,
+        tableName: 'mytable',
+        points: 5, // Number of points
+        duration: 1, // Per second(s)
+      };
+
+      const rateLimiter = new RateLimiterPostgres(opts);
+      
+      /* ... */
+     })
+    .catch((err) => {
+      
+    });      
+```
+
+### Sequelize option
 
 ```javascript
   // sequelize is connected postgres instance 
