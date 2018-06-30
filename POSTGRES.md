@@ -116,14 +116,14 @@ new RateLimiterPostgres({
 
 ```text
 Statistics        Avg      Stdev        Max
-  Reqs/sec       997.60     449.81    4472.92
-  Latency        8.44ms    12.64ms   161.73ms
+  Reqs/sec       995.09     303.79    2010.29
+  Latency        7.48ms     5.30ms    51.60ms
   Latency Distribution
-     50%     5.05ms
-     75%     5.98ms
-     90%     9.75ms
-     95%    30.72ms
-     99%    77.80ms
+     50%     5.25ms
+     75%     8.07ms
+     90%    16.36ms
+     95%    21.85ms
+     99%    29.42ms
   HTTP codes:
-    1xx - 0, 2xx - 26893, 3xx - 0, 4xx - 3108, 5xx - 0
+    1xx - 0, 2xx - 8985, 3xx - 0, 4xx - 21024, 5xx - 0
 ```

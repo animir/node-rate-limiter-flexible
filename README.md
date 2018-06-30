@@ -59,7 +59,7 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 500 concurrent clients with maximum 1000 req per sec during 30 seconds
 ```text
 5. MySQL      6.96 ms (with connection pool 100)
-6. PostgreSQL 8.44 ms (with connection pool)
+6. PostgreSQL 7.48 ms (with connection pool max 100)
 ```
 
 ## Installation
