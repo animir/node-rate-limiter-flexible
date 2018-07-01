@@ -94,7 +94,6 @@ block for `blockDuration` seconds.
 
 * `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
 In-memory blocking works in **current process memory**. 
-Any database or key-value storage may be significantly slowed down on dozens of thousands requests.
 
 * `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
 if `inmemoryBlockOnConsumed` or more points are consumed 
