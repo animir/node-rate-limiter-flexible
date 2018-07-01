@@ -88,6 +88,8 @@ Note: it isn't recommended to use it for long duration, as it may delay action f
 * `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
 block for `blockDuration` seconds. 
 
+    It sets consumed points more than allowed points for `blockDuration` seconds, so actions are rejected.
+
 #### Options specific to Redis, Mongo, MySQL, PostgreSQL
 
 * `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.

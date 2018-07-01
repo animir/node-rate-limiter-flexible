@@ -1,6 +1,6 @@
 ## RateLimiterMongo
 
-RateLimiterMongo creates unique collection for each rate limiter `keyPrefix`
+RateLimiterMongo creates unique collection for each rate limiter `keyPrefix`.
 
 ### Benchmark
 
