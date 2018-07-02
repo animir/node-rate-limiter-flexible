@@ -127,6 +127,27 @@ describe('RateLimiterPostgres with fixed window', function () {
       });
   });
 
+  it('get points return NULL if key is not set', (done) => {
+    const testKey = 'get';
+
+    const rateLimiter = new RateLimiterPostgres({ storeClient: pgClient, points: 2, duration: 5 });
+    rateLimiter._tableCreated = true;
+    pgClientStub.restore();
+    pgClientStub = sinon.stub(pgClient, 'query').resolves({
+      rowCount: 0,
+      rows: [],
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('get points using insuranceLimiter on Postgres error', (done) => {
     const testKey = 'geterror';
 

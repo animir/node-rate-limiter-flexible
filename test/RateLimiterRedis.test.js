@@ -398,4 +398,38 @@ describe('RateLimiterRedis with fixed window', function () {
           });
       });
   });
+
+  it('get points', (done) => {
+    const testKey = 'get';
+
+    const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 2, duration: 1 });
+    rateLimiter.consume(testKey)
+      .then(() => {
+        rateLimiter.get(testKey)
+          .then((res) => {
+            expect(res.consumedPoints).to.equal(1);
+            done();
+          })
+          .catch(() => {
+            done(Error('get must not reject'));
+          });
+      })
+      .catch(() => {
+        done(Error('consume must not reject'));
+      });
+  });
+
+  it('get returns NULL if key is not set', (done) => {
+    const testKey = 'getnull';
+
+    const rateLimiter = new RateLimiterRedis({ redis: redisMockClient, points: 2, duration: 1 });
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch(() => {
+        done(Error('get must not reject'));
+      });
+  });
 });
