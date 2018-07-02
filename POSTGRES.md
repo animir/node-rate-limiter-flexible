@@ -121,7 +121,7 @@ rateLimiter.consume(userIdOrIp)
 
 ### Benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `mysql:5.7` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:latest` and `postgres:latest` Docker containers with 4 workers
 
 User key is random number from 0 to 300.
 
