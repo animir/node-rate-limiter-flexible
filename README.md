@@ -27,7 +27,7 @@ Advantages:
 * covered by tests
 * no prod dependencies
 * database errors don't result to broken app if `insuranceLimiter` set up
-* useful `block`, `penalty` and `reward` methods
+* useful `get`, `block`, `penalty` and `reward` methods
 
 ### Links
 
@@ -150,6 +150,19 @@ Returns Promise, which:
 Arguments:
 * `key` is usually IP address or some unique client id
 * `points` number of points consumed. `default: 1`
+
+### rateLimiter.get(key)
+
+Get `RateLimiterRes` in current duration.
+
+Returns Promise, which: 
+* **resolved** with `RateLimiterRes` if key is set
+* **resolved** with `null` if key is NOT set or expired
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+
+Arguments:
+* `key` is usually IP address or some unique client id
 
 ### rateLimiter.penalty(key, points = 1)
 

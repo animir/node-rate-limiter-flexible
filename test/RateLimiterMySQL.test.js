@@ -116,4 +116,49 @@ describe('RateLimiterMySQL with fixed window', function () {
       && res.isFirstInDuration === false
       && res.remainingPoints === 2).to.equal(true);
   });
+
+  it('get points', (done) => {
+    const testKey = 'get';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, points: 1, duration: 1
+    });
+    mysqlClientStub.restore();
+    sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+      const res = [
+        { points: 1, expire: 1000 },
+      ];
+      cb(null, res);
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('get points return NULL if key is not set', (done) => {
+    const testKey = 'getnull';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, points: 1, duration: 1
+    });
+    mysqlClientStub.restore();
+    sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+      cb(null, []);
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });
