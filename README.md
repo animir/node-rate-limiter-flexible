@@ -264,7 +264,7 @@ rateLimiterRedis.consume(remoteAddress)
 
 #### RateLimiterRedis benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` and `redis:4.0.10-alpine` Docker containers by PM2 with 4 workers
 
 By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
 

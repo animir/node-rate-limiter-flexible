@@ -16,7 +16,7 @@ Limits data, which expired more than an hour ago, are removed every 5 minutes by
 
 ### Benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `mysql:5.7` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` and `mysql:5.7` Docker containers with 4 workers
 
 Endpoint is limited by `RateLimiterMySQL` with config:
 

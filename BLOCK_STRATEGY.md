@@ -25,7 +25,7 @@ In-memory Block strategy algorithm developed with specificity rate limiter in mi
 ### Benchmark 
 
 There is simple Express 4.x endpoint, 
-which launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+which launched in `node:10.5.0-jessie` and `redis:4.0.10-alpine` Docker containers by PM2 with 4 workers
 **Note:** Benchmark is done in local environment, so production will be much faster.
 
 ```javascript

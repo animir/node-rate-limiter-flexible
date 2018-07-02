@@ -19,7 +19,7 @@ The same benchmarking setting for all tests:
 
 There are [4 simple Express 4.x endpoints](https://github.com/animir/simple-express-endpoint-techtask/blob/test-rate-limiters/src/routes/pricing.js) 
 limited by different libraries, 
-which launched in `node:latest` and `redis:alpine` Docker containers by PM2 with 4 workers
+which launched in `node:10.5.0-jessie` and `redis:4.0.10-alpine` Docker containers by PM2 with 4 workers
 
 Docker images are recreated before each test.
 

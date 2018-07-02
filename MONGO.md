@@ -4,7 +4,7 @@ RateLimiterMongo creates unique collection for each rate limiter `keyPrefix`.
 
 ### Benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:latest` and `mongo:jessie` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` and `mongo:3.6.5-jessie` Docker containers with 4 workers
 
 Endpoint is limited by `RateLimiterMongo` with config:
 
