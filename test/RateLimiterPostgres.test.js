@@ -4,6 +4,7 @@ const {
 const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterPostgres = require('../lib/RateLimiterPostgres');
+const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
 describe('RateLimiterPostgres with fixed window', function () {
   this.timeout(5000);
@@ -123,6 +124,58 @@ describe('RateLimiterPostgres with fixed window', function () {
       })
       .catch((err) => {
         done(err);
+      });
+  });
+
+  it('get points using insuranceLimiter on Postgres error', (done) => {
+    const testKey = 'geterror';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient,
+      points: 1,
+      duration: 1,
+      insuranceLimiter: new RateLimiterMemory({
+        points: 1,
+        duration: 1,
+      }),
+    });
+    rateLimiter._tableCreated = true;
+    pgClientStub.restore();
+    pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.reject(Error('test')));
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('block custom key using insuranceLimiter on Postgres error', (done) => {
+    const testKey = 'postgreserrorblock';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient,
+      points: 1,
+      duration: 1,
+      insuranceLimiter: new RateLimiterMemory({
+        points: 1,
+        duration: 1,
+      }),
+    });
+    rateLimiter._tableCreated = true;
+    pgClientStub.restore();
+    pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.reject(Error('test')));
+
+    rateLimiter.block(testKey, 3)
+      .then((res) => {
+        expect(res.msBeforeNext > 2000).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
       });
   });
 });
