@@ -18,6 +18,8 @@ if (cluster.isMaster) {
 
     const worker = cluster.fork();
 
+    worker.setMaxListeners(0);
+
     it('master must be singleton', () => {
       const rateLimiterClusterMaster2 = new RateLimiterClusterMaster();
       expect(rateLimiterClusterMaster2 === rateLimiterClusterMaster).to.equal(true);
@@ -110,6 +112,26 @@ if (cluster.isMaster) {
         }
       });
       worker.send({ channel: 'mocha', test: 'block' });
+    });
+
+    it('get', (done) => {
+      worker.on('message', (msg) => {
+        if (msg && msg.channel === 'mocha' && msg.test === 'get') {
+          expect(msg.data._consumedPoints).to.equal(1);
+          done();
+        }
+      });
+      worker.send({ channel: 'mocha', test: 'get' });
+    });
+
+    it('get null', (done) => {
+      worker.on('message', (msg) => {
+        if (msg && msg.channel === 'mocha' && msg.test === 'get null') {
+          expect(msg.data).to.equal(null);
+          done();
+        }
+      });
+      worker.send({ channel: 'mocha', test: 'get null' });
     });
   });
 } else {
@@ -229,6 +251,31 @@ if (cluster.isMaster) {
             })
             .catch((rej) => {
               process.send({ channel: 'mocha', test: msg.test, data: rej });
+            });
+          break;
+        case 'get':
+          rateLimiterClusterWorker = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: msg.test });
+          rateLimiterClusterWorker.consume(msg.test)
+            .then(() => {
+              rateLimiterClusterWorker.get(msg.test)
+                .then((res) => {
+                  process.send({ channel: 'mocha', test: msg.test, data: res });
+                })
+                .catch((rejRes) => {
+                  process.send({ channel: 'mocha', test: msg.test, data: rejRes });
+                });
+            })
+            .catch((rejRes) => {
+              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
+            });
+          break;
+        case 'get null':
+          rateLimiterClusterWorker.get(msg.test)
+            .then((res) => {
+              process.send({ channel: 'mocha', test: msg.test, data: res });
+            })
+            .catch((rejRes) => {
+              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
             });
           break;
         default:
