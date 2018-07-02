@@ -502,8 +502,16 @@ app.use(async (ctx, next) => {
 
 ## Contribution
 
+Appreciated, feel free!
+
 Make sure you've launched `npm run eslint` before creating PR, all errors have to be fixed.
 
 You can try to run `npm run eslint-fix` to fix some issues.
 
-Appreciated, feel free!
+Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
+It has to implement at least 3 methods:
+* `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object
+* `_upsert` inserts or updates limits data by key and returns raw data
+* `_get` returns raw data by key
+
+All other methods depends on store. See `RateLimiterPostgres` for example.
