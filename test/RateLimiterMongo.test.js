@@ -29,6 +29,7 @@ describe('RateLimiterMongo with fixed window', function () {
     mongoCollection = {
       ensureIndex: () => {},
       findOneAndUpdate: () => {},
+      findOne: () => {},
     };
     sinon.stub(mongoCollection, 'ensureIndex').callsFake(() => {});
   });
@@ -241,5 +242,54 @@ describe('RateLimiterMongo with fixed window', function () {
       && res.isFirstInDuration === false
       && res.remainingPoints === 2
     ).to.equal(true);
+  });
+
+  it('get points', (done) => {
+    const testKey = 'get';
+
+    sinon.stub(mongoCollection, 'findOne').callsFake(() => {
+      const res = {
+        value: {
+          points: 1,
+          expire: 1000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      mongo: mongoClient, points: 1, duration: 1
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('get points return NULL if key is not set', (done) => {
+    const testKey = 'getnull';
+
+    sinon.stub(mongoCollection, 'findOne').callsFake(() => {
+      const res = null;
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      mongo: mongoClient, points: 1, duration: 1
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
   });
 });

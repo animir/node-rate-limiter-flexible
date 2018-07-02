@@ -128,7 +128,7 @@ describe('RateLimiterPostgres with fixed window', function () {
   });
 
   it('get points return NULL if key is not set', (done) => {
-    const testKey = 'get';
+    const testKey = 'getnull';
 
     const rateLimiter = new RateLimiterPostgres({ storeClient: pgClient, points: 2, duration: 5 });
     rateLimiter._tableCreated = true;
