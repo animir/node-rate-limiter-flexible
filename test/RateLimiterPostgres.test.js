@@ -98,7 +98,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const rateLimiter = new RateLimiterPostgres({ points: 5, storeClient: pgClient });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
-      rows: [{ points: 3, expire: new Date(Date.now() + 1000).toISOString() }],
+      rows: [{ points: 3, expire: Date.now() + 1000 }],
     });
 
     expect(res.msBeforeNext <= 1000
