@@ -23,7 +23,7 @@ Data is NOT copied from insurance limiter to main limiter. It may result to extr
 2. Setup retry strategy depending on store and requirements
 3. If `RateLimiterMemory` is used as insurance, it doesn't share limits between node processes.
 It may block or allow some action depending on balancing approach. 
-4. Any limiter `RateLimiterRedis`, `RateLimiterMongo` can be used as insurance
+4. Any limiter `RateLimiterRedis`, `RateLimiterMongo`, etc can be used as insurance
 
 ```javascript
 const redis = require('redis');

@@ -42,10 +42,14 @@ describe('RateLimiterMySQL with fixed window', function () {
     const rateLimiter = new RateLimiterMySQL({ storeClient: mysqlClient, points: 2, duration: 5 });
     mysqlClientStub.restore();
     sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
-      const res = [0, 1, [
+      const res = [
         { points: 1, expire: 5000 },
-      ]];
-      cb(null, res);
+      ];
+      if (Array.isArray(data)) {
+        cb(null, res);
+      } else {
+        data(null);
+      }
     });
 
     rateLimiter.consume(testKey)
@@ -64,10 +68,14 @@ describe('RateLimiterMySQL with fixed window', function () {
     const rateLimiter = new RateLimiterMySQL({ storeClient: mysqlClient, points: 1, duration: 5 });
     mysqlClientStub.restore();
     sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
-      const res = [0, 1, [
+      const res = [
         { points: 2, expire: 5000 },
-      ]];
-      cb(null, res);
+      ];
+      if (Array.isArray(data)) {
+        cb(null, res);
+      } else {
+        data(null);
+      }
     });
     rateLimiter.consume(testKey, 2)
       .then(() => {
@@ -87,10 +95,14 @@ describe('RateLimiterMySQL with fixed window', function () {
     });
     mysqlClientStub.restore();
     sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
-      const res = [0, 1, [
+      const res = [
         { points: 2, expire: 1000 },
-      ]];
-      cb(null, res);
+      ];
+      if (Array.isArray(data)) {
+        cb(null, res);
+      } else {
+        data(null);
+      }
     });
 
     rateLimiter.consume(testKey, 2)
@@ -106,9 +118,8 @@ describe('RateLimiterMySQL with fixed window', function () {
   it('return correct data with _getRateLimiterRes', () => {
     const rateLimiter = new RateLimiterMySQL({ points: 5, storeClient: mysqlClient });
 
-    const res = rateLimiter._getRateLimiterRes('test', 1, [0, 1, [
-      { points: 3, expire: new Date(Date.now() + 1000).toISOString() },
-    ],
+    const res = rateLimiter._getRateLimiterRes('test', 1, [
+      { points: 3, expire: Date.now() + 1000 },
     ]);
 
     expect(res.msBeforeNext <= 1000

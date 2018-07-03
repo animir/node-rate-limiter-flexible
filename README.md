@@ -33,7 +33,7 @@ Advantages:
 
 * [RateLimiterRedis](#ratelimiterredis)
 * [RateLimiterMongo](#ratelimitermongo)
-* [RateLimiterMySQL](#ratelimitermysql)
+* [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/MYSQL.md)
 * [RateLimiterPostgreSQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md)
 * [RateLimiterCluster](#ratelimitercluster)
 * [RateLimiterMemory](#ratelimitermemory)
@@ -58,8 +58,8 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 500 concurrent clients with maximum 1000 req per sec during 30 seconds
 ```text
-5. MySQL      6.96 ms (with connection pool 100)
-6. PostgreSQL 7.48 ms (with connection pool max 100)
+5. PostgreSQL 7.48 ms (with connection pool max 100)
+6. MySQL     14.59 ms (with connection pool 100)
 ```
 
 ## Installation
@@ -349,39 +349,6 @@ const rateLimiterMongo = new RateLimiterMongo(opts);
 Connection to Mongo takes milliseconds, so any method of rate limiter is rejected with Error, until connection established
 
 `insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established
-
-### RateLimiterMySQL
-
-It supports `mysql2` and `mysql` node packages.
-
-MySQL connection have to be created with allowed `multipleStatementes`.
-
-Limits data, which expired more than an hour ago, are removed every 5 minutes by `setTimeout`.
-
-[Read more about RateLimiterMySQL here](https://github.com/animir/node-rate-limiter-flexible/blob/master/MYSQL.md)
-
-```javascript
-  const mysql = require('mysql2');
-  const client = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'secret',
-    multipleStatements: true // it is required by limiter
-  });
-
-  const opts = {
-    storeClient: client,
-    dbName: 'mydb',
-    tableName: 'mytable', // all limiters store data in one table
-    points: 5, // Number of points
-    duration: 1, // Per second(s)
-  };
-
-  const rateLimiter = new RateLimiterMySQL(opts);
-    // Usage is the same as for RateLimiterRedis
-```
-
-Connection to MySQL takes milliseconds, so any method of rate limiter is rejected with Error, until connection is established
 
 ### RateLimiterCluster
 
