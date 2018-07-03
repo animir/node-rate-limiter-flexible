@@ -92,6 +92,8 @@ block for `blockDuration` seconds.
 
 #### Options specific to Redis, Mongo, MySQL, PostgreSQL
 
+* `storeClient` `Required` Have to be `redis`, `ioredis`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+
 * `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
 In-memory blocking works in **current process memory**. 
 
@@ -107,8 +109,6 @@ when database comes up with any error.
 to same values as in parent to avoid unexpected behaviour
 
 #### Options specific to MySQL and PostgreSQL
-
-* `storeClient` `Required` Have to be `pg`, `mysql2` or `mysql` pool or connection
 
 * `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
 All limits for all limiters are stored in one table if custom name is set.
@@ -225,7 +225,7 @@ redisClient.on('error', (err) => {
 
 const opts = {
   // Basic options
-  redis: redisClient,
+  storeClient: redisClient,
   points: 5, // Number of points
   duration: 5, // Per second(s)
   
@@ -312,7 +312,7 @@ const mongoConn = mongoose.connection;
 const mongoConn = mongoose.createConnection('mongodb://127.0.0.1:27017/' + RateLimiterMongo.getDbName(), mongoOpts);
 
 const opts = {
-  mongo: mongoConn,
+  storeClient: mongoConn,
   points: 10, // Number of points
   duration: 1, // Per second(s)
 };
@@ -337,7 +337,7 @@ const mongoConn = MongoClient.connect(
 );
 
 const opts = {
-  mongo: mongoConn,
+  storeClient: mongoConn,
   points: 10, // Number of points
   duration: 1, // Per second(s)
 };

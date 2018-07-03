@@ -2,7 +2,7 @@
 
 ### Benchmark
 
-Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` and `redis:4.0.10-alpine` Docker containers with 4 workers
+Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` Docker containers with 4 workers
 
 Endpoint is limited by `RateLimiterCluster` with config:
 

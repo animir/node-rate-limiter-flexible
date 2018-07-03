@@ -46,7 +46,7 @@ describe('RateLimiterMongo with fixed window', function () {
       return Promise.resolve(res);
     });
 
-    const rateLimiter = new RateLimiterMongo({ mongo: mongoClient, points: 2, duration: 5 });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
     rateLimiter.consume(testKey)
       .then((res) => {
         expect(res.consumedPoints).to.equal(1);
@@ -69,7 +69,7 @@ describe('RateLimiterMongo with fixed window', function () {
       return Promise.resolve(res);
     });
 
-    const rateLimiter = new RateLimiterMongo({ mongo: mongoClient, points: 1, duration: 5 });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 1, duration: 5 });
     rateLimiter.consume(testKey, 2)
       .then(() => {
         done(Error('have to reject'));
@@ -92,7 +92,7 @@ describe('RateLimiterMongo with fixed window', function () {
       return Promise.resolve(res);
     });
 
-    const rateLimiter = new RateLimiterMongo({ mongo: mongoClient, points: 2, duration: 5 });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
     rateLimiter.penalty(testKey)
       .then((res) => {
         expect(res.consumedPoints).to.equal(1);
@@ -115,7 +115,7 @@ describe('RateLimiterMongo with fixed window', function () {
       return Promise.resolve(res);
     });
 
-    const rateLimiter = new RateLimiterMongo({ mongo: mongoClient, points: 2, duration: 5 });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
     rateLimiter.reward(testKey)
       .then((res) => {
         expect(res.consumedPoints).to.equal(-1);
@@ -132,7 +132,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => Promise.reject(Error('Mongo error')));
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient,
+      storeClient: mongoClient,
       insuranceLimiter: new RateLimiterMemory({
         points: 2,
         duration: 2,
@@ -161,7 +161,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient,
+      storeClient: mongoClient,
       points: 2,
       duration: 5,
       inmemoryBlockOnConsumed: 10,
@@ -190,7 +190,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient, points: 1, duration: 1, blockDuration: 2,
+      storeClient: mongoClient, points: 1, duration: 1, blockDuration: 2,
     });
     rateLimiter.consume(testKey, 2)
       .then(() => {
@@ -207,7 +207,7 @@ describe('RateLimiterMongo with fixed window', function () {
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => Promise.reject(Error('Mongo error')));
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient,
+      storeClient: mongoClient,
       points: 1,
       duration: 1,
       blockDuration: 2,
@@ -227,7 +227,7 @@ describe('RateLimiterMongo with fixed window', function () {
   });
 
   it('return correct data with _getRateLimiterRes', () => {
-    const rateLimiter = new RateLimiterMongo({ points: 5, mongo: mongoClient });
+    const rateLimiter = new RateLimiterMongo({ points: 5, storeClient: mongoClient });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       value: {
@@ -258,7 +258,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient, points: 1, duration: 1
+      storeClient: mongoClient, points: 1, duration: 1
     });
 
     rateLimiter.get(testKey)
@@ -280,7 +280,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      mongo: mongoClient, points: 1, duration: 1
+      storeClient: mongoClient, points: 1, duration: 1
     });
 
     rateLimiter.get(testKey)
