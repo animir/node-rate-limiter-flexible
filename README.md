@@ -19,14 +19,14 @@ It uses **fixed window** as it is much faster than rolling window.
 :star: It is **STAR**ving, don't forget to feed the beast! :star:
 
 Advantages:
-* in-memory block strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/blob/master/BLOCK_STRATEGY.md)
+* in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/blob/master/BLOCK_STRATEGY.md)
+* Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/blob/master/INSURANCE_STRATEGY.md)
 * backed on native Promises
 * works in Cluster without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/blob/master/CLUSTER.md)
 * actions can be done evenly over duration window to cut off picks
 * no race conditions
 * covered by tests
 * no prod dependencies
-* database errors don't result to broken app if `insuranceLimiter` set up
 * useful `get`, `block`, `penalty` and `reward` methods
 
 ### Links
@@ -237,14 +237,6 @@ const opts = {
   // Database limiters specific
   inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
   inmemoryBlockDuration: 30, // block for 30 seconds in current process memory
-  insuranceLimiter: new RateLimiterMemory(
-    // It will be used only on database error as insurance
-    // Can be any implemented limiter like RateLimiterMemory or RateLimiterRedis extended from RateLimiterAbstract
-    {
-      points: 1, // 1 is fair if you have 5 workers and 1 cluster
-      duration: 5,
-      execEvenly: false,
-    })
 };
 
 const rateLimiterRedis = new RateLimiterRedis(opts);
