@@ -1,6 +1,6 @@
 ## RateLimiterMySQL
 
-It supports `mysql2` and `mysql` single connection and pool.
+It supports `mysql2`, `mysql`, `sequilize` and `knex`.
 
 **Note**: It takes 50-150 ms per request on more than 1000 concurrent requests per second
 
@@ -58,6 +58,22 @@ rateLimiter.consume(key)
   .catch((rej) => {
     // Blocked
   });
+```
+
+#### Sequelize and Knex support
+
+It gets internal connection from Sequelize or Knex to make raw queries.
+Connection is released after any query or transaction, so workflow is clean.
+
+```javascript
+const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeInstance,
+}, ready);
+
+const rateLimiter = new RateLimiterMySQL({
+      storeClient: knexInstance,
+      storeType: `knex`, // knex requires this option 
+}, ready);
 ```
 
 [See detailed options description here](https://github.com/animir/node-rate-limiter-flexible#options)
