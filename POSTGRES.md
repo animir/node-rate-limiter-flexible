@@ -116,7 +116,7 @@ Endpoint is limited by `RateLimiterMySQL` with config:
 
 ```javascript
 new RateLimiterPostgres({
-  storeClient: mysql,
+  storeClient: pgClient,
   points: 5, // Number of points
   duration: 1, // Per second(s)
 });
