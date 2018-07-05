@@ -16,7 +16,9 @@ All limits are stored in one table if `tableName` option is set.
 
 Limits data, which expired more than an hour ago, are removed every 5 minutes by `setTimeout`.
 
-[See detailed options description here](https://github.com/animir/node-rate-limiter-flexible#options)
+It is recommended to provide `ready` callback as the second option of ` new RateLimiterMySQL(opts, ready)` 
+to react on errors during creating table(s) for rate limiters. See example below. 
+`ready` callback can be omitted, if process is exit on unhandled errors.
 
 ```javascript
 const { Pool } = require('pg');
@@ -53,7 +55,17 @@ const opts = {
     }),
 };
 
-const rateLimiter = new RateLimiterPostgres(opts);
+const ready = (err) => {
+  if (err) {
+   // log or/and process exit 
+  } else {
+    // table checked/created
+  }
+};
+
+// if second parameter is not a function or not provided, it may throw unhandled error on creation db or table
+
+const rateLimiter = new RateLimiterPostgres(opts, ready);
 
 rateLimiter.consume(userIdOrIp)
   .then((rateLimiterRes) => {
@@ -76,48 +88,7 @@ rateLimiter.consume(userIdOrIp)
   });
 ```
 
-### Knex option
-
-```javascript
-  knex.client.acquireRawConnection()
-    .then((connection) => {
-      const opts = {
-        storeClient: connection,
-        tableName: 'mytable',
-        points: 5, // Number of points
-        duration: 1, // Per second(s)
-      };
-
-      const rateLimiter = new RateLimiterPostgres(opts);
-      
-      /* ... */
-     })
-    .catch((err) => {
-      
-    });      
-```
-
-### Sequelize option
-
-```javascript
-  // sequelize is connected postgres instance 
-  sequelize.connectionManager.getConnection()
-    .then((connection) => {
-      const opts = {
-        storeClient: connection,
-        tableName: 'mytable',
-        points: 5, // Number of points
-        duration: 1, // Per second(s)
-      };
-
-      const rateLimiter = new RateLimiterPostgres(opts);
-      
-      /* ... */
-     })
-    .catch((err) => {
-      
-    });
-``` 
+[See detailed options description here](https://github.com/animir/node-rate-limiter-flexible#options)
 
 ### Benchmark
 

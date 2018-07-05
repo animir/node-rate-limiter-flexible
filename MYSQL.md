@@ -16,6 +16,10 @@ Limits data, which expired more than an hour ago, are removed every 5 minutes by
 
 Connection to MySQL takes milliseconds, so any method of rate limiter is rejected with Error, until connection is established
 
+It is recommended to provide `ready` callback as the second option of ` new RateLimiterMySQL(opts, ready)` 
+to react on errors during creating database or table(s) for rate limiters. See example below.
+`ready` callback can be omitted, if process is exit on unhandled errors.
+
 ### Usage
 
 ```javascript
@@ -37,7 +41,16 @@ const opts = {
   duration: 1, // Per second(s)
 };
 
-const rateLimiter = new RateLimiterMySQL(opts);
+const ready = (err) => {
+  if (err) {
+   // log or/and process exit 
+  } else {
+    // db and table checked/created
+  }
+};
+
+// if second parameter is not a function or not provided, it may throw unhandled error on creation db or table
+const rateLimiter = new RateLimiterMySQL(opts, ready);
 rateLimiter.consume(key)
   .then((rateLimiterRes) => {
     // Allowed
@@ -46,6 +59,8 @@ rateLimiter.consume(key)
     // Blocked
   });
 ```
+
+[See detailed options description here](https://github.com/animir/node-rate-limiter-flexible#options)
 
 ### Benchmark
 
