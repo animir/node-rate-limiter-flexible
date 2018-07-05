@@ -488,4 +488,4 @@ It has to implement at least 3 methods:
 * `_upsert` inserts or updates limits data by key and returns raw data
 * `_get` returns raw data by key
 
-All other methods depends on store. See `RateLimiterPostgres` for example.
+All other methods depends on store. See `RateLimiterRedis` or `RateLimiterPostgres` for example.
