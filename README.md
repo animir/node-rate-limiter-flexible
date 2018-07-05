@@ -45,9 +45,9 @@ Advantages:
 
 ### Benchmark
 
-Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server by 
+Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
 
-1000 concurrent clients with maximum 2000 requests per sec during 30 seconds.
+1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
 
 ```text
 1. Memory   0.34 ms
@@ -112,6 +112,8 @@ to same values as in parent to avoid unexpected behaviour
 
 * `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
 All limits for all limiters are stored in one table if custom name is set.
+
+* `storeType` `Default: storeClient.constructor.name` It is required only for Knex and have to be set to 'knex'
 
 #### Options specific to MySQL
 

@@ -88,6 +88,22 @@ rateLimiter.consume(userIdOrIp)
   });
 ```
 
+#### Sequelize and Knex support
+
+It gets internal connection from Sequelize or Knex to make raw queries.
+Connection is released after any query or transaction, so workflow is clean.
+
+```javascript
+const rateLimiter = new RateLimiterPostgres({
+      storeClient: sequelizeInstance,
+}, ready);
+
+const rateLimiter = new RateLimiterPostgres({
+      storeClient: knexInstance,
+      storeType: `knex`, // knex requires this option 
+}, ready);
+```
+
 [See detailed options description here](https://github.com/animir/node-rate-limiter-flexible#options)
 
 ### Benchmark
