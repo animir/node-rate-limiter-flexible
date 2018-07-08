@@ -2,6 +2,7 @@
 .gitignore
 .npmignore
 .travis.yml
+.eslintrc.json
 test
 coverage
 img
