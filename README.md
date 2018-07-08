@@ -51,7 +51,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 ### Links
 
 * [RateLimiterRedis](#ratelimiterredis)
-* [RateLimiterMongo](#ratelimitermongo)
+* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/MYSQL.md) (support Sequelize and Knex)
 * [RateLimiterPostgreSQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md) (support Sequelize and Knex)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
@@ -309,67 +309,6 @@ Statistics        Avg      Stdev        Max
   HTTP codes:
     1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
 ```
-
-### RateLimiterMongo
-
-MongoDB >=3.2
-
-It supports `mongodb` native and `mongoose` packages
-[See RateLimiterMongo benchmark here](https://github.com/animir/node-rate-limiter-flexible/blob/master/MONGO.md)
-
-```javascript
-const { RateLimiterMongo } = require('rate-limiter-flexible');
-const mongoose = require('mongoose');
-
-const mongoOpts = {
-  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
-  reconnectInterval: 100, // Reconnect every 100ms
-};
-
-mongoose.connect('mongodb://127.0.0.1:27017/' + RateLimiterMongo.getDbName())
-  .catch((err) => {});
-const mongoConn = mongoose.connection;
-// Or
-const mongoConn = mongoose.createConnection('mongodb://127.0.0.1:27017/' + RateLimiterMongo.getDbName(), mongoOpts);
-
-const opts = {
-  storeClient: mongoConn,
-  points: 10, // Number of points
-  duration: 1, // Per second(s)
-};
-  
-const rateLimiterMongo = new RateLimiterMongo(opts);
-    // Usage is the same as for RateLimiterRedis
-
-
-/* --- Or with native mongodb package --- */
-
-const { MongoClient } = require('mongodb');
-
-const mongoOpts = {
-  useNewUrlParser: true,
-  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
-  reconnectInterval: 100, // Reconnect every 100ms
-};
-
-const mongoConn = MongoClient.connect(
-  'mongodb://localhost:27017',
-  mongoOpts
-);
-
-const opts = {
-  storeClient: mongoConn,
-  points: 10, // Number of points
-  duration: 1, // Per second(s)
-};
-
-const rateLimiterMongo = new RateLimiterMongo(opts);
-    // Usage is the same as for RateLimiterRedis
-```
-
-Connection to Mongo takes milliseconds, so any method of rate limiter is rejected with Error, until connection established
-
-`insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established
 
 ### RateLimiterMemory
 
