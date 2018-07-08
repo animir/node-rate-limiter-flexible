@@ -56,7 +56,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 * [RateLimiterPostgreSQL](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * [RateLimiterMemory](#ratelimitermemory)
-* [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
+* [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [Express middleware](#express-middleware)
 * [Koa middleware](#koa-middleware)
 * [Options](#options)
@@ -326,48 +326,6 @@ const rateLimiter = new RateLimiterMemory(
 // Usage is the same as for RateLimiterRedis
 // Except: it never rejects Promise with Error    
     
-```
-
-### RateLimiterUnion
-
-Combine 2 or more rate limiters to act as single
-
-Any rate limiters from this `rate-limiter-flexible` can be united
-
-Useful for authorization, which must be protected from password brute force
-
-For example, not more than once per second and only 5 points per minute
-
-`keyPrefix` is necessary as resolved and rejected results depend on it
-
-```javascript
-const limiter1 = new RateLimiterMemory({
-  keyPrefix: 'limit1',
-  points: 1,
-  duration: 1,
-});
-const limiter2 = new RateLimiterMemory({
-  keyPrefix: 'limit2',
-  points: 5,
-  duration: 60,
-});
-const rateLimiterUnion = new RateLimiterUnion(limiter1, limiter2);
-
-rateLimiterUnion.consume(remoteAddress)
-  .then((res) => {
-    // Returns object with 2 RateLimiterRes objects
-    res['limit1'].remainingPoints;
-    res['limit2'].remainingPoints;
-  })
-  .catch((rej) => {
-    /* Returns object with RateLimiterRes objects only for rejected limiters
-    * For example:
-    * { limit1: RateLimiterRes { ... } }
-    * 
-    * It may be Error if you use any limiter without insurance except Memory 
-    * { limit2: Error }
-    */
-  });
 ```
 
 ### Express middleware
