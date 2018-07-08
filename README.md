@@ -54,7 +54,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 * [RateLimiterMongo](#ratelimitermongo)
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/MYSQL.md) (support Sequelize and Knex)
 * [RateLimiterPostgreSQL](https://github.com/animir/node-rate-limiter-flexible/blob/master/POSTGRES.md) (support Sequelize and Knex)
-* [RateLimiterCluster](#ratelimitercluster)
+* [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * [RateLimiterMemory](#ratelimitermemory)
 * [RateLimiterUnion](#ratelimiterunion) Combine 2 or more limiters to act as single
 * [Express middleware](#express-middleware)
@@ -370,40 +370,6 @@ const rateLimiterMongo = new RateLimiterMongo(opts);
 Connection to Mongo takes milliseconds, so any method of rate limiter is rejected with Error, until connection established
 
 `insuranceLimiter` can be setup to avoid errors, but all changes won't be written from `insuranceLimiter` to `RateLimiterMongo` when connection established
-
-### RateLimiterCluster
-
-Note: it doesn't work with PM2 yet
-
-RateLimiterCluster performs limiting using IPC. 
-Each request is sent to master process, which handles all the limits, then master send results back to worker.
-
-[See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/blob/master/CLUSTER.md)
-
-```javascript
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-const { RateLimiterClusterMaster, RateLimiterCluster } = require('rate-limiter-flexible');
-
-if (cluster.isMaster) {
-  // Doesn't require any options, it is only storage and messages handler
-  new RateLimiterClusterMaster();
-
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-} else {
-  const rateLimiter = new RateLimiterCluster({
-    keyPrefix: 'myclusterlimiter', // Must be unique for each limiter
-    points: 100,
-    duration: 1,
-    timeoutMs: 3000 // Promise is rejected, if master doesn't answer for 3 secs
-  });
-  
-  // Usage is the same as for RateLimiterRedis
-}  
-    
-```
 
 ### RateLimiterMemory
 
