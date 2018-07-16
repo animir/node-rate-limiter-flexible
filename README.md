@@ -48,7 +48,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
     });
 ```
 
-### Links
+### Docs and Examples
 
 * [RateLimiterRedis](#ratelimiterredis)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
