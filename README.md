@@ -18,7 +18,7 @@
 
 **Ready for growth.** It provides unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredix`, `sequelize` or `knex`, native driver or `mongoose`. It friends with all.
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize` or `knex`, native driver or `mongoose`. It friends with all.
 
 It works in process 
 _Memory_, _Cluster_, _MongoDB_, _MySQL_, _PostgreSQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
