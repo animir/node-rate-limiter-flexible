@@ -10,7 +10,17 @@
 
 ## node-rate-limiter-flexible
 
-Flexible rate limiter and anti-DDoS protector works in process 
+**rate-limiter-flexible** limits number of actions by key and protects from DDoS and brute force attacks at any scale.
+
+**Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application.
+
+**Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
+
+**Ready for growth.** It provides unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
+
+**Friendly.** No matter which node package you prefer: `redis` or `ioredix`, `sequelize` or `knex`, native driver or `mongoose`. It friends with all.
+
+It works in process 
 _Memory_, _Cluster_, _MongoDB_, _MySQL_, _PostgreSQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
