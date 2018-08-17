@@ -65,7 +65,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
-* [RateLimiterMemory](#ratelimitermemory)
+* [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [Express middleware](#express-middleware)
 * [Koa middleware](#koa-middleware)
@@ -318,24 +318,6 @@ Statistics        Avg      Stdev        Max
      99%     5.73ms
   HTTP codes:
     1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
-```
-
-### RateLimiterMemory
-
-It manages limits in **current process memory**, so keep it in mind when use it in cluster
-
-```javascript
-const rateLimiter = new RateLimiterMemory(
-{
-  keyPrefix: 'rlflx',
-  points: 1, // 1 is fair if you have 5 workers and 1 cluster, all workers will limit it to 5 in sum
-  duration: 5,
-  execEvenly: false,
-});
-    
-// Usage is the same as for RateLimiterRedis
-// Except: it never rejects Promise with Error    
-    
 ```
 
 ### Express middleware
