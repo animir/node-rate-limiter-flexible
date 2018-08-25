@@ -67,7 +67,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
-* [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/BlackAndWhite) Black and White lists
+* [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [Express middleware](#express-middleware)
 * [Koa middleware](#koa-middleware)
 * [Options](#options)
