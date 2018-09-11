@@ -9,6 +9,7 @@ const RateLimiterMemory = require('../lib/RateLimiterMemory');
 describe('RateLimiterMongo with fixed window', function () {
   this.timeout(5000);
   let mongoClient;
+  let mongoClientStub;
   let mongoDb;
   let mongoCollection;
 
@@ -22,7 +23,7 @@ describe('RateLimiterMongo with fixed window', function () {
     };
 
     sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
-    sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
+    mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
   });
 
   beforeEach(() => {
@@ -291,5 +292,20 @@ describe('RateLimiterMongo with fixed window', function () {
       .catch((err) => {
         done(err);
       });
+  });
+
+  it('use dbName from options if db is function', () => {
+    mongoClientStub.restore();
+    mongoClientStub = sinon.stub(mongoClient, 'db').callsFake((dbName) => {
+      expect(dbName).to.equal('test');
+      return mongoDb;
+    });
+
+    new RateLimiterMongo({
+      storeClient: mongoClient, dbName: 'test'
+    });
+
+    mongoClientStub.restore();
+    mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
   });
 });

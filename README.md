@@ -149,6 +149,11 @@ All limits for all limiters are stored in one table if custom name is set.
 
 * `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
 
+#### Options specific to Mongo
+
+* `dbName` `Default: 'node-rate-limiter-flexible'` Database where limits are stored. It is created during creating a limiter.
+    Doesn't work with Mongoose, as mongoose connection is established to exact database.
+
 #### Options specific to Cluster
 
 * `timeoutMs` `Default: 5000` Timeout for communication between worker and master over IPC. 
