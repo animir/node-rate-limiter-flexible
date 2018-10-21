@@ -58,6 +58,35 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
     });
 ```
 
+
+### Express middleware
+
+```javascript
+const rateLimiterMiddleware = (req, res, next) => {
+  rateLimiter.consume(req.connection.remoteAddress)
+    .then(() => {
+      next();
+    })
+    .catch((rejRes) => {
+      res.status(429).send('Too Many Requests');
+    });
+};
+```
+
+### Koa middleware
+
+```javascript
+app.use(async (ctx, next) => {
+  try {
+    await rateLimiter.consume(ctx.ip)
+    next()
+  } catch (rejRes) {
+    ctx.status = 429
+    ctx.body = 'Too Many Requests'
+  }
+})
+```
+
 ### Docs and Examples
 
 * [RateLimiterRedis](#ratelimiterredis)
@@ -68,8 +97,8 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 * [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
-* [Express middleware](#express-middleware)
-* [Koa middleware](#koa-middleware)
+* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
+* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
 * [Options](#options)
 * [API](#api)
 
@@ -324,34 +353,6 @@ Statistics        Avg      Stdev        Max
      99%     5.73ms
   HTTP codes:
     1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
-```
-
-### Express middleware
-
-```javascript
-const rateLimiterMiddleware = (req, res, next) => {
-  rateLimiter.consume(req.connection.remoteAddress)
-    .then(() => {
-      next();
-    })
-    .catch((rejRes) => {
-      res.status(429).send('Too Many Requests');
-    });
-};
-```
-
-### Koa middleware
-
-```javascript
-app.use(async (ctx, next) => {
-  try {
-    await rateLimiter.consume(ctx.ip)
-    next()
-  } catch (rejRes) {
-    ctx.status = 429
-    ctx.body = 'Too Many Requests'
-  }
-})
 ```
 
 ## Contribution
