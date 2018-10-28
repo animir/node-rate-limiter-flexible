@@ -75,7 +75,7 @@ describe('RateLimiterRedis with fixed window', function() {
       });
   });
 
-  it('consume evenly over duration', (done) => {
+  it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
@@ -92,12 +92,41 @@ describe('RateLimiterRedis with fixed window', function() {
           .then(() => {
             /* Second consume should be delayed more than 2 seconds
                Explanation:
-               1) consume at 0ms, remaining duration = 4444ms
-               2) delayed consume for (4444 / (0 + 2)) ~= 2222ms, where 2 is a fixed value
+               1) consume at 0ms, remaining duration = 5000ms
+               2) delayed consume for (4999 / (0 + 2)) ~= 2500ms, where 2 is a fixed value
                 , because it mustn't delay in the beginning and in the end of duration
-               3) consume after 2222ms by timeout
+               3) consume after 2500ms by timeout
             */
-            expect(Date.now() - timeFirstConsume > 2000).to.equal(true);
+            const diff = Date.now() - timeFirstConsume;
+            expect(diff > 2400 && diff < 2600).to.equal(true);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('execute evenly over duration with minimum delay 20 ms', (done) => {
+    const testKey = 'consumeEvenlyMinDelay';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 100,
+      duration: 1,
+      execEvenly: true,
+      execEvenlyMinDelayMs: 20,
+    });
+    rateLimiter
+      .consume(testKey)
+      .then(() => {
+        const timeFirstConsume = Date.now();
+        rateLimiter
+          .consume(testKey)
+          .then(() => {
+            expect(Date.now() - timeFirstConsume >= 20).to.equal(true);
             done();
           })
           .catch((err) => {

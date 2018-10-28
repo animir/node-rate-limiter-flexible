@@ -46,15 +46,15 @@ if (cluster.isMaster) {
       worker.send({ channel: 'mocha', test: 'reject on consuming more than maximum points' });
     });
 
-    it('consume evenly over duration', (done) => {
+    it('execute evenly over duration', (done) => {
       worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'consume evenly over duration') {
+        if (msg && msg.channel === 'mocha' && msg.test === 'execute evenly over duration') {
           expect(msg.data).to.equal(true);
           done();
         }
       });
 
-      worker.send({ channel: 'mocha', test: 'consume evenly over duration' });
+      worker.send({ channel: 'mocha', test: 'execute evenly over duration' });
     });
 
     it('use keyPrefix from options', (done) => {
@@ -167,7 +167,7 @@ if (cluster.isMaster) {
             });
           break;
 
-        case 'consume evenly over duration':
+        case 'execute evenly over duration':
           rateLimiterClusterWorker = new RateLimiterCluster({
             points: 2, duration: 5, execEvenly: true, keyPrefix: msg.test,
           });

@@ -33,7 +33,7 @@ Advantages:
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * backed on native Promises
 * works in Cluster without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
-* actions can be done evenly over duration window to cut off picks
+* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy---execute-actions-evenly)
 * no race conditions
 * covered by tests
 * no prod dependencies
@@ -111,9 +111,14 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 * `execEvenly` `Default: false` Delay action to be executed evenly over duration
 First action in duration is executed without delay.
-All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)`
-It allows to cut off load peaks.
-Note: it isn't recommended to use it for long duration, as it may delay action for too long
+All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)` 
+with minimum delay of `duration * 1000 / points`
+It allows to cut off load peaks similar way to Leaky Bucket. [Read detailed description here.](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy---execute-actions-evenly)
+
+    Note: it isn't recommended to use it for long duration and few points, 
+    as it may delay action for too long with default `execEvenlyMinDelayMs`.
+
+* `execEvenlyMinDelayMs` `Default: duration * 1000 / points` Sets minimum delay in milliseconds, when action is delayed with `execEvenly`  
 
 * `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
 block for `blockDuration` seconds. 
