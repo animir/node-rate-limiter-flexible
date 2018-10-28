@@ -142,7 +142,7 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 First action in duration is executed without delay.
 All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)` 
 with minimum delay of `duration * 1000 / points`
-It allows to cut off load peaks similar way to Leaky Bucket. [Read detailed description here.](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy---execute-actions-evenly)
+It allows to cut off load peaks similar way to Leaky Bucket. [Read detailed Leaky Bucket description](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
 
     Note: it isn't recommended to use it for long duration and few points, 
     as it may delay action for too long with default `execEvenlyMinDelayMs`.
