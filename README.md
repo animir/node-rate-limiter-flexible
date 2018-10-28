@@ -33,7 +33,7 @@ Advantages:
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * backed on native Promises
 * works in Cluster without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
-* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy---execute-actions-evenly)
+* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
 * no race conditions
 * covered by tests
 * no prod dependencies
