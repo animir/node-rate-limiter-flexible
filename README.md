@@ -89,7 +89,7 @@ app.use(async (ctx, next) => {
 
 ### Docs and Examples
 
-* [RateLimiterRedis](#ratelimiterredis)
+* [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
@@ -266,99 +266,6 @@ Returns Promise, which:
 * **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
-## Usage
-
-### RateLimiterRedis
-
-Redis >=2.6.12
-
-It supports both `redis` and `ioredis` clients.
-
-Redis client must be created with offline queue switched off.
-
-```javascript
-const redis = require('redis');
-const redisClient = redis.createClient({ enable_offline_queue: false });
-
-const Redis = require('ioredis');
-const redisClient = new Redis({
-  options: {
-    enableOfflineQueue: false
-  }
-});
-
-const { RateLimiterRedis, RateLimiterMemory } = require('rate-limiter-flexible');
-
-// It is recommended to process Redis errors and setup some reconnection strategy
-redisClient.on('error', (err) => {
-  
-});
-
-const opts = {
-  // Basic options
-  storeClient: redisClient,
-  points: 5, // Number of points
-  duration: 5, // Per second(s)
-  
-  // Custom
-  execEvenly: false, // Do not delay actions evenly
-  blockDuration: 0, // Do not block if consumed more than points
-  keyPrefix: 'rlflx', // must be unique for limiters with different purpose
-  
-  // Database limiters specific
-  inmemoryBlockOnConsumed: 10, // If 10 points consumed in current duration
-  inmemoryBlockDuration: 30, // block for 30 seconds in current process memory
-};
-
-const rateLimiterRedis = new RateLimiterRedis(opts);
-
-rateLimiterRedis.consume(remoteAddress)
-    .then((rateLimiterRes) => {
-      // ... Some app logic here ...
-      
-      // Depending on results it allows to fine
-      rateLimiterRedis.penalty(remoteAddress, 3)
-        .then((rateLimiterRes) => {});
-      // or rise number of points for current duration
-      rateLimiterRedis.reward(remoteAddress, 2)
-        .then((rateLimiterRes) => {});
-    })
-    .catch((rejRes) => {
-      if (rejRes instanceof Error) {
-        // Some Redis error
-        // Never happen if `insuranceLimiter` set up
-        // Decide what to do with it in other case
-      } else {
-        // Can't consume
-        // If there is no error, rateLimiterRedis promise rejected with number of ms before next request allowed
-        const secs = Math.round(rejRes.msBeforeNext / 1000) || 1;
-        res.set('Retry-After', String(secs));
-        res.status(429).send('Too Many Requests');
-      }
-    });
-```
-
-#### RateLimiterRedis benchmark
-
-Endpoint is pure NodeJS endpoint launched in `node:10.5.0-jessie` and `redis:4.0.10-alpine` Docker containers by PM2 with 4 workers
-
-By `bombardier -c 1000 -l -d 30s -r 2000 -t 5s http://127.0.0.1:8000`
-
-Test with 1000 concurrent requests with maximum 2000 requests per sec during 30 seconds
-
-```text
-Statistics        Avg      Stdev        Max
-  Reqs/sec      2015.20     511.21   14570.19
-  Latency        2.45ms     7.51ms   138.41ms
-  Latency Distribution
-     50%     1.95ms
-     75%     2.16ms
-     90%     2.43ms
-     95%     2.77ms
-     99%     5.73ms
-  HTTP codes:
-    1xx - 0, 2xx - 53556, 3xx - 0, 4xx - 6417, 5xx - 0
-```
 
 ## Contribution
 
