@@ -6,6 +6,8 @@ export interface RateLimiterRes {
 }
 
 export class RateLimiterAbstract {
+    constructor(opts: IRateLimiterOptions);
+
     consume(key: string | number, pointsToConsume?: number): Promise<RateLimiterRes>;
 
     penalty(key: string | number, points?: number): Promise<RateLimiterRes>;
@@ -18,6 +20,7 @@ export class RateLimiterAbstract {
 }
 
 export class RateLimiterStoreAbstract extends RateLimiterAbstract {
+    constructor(opts: IRateLimiterStoreOptions);
 }
 
 interface IRateLimiterOptions {
@@ -69,11 +72,9 @@ export class RateLimiterClusterMaster {
 }
 
 export class RateLimiterRedis extends RateLimiterStoreAbstract {
-    constructor(opts: IRateLimiterStoreOptions);
 }
 
 export class RateLimiterMongo extends RateLimiterStoreAbstract {
-    constructor(opts: IRateLimiterStoreOptions);
 }
 
 export class RateLimiterMySQL extends RateLimiterStoreAbstract {
