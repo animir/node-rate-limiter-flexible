@@ -27,6 +27,7 @@
     "url": "https://github.com/animir/node-rate-limiter-flexible/issues"
   },
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
+  "types": "./lib/index.d.ts",
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
