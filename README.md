@@ -29,6 +29,7 @@ It uses **fixed window** as it is much faster than rolling window.
 :star: It is **STAR**ving, don't forget to feed the beast! :star:
 
 Advantages:
+* TypeScript declaration bundled
 * in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * backed on native Promises
