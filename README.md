@@ -94,7 +94,7 @@ app.use(async (ctx, next) => {
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
-* [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
+* [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) (with PM2 support)
 * [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists

@@ -71,6 +71,10 @@ export class RateLimiterClusterMaster {
     constructor();
 }
 
+export class RateLimiterClusterMasterPM2 {
+    constructor(pm2: any);
+}
+
 export class RateLimiterRedis extends RateLimiterStoreAbstract {
 }
 
