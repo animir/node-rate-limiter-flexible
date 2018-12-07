@@ -4,6 +4,7 @@ const RateLimiterMySQL = require('./lib/RateLimiterMySQL');
 const RateLimiterPostgres = require('./lib/RateLimiterPostgres');
 const { RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluster } = require('./lib/RateLimiterCluster');
 const RateLimiterMemory = require('./lib/RateLimiterMemory');
+const RLWrapperBlackAndWhite = require('./lib/RLWrapperBlackAndWhite');
 
 module.exports = {
   RateLimiterRedis,
@@ -14,4 +15,5 @@ module.exports = {
   RateLimiterClusterMaster,
   RateLimiterClusterMasterPM2,
   RateLimiterCluster,
+  RLWrapperBlackAndWhite
 };
