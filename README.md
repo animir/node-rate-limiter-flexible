@@ -18,10 +18,10 @@
 
 **Ready for growth.** It provides unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize` or `knex`, native driver or `mongoose`. It works with all of them.
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 It works in process 
-_Memory_, _Cluster_, _MongoDB_, _MySQL_, _PostgreSQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
+_Memory_, _Cluster_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ or _Redis_ allows to control requests rate in single process or distributed environment. 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
@@ -91,6 +91,7 @@ app.use(async (ctx, next) => {
 ### Docs and Examples
 
 * [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
+* [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
@@ -110,16 +111,17 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
 
 ```text
-1. Memory   0.34 ms
-2. Cluster  0.69 ms
-3. Redis    2.45 ms
-4. Mongo    4.75 ms
+1. Memory     0.34 ms
+2. Cluster    0.69 ms
+3. Redis      2.45 ms
+4. Memcached  3.89 ms
+5. Mongo      4.75 ms
 ```
 
 500 concurrent clients with maximum 1000 req per sec during 30 seconds
 ```text
-5. PostgreSQL 7.48 ms (with connection pool max 100)
-6. MySQL     14.59 ms (with connection pool 100)
+6. PostgreSQL 7.48 ms (with connection pool max 100)
+7. MySQL     14.59 ms (with connection pool 100)
 ```
 
 ## Installation
@@ -155,9 +157,9 @@ block for `blockDuration` seconds.
 
     It sets consumed points more than allowed points for `blockDuration` seconds, so actions are rejected.
 
-#### Options specific to Redis, Mongo, MySQL, PostgreSQL
+#### Options specific to Redis, Memcached, Mongo, MySQL, PostgreSQL
 
-* `storeClient` `Required` Have to be `redis`, `ioredis`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+* `storeClient` `Required` Have to be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
 
 * `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
 In-memory blocking works in **current process memory**. 
@@ -214,7 +216,7 @@ RateLimiterRes = {
 
 Returns Promise, which: 
 * **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for store and database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 * **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
 * **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object

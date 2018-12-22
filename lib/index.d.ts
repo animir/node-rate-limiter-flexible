@@ -89,6 +89,10 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterStoreOptions, cb?: ICallbackReady);
 }
 
+
+export class RateLimiterMemcache extends RateLimiterStoreAbstract {
+}
+
 export class RateLimiterUnion {
     constructor(...limiters: RateLimiterAbstract[]);
 
