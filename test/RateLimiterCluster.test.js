@@ -1,285 +1,167 @@
 const cluster = require('cluster');
-const { describe, it, after } = require('mocha');
-const { expect } = require('chai');
-const { RateLimiterClusterMaster, RateLimiterCluster } = require('../lib/RateLimiterCluster');
+const sinon = require('sinon');
+const {describe, it, after} = require('mocha');
+const {expect} = require('chai');
+const {RateLimiterClusterMaster, RateLimiterCluster} = require('../lib/RateLimiterCluster');
+const masterEvents = [];
+const workerEvents = [];
 
-if (cluster.isMaster) {
-  describe('RateLimiterCluster with fixed window', function () {
-    this.timeout(5000);
+const worker = {
+  send: (data) => {
+    workerEvents.forEach(cb => {
+      cb(data);
+    })
+  }
+};
 
-    after(() => {
-      Object.keys(cluster.workers).forEach((id) => {
-        cluster.workers[id].send('disconnect');
-      });
-      cluster.disconnect();
+global.process.on = (eventName, cb) => {
+  if (eventName === 'message') {
+    workerEvents.push(cb);
+  }
+};
+global.process.send = (data) => {
+  masterEvents.forEach(cb => {
+    cb(worker, data);
+  })
+};
+
+describe('RateLimiterCluster', function () {
+  let rateLimiterClusterMaster;
+  let clusterStubOn;
+  this.timeout(5000);
+
+  before(() => {
+    clusterStubOn = sinon.stub(cluster, 'on').callsFake((eventName, cb) => {
+      masterEvents.push(cb);
     });
-
-    const rateLimiterClusterMaster = new RateLimiterClusterMaster();
-
-    const worker = cluster.fork();
-
-    worker.setMaxListeners(0);
-
-    it('master must be singleton', () => {
-      const rateLimiterClusterMaster2 = new RateLimiterClusterMaster();
-      expect(rateLimiterClusterMaster2 === rateLimiterClusterMaster).to.equal(true);
-    });
-
-    it('consume 1 point', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'consume 1 point') {
-          expect(msg.data._remainingPoints).to.equal(1);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'consume 1 point' });
-    });
-
-    it('reject on consuming more than maximum points', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'reject on consuming more than maximum points') {
-          expect(msg.data._remainingPoints).to.equal(0);
-          done();
-        }
-      });
-
-      worker.send({ channel: 'mocha', test: 'reject on consuming more than maximum points' });
-    });
-
-    it('execute evenly over duration', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'execute evenly over duration') {
-          expect(msg.data).to.equal(true);
-          done();
-        }
-      });
-
-      worker.send({ channel: 'mocha', test: 'execute evenly over duration' });
-    });
-
-    it('use keyPrefix from options', (done) => {
-      const keyPrefix = 'test';
-
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'use keyPrefix from options') {
-          expect(typeof rateLimiterClusterMaster._rateLimiters[keyPrefix]._memoryStorage._storage['test:use keyPrefix from options']
-            !== 'undefined').to.equal(true);
-          done();
-        }
-      });
-
-      worker.send({ channel: 'mocha', test: 'use keyPrefix from options', data: keyPrefix });
-    });
-
-    it('create 2 rate limiters depending on keyPrefix', (done) => {
-      const keyPrefixes = ['create1', 'create2'];
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'create 2 rate limiters depending on keyPrefix') {
-          const createdKeyLimiters = Object.keys(rateLimiterClusterMaster._rateLimiters);
-          expect(createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1 && createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1).to.equal(true);
-          done();
-        }
-      });
-
-      worker.send({ channel: 'mocha', test: 'create 2 rate limiters depending on keyPrefix', data: keyPrefixes });
-    });
-
-    it('penalty', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'penalty') {
-          expect(msg.data._remainingPoints).to.equal(1);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'penalty' });
-    });
-
-    it('reward', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'reward') {
-          expect(msg.data._remainingPoints).to.equal(2);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'reward' });
-    });
-
-    it('block', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'block') {
-          expect(msg.data._msBeforeNext > 1000).to.equal(true);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'block' });
-    });
-
-    it('get', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'get') {
-          expect(msg.data._consumedPoints).to.equal(1);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'get' });
-    });
-
-    it('get null', (done) => {
-      worker.on('message', (msg) => {
-        if (msg && msg.channel === 'mocha' && msg.test === 'get null') {
-          expect(msg.data).to.equal(null);
-          done();
-        }
-      });
-      worker.send({ channel: 'mocha', test: 'get null' });
-    });
-  });
-} else {
-  let rateLimiterClusterWorker;
-  let rateLimiterClusterWorker1;
-  let rateLimiterClusterWorker2;
-  const intervalId = setInterval(() => {}, 1000);
-  process.on('message', (msg) => {
-    if (msg === 'disconnect') {
-      clearInterval(intervalId);
-    }
+    rateLimiterClusterMaster = new RateLimiterClusterMaster();
   });
 
-  process.on('message', (msg) => {
-    if (msg && msg.channel === 'mocha' && typeof msg.test === 'string') {
-      switch (msg.test) {
-        case 'consume 1 point':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: msg.test });
-          rateLimiterClusterWorker.consume(msg.test)
-            .then((res) => {
-              process.send({ channel: 'mocha', test: msg.test, data: res });
-            });
-          break;
+  after(() => {
+    clusterStubOn.restore();
+  });
 
-        case 'reject on consuming more than maximum points':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: msg.test });
-          rateLimiterClusterWorker.consume(msg.test, 3)
-            .then(() => {
+  it('master must be singleton', () => {
+    const rateLimiterClusterMaster2 = new RateLimiterClusterMaster();
+    expect(rateLimiterClusterMaster2 === rateLimiterClusterMaster).to.equal(true);
+  });
 
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
+  it('consume 1 point', (done) => {
+    const key = 'consume1';
+    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    rateLimiterCluster.consume(key)
+      .then((res) => {
+        expect(res.remainingPoints).to.equal(1);
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+  });
 
-        case 'execute evenly over duration':
-          rateLimiterClusterWorker = new RateLimiterCluster({
-            points: 2, duration: 5, execEvenly: true, keyPrefix: msg.test,
+  it('reject on consuming more than maximum points', (done) => {
+    const key = 'reject';
+    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    rateLimiterCluster.consume(key, 3)
+      .then(() => {
+
+      })
+      .catch((rejRes) => {
+        expect(rejRes.remainingPoints).to.equal(0);
+        done();
+      });
+  });
+  //
+  it('execute evenly over duration', (done) => {
+    const key = 'evenly';
+    const rateLimiterCluster = new RateLimiterCluster({
+      points: 2, duration: 5, execEvenly: true, keyPrefix: key,
+    });
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        const timeFirstConsume = Date.now();
+        rateLimiterCluster.consume(key)
+          .then(() => {
+            /* Second consume should be delayed more than 2 seconds
+               Explanation:
+               1) consume at 0ms, remaining duration = 4444ms
+               2) delayed consume for (4444 / (0 + 2)) ~= 2222ms, where 2 is a fixed value
+                , because it mustn't delay in the beginning and in the end of duration
+               3) consume after 2222ms by timeout
+            */
+            expect((Date.now() - timeFirstConsume) > 2000).to.equal(true);
+            done();
+          })
+          .catch((err) => {
+            done(err);
           });
-          rateLimiterClusterWorker.consume(msg.test)
-            .then(() => {
-              const timeFirstConsume = Date.now();
-              rateLimiterClusterWorker.consume(msg.test)
-                .then(() => {
-                  /* Second consume should be delayed more than 2 seconds
-                     Explanation:
-                     1) consume at 0ms, remaining duration = 4444ms
-                     2) delayed consume for (4444 / (0 + 2)) ~= 2222ms, where 2 is a fixed value
-                      , because it mustn't delay in the beginning and in the end of duration
-                     3) consume after 2222ms by timeout
-                  */
-                  process.send({ channel: 'mocha', test: msg.test, data: (Date.now() - timeFirstConsume) > 2000 });
-                })
-                .catch((err) => {
-                  process.send({ channel: 'mocha', test: msg.test, data: err });
-                });
-            })
-            .catch((err) => {
-              process.send({ channel: 'mocha', test: msg.test, data: err });
-            });
-          break;
-
-        case 'use keyPrefix from options':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: msg.data });
-          rateLimiterClusterWorker.consume(msg.test)
-            .then((res) => {
-              process.send({ channel: 'mocha', test: msg.test, data: res });
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
-        case 'create 2 rate limiters depending on keyPrefix':
-          rateLimiterClusterWorker1 = new RateLimiterCluster({ keyPrefix: msg.data[0] });
-          rateLimiterClusterWorker2 = new RateLimiterCluster({ keyPrefix: msg.data[1] });
-          rateLimiterClusterWorker1.consume(msg.test)
-            .then(() => {
-              rateLimiterClusterWorker2.consume(msg.test)
-                .then(() => {
-                  process.send({ channel: 'mocha', test: msg.test, data: {} });
-                })
-                .catch((rejRes) => {
-                  process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-                });
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
-
-        case 'penalty':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: msg.test });
-          rateLimiterClusterWorker.penalty(msg.test)
-            .then((res) => {
-              process.send({ channel: 'mocha', test: msg.test, data: res });
-            });
-          break;
-
-        case 'reward':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: msg.test });
-          rateLimiterClusterWorker.consume(msg.test)
-            .then(() => {
-              rateLimiterClusterWorker.reward(msg.test)
-                .then((res) => {
-                  process.send({ channel: 'mocha', test: msg.test, data: res });
-                });
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
-        case 'block':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: msg.test });
-          rateLimiterClusterWorker.block(msg.test, 2)
-            .then((res) => {
-              process.send({ channel: 'mocha', test: msg.test, data: res });
-            })
-            .catch((rej) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rej });
-            });
-          break;
-        case 'get':
-          rateLimiterClusterWorker = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: msg.test });
-          rateLimiterClusterWorker.consume(msg.test)
-            .then(() => {
-              rateLimiterClusterWorker.get(msg.test)
-                .then((res) => {
-                  process.send({ channel: 'mocha', test: msg.test, data: res });
-                })
-                .catch((rejRes) => {
-                  process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-                });
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
-        case 'get null':
-          rateLimiterClusterWorker.get(msg.test)
-            .then((res) => {
-              process.send({ channel: 'mocha', test: msg.test, data: res });
-            })
-            .catch((rejRes) => {
-              process.send({ channel: 'mocha', test: msg.test, data: rejRes });
-            });
-          break;
-        default:
-      }
-    }
+      })
+      .catch((err) => {
+        done(err);
+      });
   });
-}
+
+  it('use keyPrefix from options', (done) => {
+    const key = 'use keyPrefix from options';
+
+    const keyPrefix = 'test';
+    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix});
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        expect(typeof rateLimiterClusterMaster._rateLimiters[keyPrefix]._memoryStorage._storage[`${keyPrefix}:${key}`]
+          !== 'undefined').to.equal(true);
+        done();
+      })
+      .catch((rejRes) => {
+        done(rejRes);
+      });
+  });
+
+  it('create 2 rate limiters depending on keyPrefix', async () => {
+    const keyPrefixes = ['create1', 'create2'];
+    const rateLimiterClusterprocess1 = new RateLimiterCluster({keyPrefix: keyPrefixes[0]});
+    const rateLimiterClusterprocess2 = new RateLimiterCluster({keyPrefix: keyPrefixes[1]});
+    await rateLimiterClusterprocess1.consume('key1');
+    await rateLimiterClusterprocess2.consume('key2');
+    const createdKeyLimiters = Object.keys(rateLimiterClusterMaster._rateLimiters);
+    expect(createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1 && createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1).to.equal(true);
+  });
+
+  it('penalty', async () => {
+    const key = 'penalty';
+    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    const res = await rateLimiterCluster.penalty(key);
+    expect(res.remainingPoints).to.equal(1);
+  });
+
+  it('reward', async () => {
+    const key = 'reward';
+    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    await rateLimiterCluster.consume(key);
+    const res = await rateLimiterCluster.reward(key);
+    expect(res.remainingPoints).to.equal(2);
+  });
+
+  it('block', async () => {
+    const key = 'block';
+    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    const res = await rateLimiterCluster.block(key, 2);
+    expect(res.msBeforeNext > 1000).to.equal(true);
+  });
+
+  it('get', async () => {
+    const key = 'get';
+    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    await rateLimiterCluster.consume(key);
+    const res = await rateLimiterCluster.get(key);
+    expect(res.consumedPoints).to.equal(1);
+  });
+
+  it('get null', async () => {
+    const key = 'getnull';
+    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    const res = await rateLimiterCluster.get(key);
+    expect(res).to.equal(null);
+  });
+});
+
