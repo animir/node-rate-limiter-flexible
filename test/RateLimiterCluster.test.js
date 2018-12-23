@@ -117,51 +117,75 @@ describe('RateLimiterCluster', function () {
       });
   });
 
-  it('create 2 rate limiters depending on keyPrefix', async () => {
+  it('create 2 rate limiters depending on keyPrefix', (done) => {
     const keyPrefixes = ['create1', 'create2'];
     const rateLimiterClusterprocess1 = new RateLimiterCluster({keyPrefix: keyPrefixes[0]});
     const rateLimiterClusterprocess2 = new RateLimiterCluster({keyPrefix: keyPrefixes[1]});
-    await rateLimiterClusterprocess1.consume('key1');
-    await rateLimiterClusterprocess2.consume('key2');
-    const createdKeyLimiters = Object.keys(rateLimiterClusterMaster._rateLimiters);
-    expect(createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1 && createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1).to.equal(true);
+    rateLimiterClusterprocess1.consume('key1')
+      .then(() => {
+        rateLimiterClusterprocess2.consume('key2')
+          .then(() => {
+            const createdKeyLimiters = Object.keys(rateLimiterClusterMaster._rateLimiters);
+            expect(createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1 && createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1).to.equal(true);
+            done();
+          })
+      });
   });
 
-  it('penalty', async () => {
+  it('penalty', (done) => {
     const key = 'penalty';
     const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
-    const res = await rateLimiterCluster.penalty(key);
-    expect(res.remainingPoints).to.equal(1);
+    rateLimiterCluster.penalty(key)
+      .then(res => {
+        expect(res.remainingPoints).to.equal(1);
+        done();
+      });
   });
 
-  it('reward', async () => {
+  it('reward', (done) => {
     const key = 'reward';
     const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
-    await rateLimiterCluster.consume(key);
-    const res = await rateLimiterCluster.reward(key);
-    expect(res.remainingPoints).to.equal(2);
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        rateLimiterCluster.reward(key)
+          .then(res => {
+            expect(res.remainingPoints).to.equal(2);
+            done();
+          });
+      });
   });
 
-  it('block', async () => {
+  it('block', (done) => {
     const key = 'block';
     const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
-    const res = await rateLimiterCluster.block(key, 2);
-    expect(res.msBeforeNext > 1000).to.equal(true);
+    rateLimiterCluster.block(key, 2)
+      .then((res) => {
+        expect(res.msBeforeNext > 1000).to.equal(true);
+        done();
+      });
   });
 
-  it('get', async () => {
+  it('get', (done) => {
     const key = 'get';
     const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
-    await rateLimiterCluster.consume(key);
-    const res = await rateLimiterCluster.get(key);
-    expect(res.consumedPoints).to.equal(1);
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        rateLimiterCluster.get(key)
+          .then((res) => {
+            expect(res.consumedPoints).to.equal(1);
+            done();
+          })
+      });
   });
 
-  it('get null', async () => {
+  it('get null', (done) => {
     const key = 'getnull';
     const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
-    const res = await rateLimiterCluster.get(key);
-    expect(res).to.equal(null);
+    rateLimiterCluster.get(key)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      });
   });
 });
 
