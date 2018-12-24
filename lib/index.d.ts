@@ -32,7 +32,7 @@ interface IRateLimiterOptions {
     blockDuration?: number;
 }
 
-interface IRateLimiterStoreOptions {
+interface IRateLimiterStoreOptions extends IRateLimiterOptions{
     storeClient: any;
     storeType?: string;
     inmemoryBlockOnConsumed?: number;
@@ -49,14 +49,14 @@ interface ICallbackReady {
 
 interface IRLWrapperBlackAndWhiteOptions {
     limiter: RateLimiterAbstract;
-    blackList: string [] | number[];
-    whiteList: string[] | number[];
+    blackList?: string [] | number[];
+    whiteList?: string[] | number[];
 
-    isBlack(key: string | number): boolean;
+    isBlack?(key: string | number): boolean;
 
-    isWhite(key: string | number): boolean;
+    isWhite?(key: string | number): boolean;
 
-    runActionAnyway: boolean;
+    runActionAnyway?: boolean;
 }
 
 export class RateLimiterMemory extends RateLimiterAbstract {
@@ -89,7 +89,6 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterStoreOptions, cb?: ICallbackReady);
 }
 
-
 export class RateLimiterMemcache extends RateLimiterStoreAbstract {
 }
 
@@ -99,6 +98,6 @@ export class RateLimiterUnion {
     consume(key: string | number, points?: number): Promise<RateLimiterRes>[];
 }
 
-export class RLWrapperBlackAndWhite {
+export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
 }
