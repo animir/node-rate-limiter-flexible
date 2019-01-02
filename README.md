@@ -58,40 +58,17 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
     });
 ```
 
+**Middlewares and plugins:**
+* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
+* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
+* [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
+
 Other examples on Wiki:
 * [Login endpoint protection](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#login-endpoint-protection)
 * [Authorized users specific limits](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#authorized-and-not-authorized-users)
 * [Different limits for different parts of application](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#different-limits-for-different-parts-of-application)
 * [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
 * [Setup Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
-
-### Express middleware
-
-```javascript
-const rateLimiterMiddleware = (req, res, next) => {
-  rateLimiter.consume(req.connection.remoteAddress)
-    .then(() => {
-      next();
-    })
-    .catch((rejRes) => {
-      res.status(429).send('Too Many Requests');
-    });
-};
-```
-
-### Koa middleware
-
-```javascript
-app.use(async (ctx, next) => {
-  try {
-    await rateLimiter.consume(ctx.ip)
-    next()
-  } catch (rejRes) {
-    ctx.status = 429
-    ctx.body = 'Too Many Requests'
-  }
-})
-```
 
 ### Docs and Examples
 
