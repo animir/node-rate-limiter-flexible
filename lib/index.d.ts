@@ -17,6 +17,8 @@ export class RateLimiterAbstract {
     block(key: string | number, secDuration: number): Promise<RateLimiterRes>;
 
     get(key: string | number): Promise<RateLimiterRes>;
+
+    getKey(key: string | number): string;
 }
 
 export class RateLimiterStoreAbstract extends RateLimiterAbstract {

@@ -251,6 +251,9 @@ Returns Promise, which:
 * **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
+### rateLimiter.getKey(key)
+
+Returns internal key prefixed with `keyPrefix` option as it is saved in store. 
 
 ## Contribution
 
