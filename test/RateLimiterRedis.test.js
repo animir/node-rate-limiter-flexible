@@ -566,4 +566,50 @@ describe('RateLimiterRedis with fixed window', function() {
         done(Error('consume must not reject'));
       });
   });
+
+  it('delete key and return true', (done) => {
+    const testKey = 'deletetrue';
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: 1,
+    });
+    rateLimiter
+      .consume(testKey)
+      .then(() => {
+        rateLimiter.delete(testKey)
+          .then((resDel) => {
+            expect(resDel).to.equal(true);
+            done();
+          })
+      });
+  });
+
+  it('delete returns false, if there is no key', (done) => {
+    const testKey = 'deletefalse';
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: 1,
+    });
+    rateLimiter.delete(testKey)
+      .then((resDel) => {
+        expect(resDel).to.equal(false);
+        done();
+      })
+  });
+
+  it('delete rejects on error', (done) => {
+    const testKey = 'deleteerr';
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisClientClosed,
+      points: 2,
+      duration: 1,
+    });
+    rateLimiter.delete(testKey)
+      .catch(() => done())
+  });
 });

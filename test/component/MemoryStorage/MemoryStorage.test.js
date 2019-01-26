@@ -39,4 +39,14 @@ describe('MemoryStorage', function () {
     expect(storage.get(testKey).consumedPoints).to.equal(val);
     done();
   });
+
+  it('should delete record and return true, if it was there', () => {
+    storage.set(testKey, val, 10);
+    expect(storage.delete(testKey)).to.equal(true);
+    expect(storage.get(testKey)).to.equal(null);
+  });
+
+  it('return false, if there is no record to delete', () => {
+    expect(storage.delete(testKey)).to.equal(false);
+  });
 });

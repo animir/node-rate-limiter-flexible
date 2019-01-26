@@ -31,6 +31,7 @@ describe('RateLimiterMongo with fixed window', function () {
       ensureIndex: () => {},
       findOneAndUpdate: () => {},
       findOne: () => {},
+      deleteOne: () => {},
     };
     sinon.stub(mongoCollection, 'ensureIndex').callsFake(() => {});
   });
@@ -307,5 +308,47 @@ describe('RateLimiterMongo with fixed window', function () {
 
     mongoClientStub.restore();
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
+  });
+
+  it('delete key and return true', (done) => {
+    const testKey = 'deletetrue';
+    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => {
+      return Promise.resolve({
+        result: {
+          n: 1
+        }
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      storeClient: mongoClient, points: 1, duration: 1, blockDuration: 2,
+    });
+
+    rateLimiter.delete(testKey)
+      .then((res) => {
+        expect(res).to.equal(true);
+        done();
+      })
+  });
+
+  it('delete returns false, if there is no key', (done) => {
+    const testKey = 'deletefalse';
+    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => {
+      return Promise.resolve({
+        result: {
+          n: 0
+        }
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      storeClient: mongoClient, points: 1, duration: 1, blockDuration: 2,
+    });
+
+    rateLimiter.delete(testKey)
+      .then((res) => {
+        expect(res).to.equal(false);
+        done();
+      })
   });
 });

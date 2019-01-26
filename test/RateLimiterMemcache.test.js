@@ -374,4 +374,50 @@ describe('RateLimiterMemcache', function () {
         done(Error('get must not reject'));
       });
   });
+
+  it('delete key and return true', (done) => {
+    const testKey = 'deletetrue';
+
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient,
+      points: 2,
+      duration: 10,
+    });
+    rateLimiter
+      .consume(testKey)
+      .then(() => {
+        rateLimiter
+          .delete(testKey)
+          .then((res) => {
+            expect(res).to.equal(true);
+            rateLimiter
+              .get(testKey)
+              .then((resGet) => {
+                expect(resGet).to.equal(null);
+                done();
+              })
+          });
+      });
+  });
+
+  it('delete returns false, if there is no key', (done) => {
+    const testKey = 'deletefalse';
+
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient,
+      points: 2,
+      duration: 10,
+    });
+    rateLimiter
+      .delete(testKey)
+      .then((res) => {
+        expect(res).to.equal(false);
+        rateLimiter
+          .get(testKey)
+          .then((resGet) => {
+            expect(resGet).to.equal(null);
+            done();
+          })
+      });
+  });
 });

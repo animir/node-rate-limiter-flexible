@@ -499,4 +499,30 @@ describe('RLWrapperBlackAndWhite ', () => {
         done(Error('must not reject'));
       });
   });
+
+  it('delete data straight on limiter even if key is black or white listed', (done) => {
+    const testKey = 'test';
+    const limiter = new RateLimiterMemory({
+      points: 1,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      isBlack: (key) => {
+        return key === testKey;
+      },
+      isWhite: (key) => {
+        return key === testKey;
+      },
+    });
+    limiter.consume(testKey)
+      .then(() => {
+        limiterWrapped.delete(testKey)
+          .then((res) => {
+            expect(res).to.equal(true);
+            done();
+          });
+      });
+  });
 });

@@ -223,4 +223,22 @@ describe('RateLimiterMemory with fixed window', function () {
         done();
       });
   });
+
+  it('delete resolves true if key is set', (done) => {
+    const testKey = 'deletekey';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5 });
+    rateLimiterMemory.consume(testKey)
+      .then(() => {
+        rateLimiterMemory.delete(testKey)
+          .then((res) => {
+            expect(res).to.equal(true);
+            done();
+          }).catch(() => {
+            done(Error('must not reject'));
+          });
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
 });

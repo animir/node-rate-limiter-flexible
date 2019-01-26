@@ -18,6 +18,8 @@ export class RateLimiterAbstract {
 
     get(key: string | number): Promise<RateLimiterRes>;
 
+    delete(key: string | number): Promise<boolean>;
+
     getKey(key: string | number): string;
 }
 

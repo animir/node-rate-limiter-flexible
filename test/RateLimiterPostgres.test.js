@@ -27,7 +27,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.reject(Error('test')));
 
       const rateLimiter = new RateLimiterPostgres({
-        storeClient: pgClient, storeType: 'connection', points: 2, duration: 5
+        storeClient: pgClient, storeType: 'client', points: 2, duration: 5
       }, (e) => {
         expect(e instanceof Error).to.equal(true);
         done();
@@ -38,7 +38,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'consume1';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -60,7 +60,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'consumerej';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection', points: 1, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 1, duration: 5
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -81,7 +81,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'block';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection', points: 1, duration: 1, blockDuration: 2,
+      storeClient: pgClient, storeType: 'client', points: 1, duration: 1, blockDuration: 2,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -100,7 +100,7 @@ describe('RateLimiterPostgres with fixed window', function () {
   });
 
   it('return correct data with _getRateLimiterRes', () => {
-    const rateLimiter = new RateLimiterPostgres({ points: 5, storeClient: pgClient, storeType: 'connection' });
+    const rateLimiter = new RateLimiterPostgres({ points: 5, storeClient: pgClient, storeType: 'client' });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       rows: [{ points: 3, expire: Date.now() + 1000 }],
@@ -116,7 +116,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'get';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -138,7 +138,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'getnull';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -161,7 +161,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'geterror';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection',
+      storeClient: pgClient, storeType: 'client',
       points: 1,
       duration: 1,
       insuranceLimiter: new RateLimiterMemory({
@@ -187,7 +187,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'postgreserrorblock';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'connection',
+      storeClient: pgClient, storeType: 'client',
       points: 1,
       duration: 1,
       insuranceLimiter: new RateLimiterMemory({
@@ -206,6 +206,60 @@ describe('RateLimiterPostgres with fixed window', function () {
         .catch(() => {
           done(Error('must not reject'));
         });
+    });
+  });
+
+  it('delete key and return true', (done) => {
+    const testKey = 'deletetrue';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+    }, () => {
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').resolves({
+        rowCount: 1,
+      });
+
+      rateLimiter.delete(testKey)
+        .then((res) => {
+          expect(res).to.equal(true);
+          done();
+        })
+    });
+  });
+
+  it('delete returns false, if there is no key', (done) => {
+    const testKey = 'deletefalse';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+    }, () => {
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').resolves({
+        rowCount: 0,
+      });
+
+      rateLimiter.delete(testKey)
+        .then((res) => {
+          expect(res).to.equal(false);
+          done();
+        })
+    });
+  });
+
+  it('delete rejects on error', (done) => {
+    const testKey = 'deleteerr';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+    }, () => {
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').rejects(new Error());
+
+      rateLimiter.delete(testKey)
+        .catch(() => {
+          done();
+        })
     });
   });
 });

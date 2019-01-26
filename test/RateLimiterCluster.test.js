@@ -187,5 +187,18 @@ describe('RateLimiterCluster', function () {
         done();
       });
   });
+
+  it('delete', (done) => {
+    const key = 'deletetrue';
+    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 10, keyPrefix: key});
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        rateLimiterCluster.delete(key)
+          .then((res) => {
+            expect(res).to.equal(true);
+            done();
+          })
+      });
+  });
 });
 

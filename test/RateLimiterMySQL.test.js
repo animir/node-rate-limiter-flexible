@@ -182,4 +182,60 @@ describe('RateLimiterMySQL with fixed window', function () {
         });
     });
   });
+
+  it('delete key and return true', (done) => {
+    const testKey = 'deletetrue';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'connection', points: 1, duration: 1,
+    }, () => {
+      mysqlClientStub.restore();
+      sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        cb(null, {affectedRows: 1});
+      });
+
+      rateLimiter.delete(testKey)
+        .then((res) => {
+          expect(res).to.equal(true);
+          done();
+        })
+    });
+  });
+
+  it('delete returns false, if there is no key', (done) => {
+    const testKey = 'deletefalse';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'connection', points: 1, duration: 1,
+    }, () => {
+      mysqlClientStub.restore();
+      sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        cb(null, {affectedRows: 0});
+      });
+
+      rateLimiter.delete(testKey)
+        .then((res) => {
+          expect(res).to.equal(false);
+          done();
+        })
+    });
+  });
+
+  it('delete rejects on error', (done) => {
+    const testKey = 'deleteerr';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'connection', points: 1, duration: 1,
+    }, () => {
+      mysqlClientStub.restore();
+      sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        cb(new Error('test'));
+      });
+
+      rateLimiter.delete(testKey)
+        .catch(() => {
+          done();
+        })
+    });
+  });
 });

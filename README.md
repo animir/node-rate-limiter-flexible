@@ -251,6 +251,17 @@ Returns Promise, which:
 * **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
 * **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
 
+### rateLimiter.delete(key)
+
+Delete all data related to `key`. 
+
+For example, previously blocked key is not blocked after delete as there is no data anymore.
+
+Returns Promise, which:
+* **resolved** with `boolean`, `true` if data is removed by key, `false` if there is no such key.
+* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
+* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
+
 ### rateLimiter.getKey(key)
 
 Returns internal key prefixed with `keyPrefix` option as it is saved in store. 
@@ -265,8 +276,9 @@ You can try to run `npm run eslint-fix` to fix some issues.
 
 Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
 It has to implement at least 3 methods:
-* `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object
-* `_upsert` inserts or updates limits data by key and returns raw data
-* `_get` returns raw data by key
+* `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object.
+* `_upsert` inserts or updates limits data by key and returns raw data.
+* `_get` returns raw data by key.
+* `_delete` deletes all key related data and returns `true` on deleted, `false` if key is not found.
 
 All other methods depends on store. See `RateLimiterRedis` or `RateLimiterPostgres` for example.
