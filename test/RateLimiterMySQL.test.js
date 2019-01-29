@@ -238,4 +238,19 @@ describe('RateLimiterMySQL with fixed window', function () {
         })
     });
   });
+
+  it('clearExpired method uses private _getConnection to get connection', (done) => {
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'sequelize',
+    }, () => {
+
+      const rlStub = sinon.stub(rateLimiter, '_getConnection').callsFake(() => {
+        done();
+        return Promise.resolve(mysqlClient);
+      });
+
+      rateLimiter.clearExpired(1);
+      rlStub.restore();
+    });
+  });
 });

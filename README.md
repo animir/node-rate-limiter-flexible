@@ -164,6 +164,8 @@ All limits for all limiters are stored in one table if custom name is set.
 
 * `storeType` `Default: storeClient.constructor.name` It is required only for Knex and have to be set to 'knex'
 
+* `clearExpiredByTimeout` `Default: true` Rate limiter deletes data expired more than 1 hour ago every 5 minutes.
+
 #### Options specific to MySQL
 
 * `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
