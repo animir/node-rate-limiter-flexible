@@ -262,4 +262,229 @@ describe('RateLimiterPostgres with fixed window', function () {
         })
     });
   });
+
+  it('query sets unique prefix to prepared statement for every limiter table', (done) => {
+    let queryName1;
+    let rateLimiter1;
+    let rateLimiter2;
+
+    Promise.all([
+      new Promise((resolve) => {
+        rateLimiter1 = new RateLimiterPostgres({
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname1'
+        }, () => {
+          resolve();
+        });
+      }),
+      new Promise((resolve) => {
+        rateLimiter2 = new RateLimiterPostgres({
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname2'
+        }, () => {
+          resolve();
+        });
+      }),
+    ]).then(() => {
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').callsFake((q) => {
+        queryName1 = q.name;
+        return Promise.resolve({
+          rows: [{ points: 1, expire: 5000 }],
+        })
+      });
+
+      rateLimiter1.consume('test')
+        .then(() => {
+          pgClientStub.restore();
+          pgClientStub = sinon.stub(pgClient, 'query').callsFake((q) => {
+            expect(q.name).to.not.equal(queryName1);
+            done();
+            return Promise.resolve({
+              rows: [{ points: 1, expire: 5000 }],
+            })
+          });
+
+          rateLimiter2.consume('test');
+        });
+    });
+  });
+
+  it('set client type to "client" by constructor name for Client', (done) => {
+    class Client {
+      Client(){};
+      query(){};
+    }
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: new Client()
+    }, () => {
+      expect(rateLimiter.clientType).to.equal('client');
+      done();
+    });
+  });
+
+  it('set client type to "pool" by constructor name for Pool', (done) => {
+    class Pool {
+      Pool(){};
+      query(){};
+    }
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: new Pool()
+    }, () => {
+      expect(rateLimiter.clientType).to.equal('pool');
+      done();
+    });
+  });
+
+  it('set client type to "sequelize" by constructor name for Sequelize', (done) => {
+    class Sequelize {
+      Sequelize(){};
+      query(){};
+    }
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: new Sequelize()
+    }, () => {
+      expect(rateLimiter.clientType).to.equal('sequelize');
+      done();
+    });
+  });
+
+  it('throw error if it is not possible to define client type', (done) => {
+    try {
+      new RateLimiterPostgres({
+        storeClient: {}
+      });
+    } catch (err) {
+      expect(err instanceof Error).to.equal(true);
+      done();
+    }
+  });
+
+  it('private _getConnection returns client for Pool', (done) => {
+    class Pool {
+      Pool(){};
+      query(){};
+    }
+
+    const client = new Pool();
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client
+    }, () => {
+      rateLimiter._getConnection()
+        .then((conn) => {
+          expect(conn).to.equal(client);
+          done();
+        });
+    });
+  });
+
+  it('private _getConnection returns connection from manager for Sequelize', (done) => {
+    class Sequelize {
+      Sequelize(){};
+      query(){};
+    }
+
+    const client = new Sequelize();
+    client.connectionManager = {
+      getConnection: () => {
+        return Promise.resolve(123);
+      }
+    };
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client
+    }, () => {
+      rateLimiter._getConnection()
+        .then((res) => {
+          expect(res).to.equal(123);
+          done();
+        });
+    });
+  });
+
+  it('private _getConnection returns acquire connection from Knex', (done) => {
+    class Knex {
+      Knex(){};
+      query(){};
+    }
+
+    const client = new Knex();
+    client.client = {
+      acquireConnection: () => {
+        return Promise.resolve(321);
+      }
+    };
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client,
+      storeType: 'knex',
+    }, () => {
+      rateLimiter._getConnection()
+        .then((res) => {
+          expect(res).to.equal(321);
+          done();
+        });
+    });
+  });
+
+  it('Pool does not require specific connection releasing', (done) => {
+    class Pool {
+      Pool(){};
+      query(){};
+    }
+
+    const client = new Pool();
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client
+    }, () => {
+      expect(rateLimiter._releaseConnection()).to.equal(true);
+      done();
+    });
+  });
+
+  it('Sequelize release connection from manager', (done) => {
+    class Sequelize {
+      Sequelize(){};
+      query(){};
+    }
+
+    const client = new Sequelize();
+    client.connectionManager = {
+      releaseConnection: () => {
+        return 123;
+      }
+    };
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client
+    }, () => {
+      expect(rateLimiter._releaseConnection()).to.equal(123);
+      done();
+    });
+  });
+
+  it('Knex release connection from client', (done) => {
+    class Knex {
+      Knex(){};
+      query(){};
+    }
+
+    const client = new Knex();
+    client.client = {
+      releaseConnection: () => {
+        return 321;
+      }
+    };
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client,
+      storeType: 'knex',
+    }, () => {
+      expect(rateLimiter._releaseConnection()).to.equal(321);
+      done();
+    });
+  });
 });
