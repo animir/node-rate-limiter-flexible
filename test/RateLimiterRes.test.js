@@ -32,4 +32,29 @@ describe('RateLimiterRes response object', () => {
     rateLimiterRes.isFirstInDuration = 1;
     expect(rateLimiterRes.isFirstInDuration).to.equal(true);
   });
+
+  it('returns object on toJSON call', () => {
+    const rateLimiterRes = new RateLimiterRes();
+    rateLimiterRes.msBeforeNext = 12;
+    rateLimiterRes.remainingPoints = 3;
+    rateLimiterRes.consumedPoints = 2;
+    rateLimiterRes.isFirstInDuration = true;
+
+    expect(rateLimiterRes.toJSON()).to.deep.equal({
+      remainingPoints: 3,
+      msBeforeNext: 12,
+      consumedPoints: 2,
+      isFirstInDuration: true
+    });
+  });
+
+  it('returns JSON string on toString call', () => {
+    const rateLimiterRes = new RateLimiterRes();
+    rateLimiterRes.msBeforeNext = 2;
+    rateLimiterRes.remainingPoints = 0;
+    rateLimiterRes.consumedPoints = 5;
+    rateLimiterRes.isFirstInDuration = false;
+
+    expect(rateLimiterRes.toString()).to.equal('{"remainingPoints":0,"msBeforeNext":2,"consumedPoints":5,"isFirstInDuration":false}');
+  });
 });
