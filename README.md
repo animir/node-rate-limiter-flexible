@@ -162,8 +162,8 @@ to same values as in parent to avoid unexpected behaviour
 
 #### Options specific to MySQL and PostgreSQL
 
-* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates table for each unique `keyPrefix`. 
-All limits for all limiters are stored in one table if custom name is set.
+* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates a table for each unique `keyPrefix`. 
+`tableName` option sets table name where values should be stored.
 
 * `storeType` `Default: storeClient.constructor.name` It is required only for Knex and have to be set to 'knex'
 
@@ -174,6 +174,9 @@ All limits for all limiters are stored in one table if custom name is set.
 * `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
 
 #### Options specific to Mongo
+
+* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates a collection for each unique `keyPrefix`. 
+  `tableName` option sets a collection name where documents should be stored.
 
 * `dbName` `Default: 'node-rate-limiter-flexible'` Database where limits are stored. It is created during creating a limiter.
     Doesn't work with Mongoose, as mongoose connection is established to exact database.

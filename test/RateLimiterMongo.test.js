@@ -351,4 +351,26 @@ describe('RateLimiterMongo with fixed window', function () {
         done();
       })
   });
+
+  it('uses tableName option to create collection', (done) => {
+    const tableName = 'collection_name';
+    const mongoDb = {
+      collection: () => {},
+    };
+
+    sinon.stub(mongoDb, 'collection').callsFake((name) => {
+      expect(name).to.equal(tableName);
+      done();
+      return mongoCollection;
+    });
+
+    const client = {
+      db: () => mongoDb
+    }
+
+    new RateLimiterMongo({
+      storeClient: client,
+      tableName: tableName
+    });
+  })
 });
