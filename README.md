@@ -115,7 +115,9 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 ## Options
 
-* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose. 
+* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose.
+    
+    Set to empty string `''`, if keys should be stored without prefix. 
 
     Note: for some limiters it should correspond to Storage requirements for tables or collections name,
      as `keyPrefix` may be used as their name.
