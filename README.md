@@ -75,7 +75,7 @@ Other examples on Wiki:
 
 * [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
-* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo)
+* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
@@ -199,6 +199,16 @@ RateLimiterRes = {
     remainingPoints: 0, // Number of remaining points in current duration 
     consumedPoints: 5, // Number of consumed points in current duration 
     isFirstInDuration: false, // action is first in current duration 
+}
+```
+
+You may want to set next HTTP headers to response:
+```javascript
+const headers = {
+  "Retry-After": rateLimiterRes.msBeforeNext / 1000,
+  "X-RateLimit-Limit": opts.points,
+  "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
+  "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
 }
 ```
 
