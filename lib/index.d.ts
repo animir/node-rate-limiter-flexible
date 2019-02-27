@@ -3,6 +3,13 @@ export interface RateLimiterRes {
     readonly remainingPoints: number;
     readonly consumedPoints: number;
     readonly isFirstInDuration: boolean;
+    toString(): string;
+    toJSON(): {
+        remainingPoints: number;
+        msBeforeNext: number;
+        consumedPoints: number;
+        isFirstInDuration: boolean;
+    };
 }
 
 export class RateLimiterAbstract {
