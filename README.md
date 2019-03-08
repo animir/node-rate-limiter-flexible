@@ -27,19 +27,13 @@ It uses **fixed window** as it is much faster than rolling window.
 
 :star: It is **STAR**ving, don't forget to feed the beast! :star:
 
-Advantages:
-* TypeScript declaration bundled
-* in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
-* Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
-* backed on native Promises
-* works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
-* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
-* no race conditions
-* covered by tests
-* no prod dependencies
-* useful `get`, `block`, `penalty` and `reward` methods
+## Installation
 
-### Example
+`npm i --save rate-limiter-flexible`
+
+`yarn add rate-limiter-flexible`
+
+## Basic Example
 
 ```javascript
 const opts = {
@@ -58,141 +52,9 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
     });
 ```
 
-**Middlewares and plugins:**
-* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
-* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
-* [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
+#### RateLimiterRes object
 
-Other examples on Wiki:
-* [Login endpoint protection](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#login-endpoint-protection)
-* [Websocket connection prevent flooding](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding)
-* [Authorized users specific limits](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#authorized-and-not-authorized-users)
-* [Different limits for different parts of application](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#different-limits-for-different-parts-of-application)
-* [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
-* [Setup Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
-
-### Docs and Examples
-
-* [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
-* [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
-* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
-* [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
-* [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
-* [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
-* [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
-* [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
-* [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
-* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
-* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
-* [Options](#options)
-* [API](#api)
-
-### Benchmark
-
-Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
-
-1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
-
-```text
-1. Memory     0.34 ms
-2. Cluster    0.69 ms
-3. Redis      2.45 ms
-4. Memcached  3.89 ms
-5. Mongo      4.75 ms
-```
-
-500 concurrent clients with maximum 1000 req per sec during 30 seconds
-```text
-6. PostgreSQL 7.48 ms (with connection pool max 100)
-7. MySQL     14.59 ms (with connection pool 100)
-```
-
-## Installation
-
-`npm i rate-limiter-flexible`
-
-`yarn add rate-limiter-flexible`
-
-## Options
-
-* `keyPrefix` `Default: 'rlflx'` If you need to create several limiters for different purpose.
-    
-    Set to empty string `''`, if keys should be stored without prefix. 
-
-    Note: for some limiters it should correspond to Storage requirements for tables or collections name,
-     as `keyPrefix` may be used as their name.
-
-* `points` `Default: 4` Maximum number of points can be consumed over duration
-
-* `duration` `Default: 1` Number of seconds before consumed points are reset
-
-* `execEvenly` `Default: false` Delay action to be executed evenly over duration
-First action in duration is executed without delay.
-All next allowed actions in current duration are delayed by formula `msBeforeDurationEnd / (remainingPoints + 2)` 
-with minimum delay of `duration * 1000 / points`
-It allows to cut off load peaks similar way to Leaky Bucket. [Read detailed Leaky Bucket description](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
-
-    Note: it isn't recommended to use it for long duration and few points, 
-    as it may delay action for too long with default `execEvenlyMinDelayMs`.
-
-* `execEvenlyMinDelayMs` `Default: duration * 1000 / points` Sets minimum delay in milliseconds, when action is delayed with `execEvenly`  
-
-* `blockDuration` `Default: 0` If positive number and consumed more than points in current duration, 
-block for `blockDuration` seconds. 
-
-    It sets consumed points more than allowed points for `blockDuration` seconds, so actions are rejected.
-
-#### Options specific to Redis, Memcached, Mongo, MySQL, PostgreSQL
-
-* `storeClient` `Required` Have to be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
-
-* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key does not increment counter in Redis, MySQL, Mongo, etc., 
-so malicious requests can't overload a storage.
-In-memory blocking works in **current process memory**, if process A has blocked a key in memory, it may be still not blocked in memory of process B;
-
-* `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
-if `inmemoryBlockOnConsumed` or more points are consumed 
-
-* `insuranceLimiter` `Default: undefined` Instance of RateLimiterAbstract extended object to store limits, 
-when database comes up with any error. 
-
-    All data from `insuranceLimiter` is NOT copied to parent limiter, when error gone
-
-    **Note:** `insuranceLimiter` automatically setup `blockDuration` and `execEvenly` 
-to same values as in parent to avoid unexpected behaviour
-
-#### Options specific to MySQL and PostgreSQL
-
-* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates a table for each unique `keyPrefix`. 
-`tableName` option sets table name where values should be stored.
-
-* `storeType` `Default: storeClient.constructor.name` It is required only for Knex and have to be set to 'knex'
-
-* `clearExpiredByTimeout` `Default: true` Rate limiter deletes data expired more than 1 hour ago every 5 minutes.
-
-#### Options specific to MySQL
-
-* `dbName` `Default: 'rtlmtrflx'` Database where limits are stored. It is created during creating a limiter
-
-#### Options specific to Mongo
-
-* `tableName` `Default: equals to 'keyPrefix' option` By default, limiter creates a collection for each unique `keyPrefix`. 
-  `tableName` option sets a collection name where documents should be stored.
-
-* `dbName` `Default: 'node-rate-limiter-flexible'` Database where limits are stored. It is created during creating a limiter.
-    Doesn't work with Mongoose, as mongoose connection is established to exact database.
-
-#### Options specific to Cluster
-
-* `timeoutMs` `Default: 5000` Timeout for communication between worker and master over IPC. 
-If master doesn't response in time, promise is rejected with Error
-
-
-## API
-
-### RateLimiterRes object
-
-Both Promise resolve and reject returns object of `RateLimiterRes` class if there is no any error.
+Both Promise resolve and reject return object of `RateLimiterRes` class if there is no any error.
 Object attributes:
 ```javascript
 RateLimiterRes = {
@@ -212,6 +74,88 @@ const headers = {
   "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
 }
 ```
+
+### Advantages:
+* TypeScript declaration bundled
+* in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
+* Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
+* backed on native Promises
+* works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
+* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
+* no race conditions
+* covered by tests
+* no prod dependencies
+* useful `get`, `block`, `delete`, `penalty` and `reward` methods
+
+### Middlewares and plugins
+* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
+* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
+* [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
+
+Other examples on Wiki:
+* [Login endpoint protection](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#login-endpoint-protection)
+* [Websocket connection prevent flooding](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding)
+* [Authorized users specific limits](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#authorized-and-not-authorized-users)
+* [Different limits for different parts of application](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#different-limits-for-different-parts-of-application)
+* [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
+* [Setup Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
+
+### Docs and Examples
+
+* [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
+* [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
+* [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
+* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
+* [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
+* [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize and Knex)
+* [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
+* [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
+* [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
+* [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
+* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
+* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
+* [API](#api)
+
+## Basic Options
+
+* `points` 
+    
+    `Default: 4` 
+    
+    Maximum number of points can be consumed over duration
+
+* `duration` 
+
+    `Default: 1` 
+    
+    Number of seconds before consumed points are reset
+
+* `storeClient` 
+
+    `Required for store limiters` 
+
+    Have to be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+
+### Other options on Wiki:
+* [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
+* [blockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#blockduration) Block for N seconds, if consumed more than points.
+* [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) Against powerful DoS.
+* [inmemoryBlockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockduration)
+* [insuranceLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#insurancelimiter) Make it more stable with less efforts.
+* [storeType](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#storetype) Have to be set to `knex`, if you use it.
+* [dbName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#dbname) Where to store points.
+* [tableName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablename) Table/collection.
+* [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL and PostgreSQL.
+
+Cut off load picks:
+* [execEvenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenly)
+* [execEvenlyMinDelayMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenlymindelayms)
+
+Specific:
+* [indexKeyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#indexkeyprefix) Combined indexes of MongoDB.
+* [timeoutMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#timeoutms) For Cluster.
+
+## API
 
 ### rateLimiter.consume(key, points = 1)
 
@@ -284,6 +228,26 @@ Returns Promise, which:
 ### rateLimiter.getKey(key)
 
 Returns internal key prefixed with `keyPrefix` option as it is saved in store. 
+
+## Benchmark
+
+Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
+
+1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
+
+```text
+1. Memory     0.34 ms
+2. Cluster    0.69 ms
+3. Redis      2.45 ms
+4. Memcached  3.89 ms
+5. Mongo      4.75 ms
+```
+
+500 concurrent clients with maximum 1000 req per sec during 30 seconds
+```text
+6. PostgreSQL 7.48 ms (with connection pool max 100)
+7. MySQL     14.59 ms (with connection pool 100)
+```
 
 ## Contribution
 
