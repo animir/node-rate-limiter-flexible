@@ -372,5 +372,95 @@ describe('RateLimiterMongo with fixed window', function () {
       storeClient: client,
       tableName: tableName
     });
-  })
+  });
+
+  it('_upsert adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
+    const testKey = '_upsert';
+    const testAttrs = {
+      country: 'country1'
+    };
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where) => {
+      expect(where.country).to.equal(testAttrs.country);
+      done();
+      return Promise.resolve({
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.consume(testKey, 1, { attrs: testAttrs })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('forced _upsert adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
+    const testKey = '_upsertforce';
+    const testAttrs = {
+      country: 'country2'
+    };
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where) => {
+      expect(where.country).to.equal(testAttrs.country);
+      done();
+      return Promise.resolve({
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.block(testKey, 1, { attrs: testAttrs })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('_get adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
+    const testKey = '_get';
+    const testAttrs = {
+      country: 'country3'
+    };
+    sinon.stub(mongoCollection, 'findOne').callsFake((where) => {
+      expect(where.country).to.equal(testAttrs.country);
+      done();
+      return Promise.resolve({
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.get(testKey, { attrs: testAttrs });
+  });
+
+  it('_delete adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
+    const testKey = '_delete';
+    const testAttrs = {
+      country: 'country4'
+    };
+    sinon.stub(mongoCollection, 'deleteOne').callsFake((where) => {
+      expect(where.country).to.equal(testAttrs.country);
+      done();
+      return Promise.resolve({
+        result: {
+          n: 0,
+        },
+      });
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.delete(testKey, { attrs: testAttrs });
+  });
+
+  it('set indexKeyPrefix empty {} if not provided', () => {
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    expect(Object.keys(rateLimiter.indexKeyPrefix).length).to.equal(0);
+  });
 });

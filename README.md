@@ -146,8 +146,9 @@ block for `blockDuration` seconds.
 
 * `storeClient` `Required` Have to be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
 
-* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key isn't checked by requesting Redis, MySQL or Mongo.
-In-memory blocking works in **current process memory**. 
+* `inmemoryBlockOnConsumed` `Default: 0` Against DDoS attacks. Blocked key does not increment counter in Redis, MySQL, Mongo, etc., 
+so malicious requests can't overload a storage.
+In-memory blocking works in **current process memory**, if process A has blocked a key in memory, it may be still not blocked in memory of process B;
 
 * `inmemoryBlockDuration` `Default: 0` Block key for `inmemoryBlockDuration` seconds, 
 if `inmemoryBlockOnConsumed` or more points are consumed 
