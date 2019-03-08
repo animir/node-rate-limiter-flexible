@@ -28,12 +28,12 @@ describe('RateLimiterMongo with fixed window', function () {
 
   beforeEach(() => {
     mongoCollection = {
-      ensureIndex: () => {},
+      createIndex: () => {},
       findOneAndUpdate: () => {},
       findOne: () => {},
       deleteOne: () => {},
     };
-    sinon.stub(mongoCollection, 'ensureIndex').callsFake(() => {});
+    sinon.stub(mongoCollection, 'createIndex').callsFake(() => {});
   });
 
   it('consume 1 point', (done) => {
