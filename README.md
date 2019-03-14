@@ -14,7 +14,7 @@
 
 It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
 
-**Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application.
+**Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
 **Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
 
@@ -103,6 +103,7 @@ Other examples on Wiki:
 ### Docs and Examples
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
+* [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
 * [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
@@ -114,7 +115,6 @@ Other examples on Wiki:
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
 * [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
-* [API](#api)
 
 ## Basic Options
 
@@ -157,77 +157,15 @@ Specific:
 
 ## API
 
-### rateLimiter.consume(key, points = 1)
+Read detailed description on Wiki.
 
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes` when point(s) is consumed, so action can be done
-* **rejected** only for store and database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-* **rejected** when there is no points to be consumed, where reject reason `rejRes` is `RateLimiterRes` object
-* **rejected** when key is blocked (if block strategy is set up), where reject reason `rejRes` is `RateLimiterRes` object
-
-Arguments:
-* `key` is usually IP address or some unique client id
-* `points` number of points consumed. `default: 1`
-
-### rateLimiter.get(key)
-
-Get `RateLimiterRes` in current duration.
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes` if key is set
-* **resolved** with `null` if key is NOT set or expired
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-Arguments:
-* `key` is usually IP address or some unique client id
-
-### rateLimiter.penalty(key, points = 1)
-
-Fine `key` by `points` number of points for **one duration**.
-
-Note: Depending on time penalty may go to next durations
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.reward(key, points = 1)
-
-Reward `key` by `points` number of points for **one duration**.
-
-Note: Depending on time reward may go to next durations
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.block(key, secDuration)
-
-Block `key` for `secDuration` seconds
-
-Returns Promise, which: 
-* **resolved** with `RateLimiterRes`
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.delete(key)
-
-Delete all data related to `key`. 
-
-For example, previously blocked key is not blocked after delete as there is no data anymore.
-
-Returns Promise, which:
-* **resolved** with `boolean`, `true` if data is removed by key, `false` if there is no such key.
-* **rejected** only for database limiters if `insuranceLimiter` isn't setup: when some error happened, where reject reason `rejRes` is Error object
-* **rejected** only for RateLimiterCluster if `insuranceLimiter` isn't setup: when `timeoutMs` exceeded, where reject reason `rejRes` is Error object
-
-### rateLimiter.getKey(key)
-
-Returns internal key prefixed with `keyPrefix` option as it is saved in store. 
+* [consume(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterconsumekey-points--1) Consume points by key.
+* [get(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitergetkey) Get `RateLimiterRes` or `null`.
+* [block(key, secDuration)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterblockkey-secduration) Block key for `secDuration` seconds.
+* [delete(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterdeletekey) Reset consumed points.
+* [penalty(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterpenaltykey-points--1) Increase number of consumed points in current duration.
+* [reward(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterrewardkey-points--1) Decrease number of consumed points in current duration.
+* [getKey(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitergetkeykey) Get internal prefixed key.
 
 ## Benchmark
 
