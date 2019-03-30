@@ -193,7 +193,7 @@ describe('RateLimiterMemory with fixed window', function () {
         done(Error('must not resolve'));
       })
       .catch((rej) => {
-        expect(rej.msBeforeNext > 1000).to.equal(true);
+        expect(rej.msBeforeNext > 1000 && rej.msBeforeNext <= 2000).to.equal(true);
         done();
       });
   });

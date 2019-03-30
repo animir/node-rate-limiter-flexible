@@ -200,7 +200,7 @@ describe('RateLimiterPostgres with fixed window', function () {
 
       rateLimiter.block(testKey, 3)
         .then((res) => {
-          expect(res.msBeforeNext > 2000).to.equal(true);
+          expect(res.msBeforeNext > 2000 && res.msBeforeNext <= 3000).to.equal(true);
           done();
         })
         .catch(() => {

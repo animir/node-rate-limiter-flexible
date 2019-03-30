@@ -59,7 +59,7 @@ describe('RLWrapperBlackAndWhite ', () => {
     limiterWrapped
       .block('test', 30)
       .then((res) => {
-        expect(res.msBeforeNext > 1000).to.equal(true);
+        expect(res.msBeforeNext > 1000 && res.msBeforeNext <= 30000).to.equal(true);
         done();
       })
       .catch(() => {

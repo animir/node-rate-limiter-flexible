@@ -160,7 +160,7 @@ describe('RateLimiterCluster', function () {
     const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
     rateLimiterCluster.block(key, 2)
       .then((res) => {
-        expect(res.msBeforeNext > 1000).to.equal(true);
+        expect(res.msBeforeNext > 1000 && res.msBeforeNext <= 2000).to.equal(true);
         done();
       });
   });

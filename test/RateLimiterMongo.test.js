@@ -220,7 +220,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
     rateLimiter.block(testKey, 2)
       .then((res) => {
-        expect(res.msBeforeNext > 1000).to.equal(true);
+        expect(res.msBeforeNext > 1000 && res.msBeforeNext <= 2000).to.equal(true);
         done();
       })
       .catch(() => {
