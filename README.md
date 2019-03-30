@@ -25,8 +25,6 @@ It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _Mongo
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
 
-:star: It is **STAR**ving, don't forget to feed the beast! :star:
-
 ## Installation
 
 `npm i --save rate-limiter-flexible`
@@ -76,15 +74,13 @@ const headers = {
 ```
 
 ### Advantages:
+* no race conditions
+* no production dependencies
 * TypeScript declaration bundled
 * in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
-* backed on native Promises
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
-* no race conditions
-* covered by tests
-* no prod dependencies
 * useful `get`, `block`, `delete`, `penalty` and `reward` methods
 
 ### Middlewares and plugins
@@ -114,8 +110,6 @@ Other examples on Wiki:
 * [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
-* [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
-* [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
 
 ## Basic Options
 
@@ -197,7 +191,7 @@ Make sure you've launched `npm run eslint` before creating PR, all errors have t
 You can try to run `npm run eslint-fix` to fix some issues.
 
 Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
-It has to implement at least 3 methods:
+It has to implement at least 4 methods:
 * `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object.
 * `_upsert` inserts or updates limits data by key and returns raw data.
 * `_get` returns raw data by key.
