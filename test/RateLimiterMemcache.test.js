@@ -420,4 +420,21 @@ describe('RateLimiterMemcache', function () {
           })
       });
   });
+
+  it('creates key and increment on 2 parallel requests', () => {
+    const testKey = 'parallel';
+
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient,
+      points: 2,
+      duration: 1,
+    });
+
+    return Promise.all([
+      rateLimiter.consume(testKey),
+      rateLimiter.consume(testKey),
+    ]).then((resAll) => {
+      expect(resAll[0].consumedPoints === 1 && resAll[1].consumedPoints === 2).to.equal(true);
+    });
+  });
 });
