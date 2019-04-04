@@ -241,4 +241,43 @@ describe('RateLimiterMemory with fixed window', function () {
         done(Error('must not reject'));
       });
   });
+
+  it('consume applies options.customDuration to set expire', (done) => {
+    const testKey = 'options.customDuration';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
+    rateLimiterMemory.consume(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.msBeforeNext <= 1000).to.be.true;
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('penalty applies options.customDuration to set expire', (done) => {
+    const testKey = 'options.customDuration';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
+    rateLimiterMemory.penalty(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.msBeforeNext <= 1000).to.be.true;
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('reward applies options.customDuration to set expire', (done) => {
+    const testKey = 'options.customDuration';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
+    rateLimiterMemory.reward(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.msBeforeNext <= 1000).to.be.true;
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
 });

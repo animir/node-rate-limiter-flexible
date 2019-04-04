@@ -612,4 +612,66 @@ describe('RateLimiterRedis with fixed window', function() {
     rateLimiter.delete(testKey)
       .catch(() => done())
   });
+
+  it('consume applies options.customDuration to set expire', (done) => {
+    const testKey = 'consume.customDuration';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: 5,
+    });
+    rateLimiter
+      .consume(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.msBeforeNext <= 1000).to.be.true;
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('insurance limiter on error consume applies options.customDuration to set expire', (done) => {
+    const testKey = 'consume.customDuration';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: 5,
+    });
+    rateLimiter
+      .consume(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.msBeforeNext <= 1000).to.be.true;
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('insurance limiter on error consume applies options.customDuration to set expire', (done) => {
+    const testKey = 'consume.customDuration.onerror';
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisClientClosed,
+      points: 1,
+      duration: 2,
+      insuranceLimiter: new RateLimiterRedis({
+        points: 2,
+        duration: 3,
+        storeClient: redisMockClient,
+      }),
+    });
+
+    // Consume from insurance limiter with different options
+    rateLimiter
+      .consume(testKey, 1, {customDuration: 1})
+      .then((res) => {
+        expect(res.remainingPoints === 1 && res.msBeforeNext <= 1000).to.equal(true);
+        done();
+      })
+      .catch((rejRes) => {
+        done(rejRes);
+      });
+  });
 });
