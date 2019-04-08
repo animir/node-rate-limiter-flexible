@@ -97,6 +97,9 @@ Other examples on Wiki:
 * [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
 * [Setup Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
 
+### Migration from other packages
+* [express-brute](https://github.com/animir/node-rate-limiter-flexible/wiki/ExpressBrute-migration) Bonus: race conditions fixed, prod deps removed
+
 ### Docs and Examples
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
