@@ -1,5 +1,6 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
+const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redisMock = require('redis-mock');
 
@@ -437,6 +438,26 @@ describe('RateLimiterRedis with fixed window', function() {
       });
   });
 
+  it('reject with error, if internal block by blockDuration failed', (done) => {
+    const testKey = 'blockdurationfailed';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 1,
+      duration: 1,
+      blockDuration: 2,
+    });
+    sinon.stub(rateLimiter, '_block').callsFake(() => Promise.reject(new Error()));
+    rateLimiter
+      .consume(testKey, 2)
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch((rej) => {
+        expect(rej instanceof Error).to.equal(true);
+        done();
+      });
+  });
+
   it('block expires in blockDuration seconds', (done) => {
     const testKey = 'blockexpires';
     const rateLimiter = new RateLimiterRedis({
@@ -669,6 +690,37 @@ describe('RateLimiterRedis with fixed window', function() {
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext <= 1000).to.equal(true);
         done();
+      })
+      .catch((rejRes) => {
+        done(rejRes);
+      });
+  });
+
+  it('block key in memory works with blockDuration on store', (done) => {
+    const testKey = 'blockmem+blockduration';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 1,
+      duration: 5,
+      blockDuration: 10,
+      inmemoryBlockOnConsumed: 2,
+      inmemoryBlockDuration: 10,
+    });
+    rateLimiter
+      .consume(testKey)
+      .then(() => {
+        rateLimiter
+          .consume(testKey)
+          .then(() => {})
+          .catch((rejRes) => {
+            rateLimiter.get(testKey)
+              .then((getRes) => {
+                expect(getRes.msBeforeNext > 5000 && rejRes.remainingPoints === 0).to.equal(true);
+                // msBeforeNext more than 5000, so key was blocked in memory
+                expect(rejRes.msBeforeNext > 5000 && rejRes.remainingPoints === 0).to.equal(true);
+                done();
+              });
+          });
       })
       .catch((rejRes) => {
         done(rejRes);
