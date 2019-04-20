@@ -1,7 +1,7 @@
 {
   "name": "rate-limiter-flexible",
   "version": "0.25.2",
-  "description": "Flexible API rate limiter backed by Redis for distributed node.js applications",
+  "description": "Node.js rate limiter by key and protection from DDoS and Brute-Force attacks in process Memory, Redis, MongoDb, Memcached, MySQL, PostgreSQL, Cluster or PM",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha --recursive",
