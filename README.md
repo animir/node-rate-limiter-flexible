@@ -89,7 +89,8 @@ const headers = {
 * [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
 * [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
 
-Other examples on Wiki:
+Some copy/paste examples on Wiki:
+* [Minimal protection against password brute-force](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#minimal-protection-against-password-brute-force)
 * [Login endpoint protection](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#login-endpoint-protection)
 * [Websocket connection prevent flooding](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding)
 * [Dynamic block duration](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#dynamic-block-duration)
@@ -117,19 +118,19 @@ Other examples on Wiki:
 
 ## Basic Options
 
-* `points` 
+* **points** 
     
     `Default: 4` 
     
     Maximum number of points can be consumed over duration
 
-* `duration` 
+* **duration** 
 
     `Default: 1` 
     
     Number of seconds before consumed points are reset
 
-* `storeClient` 
+* **storeClient** 
 
     `Required for store limiters` 
 
