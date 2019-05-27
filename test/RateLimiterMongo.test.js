@@ -310,6 +310,20 @@ describe('RateLimiterMongo with fixed window', function () {
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
   });
 
+  it('use collection from client instead of db if Mongoose in use', () => {
+    const createIndex = sinon.spy();
+    const mongooseConnection = {
+      collection: () => ({
+        createIndex,
+      }),
+    };
+
+    new RateLimiterMongo({
+      storeClient: mongooseConnection,
+    });
+    expect(createIndex.called);
+  })
+
   it('delete key and return true', (done) => {
     const testKey = 'deletetrue';
     sinon.stub(mongoCollection, 'deleteOne').callsFake(() => {
