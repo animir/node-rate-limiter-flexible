@@ -7,6 +7,15 @@ describe('RateLimiterMemcache', function () {
   this.timeout(5000);
   const memcacheMockClient = new Memcached('localhost:11211');
 
+  const memcacheUnavailableClient = new Proxy({}, {
+    get: (func, name) => {
+      return function(...args) {
+        const cb = args.pop();
+        cb(Error('Server Unavailable'));
+      };
+    }
+  })
+
   beforeEach((done) => {
     memcacheMockClient.flush(done);
   });
@@ -436,5 +445,48 @@ describe('RateLimiterMemcache', function () {
     ]).then((resAll) => {
       expect(resAll[0].consumedPoints === 1 && resAll[1].consumedPoints === 2).to.equal(true);
     });
+  });
+
+  it('rejected when MemcachedClient error', (done) => {
+    const testKey = 'memcacheerror';
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheUnavailableClient,
+      points: 1,
+      duration: 5,
+    });
+    rateLimiter
+      .consume(testKey, 2)
+      .then(() => {
+        expect.fail("should not be resolved");
+      })
+      .catch((rejRes) => {
+        done();
+      });
+  });
+
+  it('consume using insuranceLimiter when MemcachedClient error', (done) => {
+    const testKey = 'memcacheerror2';
+
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheUnavailableClient,
+      points: 1,
+      duration: 1,
+      insuranceLimiter: new RateLimiterMemcache({
+        points: 2,
+        duration: 2,
+        storeClient: memcacheMockClient,
+      }),
+    });
+
+    // Consume from insurance limiter with different options
+    rateLimiter
+      .consume(testKey)
+      .then((res) => {
+        expect(res.remainingPoints === 1 && res.msBeforeNext > 1000).to.equal(true);
+        done();
+      })
+      .catch((rejRes) => {
+        done(rejRes);
+      });
   });
 });
