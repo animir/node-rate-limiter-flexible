@@ -2,11 +2,12 @@ const RateLimiterRedis = require('./lib/RateLimiterRedis');
 const RateLimiterMongo = require('./lib/RateLimiterMongo');
 const RateLimiterMySQL = require('./lib/RateLimiterMySQL');
 const RateLimiterPostgres = require('./lib/RateLimiterPostgres');
-const { RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluster } = require('./lib/RateLimiterCluster');
+const {RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluster} = require('./lib/RateLimiterCluster');
 const RateLimiterMemory = require('./lib/RateLimiterMemory');
 const RateLimiterMemcache = require('./lib/RateLimiterMemcache');
 const RLWrapperBlackAndWhite = require('./lib/RLWrapperBlackAndWhite');
 const RateLimiterUnion = require('./lib/RateLimiterUnion');
+const RateLimiterQueue = require('./lib/RateLimiterQueue');
 
 module.exports = {
   RateLimiterRedis,
@@ -19,5 +20,6 @@ module.exports = {
   RateLimiterClusterMasterPM2,
   RateLimiterCluster,
   RLWrapperBlackAndWhite,
-  RateLimiterUnion
+  RateLimiterUnion,
+  RateLimiterQueue,
 };

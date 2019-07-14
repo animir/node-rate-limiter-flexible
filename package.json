@@ -15,11 +15,21 @@
     "url": "git+https://github.com/animir/node-rate-limiter-flexible.git"
   },
   "keywords": [
-    "rate-limits",
-    "rate-limiting",
-    "rate-limiter",
-    "cluster",
-    "redis"
+    "authorization",
+    "security",
+    "rate",
+    "limit",
+    "ratelimter",
+    "brute",
+    "force",
+    "bruteforce",
+    "throttle",
+    "koa",
+    "express",
+    "hapi",
+    "auth",
+    "ddos",
+    "queue"
   ],
   "author": "animir <animirr@gmail.com>",
   "license": "ISC",

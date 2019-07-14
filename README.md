@@ -101,6 +101,7 @@ Some copy/paste examples on Wiki:
 
 ### Migration from other packages
 * [express-brute](https://github.com/animir/node-rate-limiter-flexible/wiki/ExpressBrute-migration) Bonus: race conditions fixed, prod deps removed
+* [limiter](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue#migration-from-limiter) Bonus: multi-server support, respects queue order, native promises
 
 ### Docs and Examples
 
@@ -115,6 +116,7 @@ Some copy/paste examples on Wiki:
 * [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
+* [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue
 
 ## Basic Options
 
