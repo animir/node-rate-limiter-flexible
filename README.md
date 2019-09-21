@@ -15,6 +15,8 @@
 
 It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
 
+**Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
+
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
 **Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
@@ -98,6 +100,7 @@ Some copy/paste examples on Wiki:
 * [Different limits for different parts of application](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#different-limits-for-different-parts-of-application)
 * [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
 * [Setup Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-for-better-protection)
+* [Third-party API, crawler, bot rate limiting](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#third-party-api-crawler-bot-rate-limiting)
 
 ### Migration from other packages
 * [express-brute](https://github.com/animir/node-rate-limiter-flexible/wiki/ExpressBrute-migration) Bonus: race conditions fixed, prod deps removed

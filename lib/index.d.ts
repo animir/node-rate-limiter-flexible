@@ -137,3 +137,11 @@ export class RateLimiterUnion {
 export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
 }
+
+interface IRateLimiterQueueOpts {
+    maxQueueSize?: number,
+}
+
+export class RateLimiterQueue {
+    constructor(limiterFlexible: RateLimiterAbstract, opts?: IRateLimiterQueueOpts)
+}
