@@ -8,6 +8,7 @@ const RateLimiterMemcache = require('./lib/RateLimiterMemcache');
 const RLWrapperBlackAndWhite = require('./lib/RLWrapperBlackAndWhite');
 const RateLimiterUnion = require('./lib/RateLimiterUnion');
 const RateLimiterQueue = require('./lib/RateLimiterQueue');
+const RateLimiterRes = require('./lib/RateLimiterRes');
 
 module.exports = {
   RateLimiterRedis,
@@ -22,4 +23,5 @@ module.exports = {
   RLWrapperBlackAndWhite,
   RateLimiterUnion,
   RateLimiterQueue,
+  RateLimiterRes,
 };
