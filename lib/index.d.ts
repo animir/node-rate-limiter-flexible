@@ -1,8 +1,18 @@
-export interface RateLimiterRes {
+export interface IRateLimiterResOptions {
+    msBeforeNext?: number;
+    remainingPoints?: number;
+    consumedPoints?: number;
+    isFirstInDuration?: boolean;
+}
+
+export class RateLimiterRes {
+    constructor(opts: IRateLimiterResOptions);
+
     readonly msBeforeNext: number;
     readonly remainingPoints: number;
     readonly consumedPoints: number;
     readonly isFirstInDuration: boolean;
+    
     toString(): string;
     toJSON(): {
         remainingPoints: number;
