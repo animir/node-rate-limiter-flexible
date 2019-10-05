@@ -1,10 +1,12 @@
+/* eslint-disable new-cap */
+/* eslint-disable no-unused-expressions */
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redisMock = require('redis-mock');
 
-describe('RateLimiterRedis with fixed window', function() {
+describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5000);
   const redisMockClient = redisMock.createClient();
 
@@ -27,7 +29,7 @@ describe('RateLimiterRedis with fixed window', function() {
       if (name in redisClientClosedRaw) {
         return redisClientClosedRaw[name];
       }
-      return function(...args) {
+      return function (...args) {
         const cb = args.pop();
         cb(Error('closed'));
       };
@@ -603,7 +605,7 @@ describe('RateLimiterRedis with fixed window', function() {
           .then((resDel) => {
             expect(resDel).to.equal(true);
             done();
-          })
+          });
       });
   });
 
@@ -619,7 +621,7 @@ describe('RateLimiterRedis with fixed window', function() {
       .then((resDel) => {
         expect(resDel).to.equal(false);
         done();
-      })
+      });
   });
 
   it('delete rejects on error', (done) => {
@@ -631,7 +633,7 @@ describe('RateLimiterRedis with fixed window', function() {
       duration: 1,
     });
     rateLimiter.delete(testKey)
-      .catch(() => done())
+      .catch(() => done());
   });
 
   it('consume applies options.customDuration to set expire', (done) => {
@@ -642,7 +644,7 @@ describe('RateLimiterRedis with fixed window', function() {
       duration: 5,
     });
     rateLimiter
-      .consume(testKey, 1, {customDuration: 1})
+      .consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();
@@ -660,7 +662,7 @@ describe('RateLimiterRedis with fixed window', function() {
       duration: 5,
     });
     rateLimiter
-      .consume(testKey, 1, {customDuration: 1})
+      .consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();
@@ -686,7 +688,7 @@ describe('RateLimiterRedis with fixed window', function() {
 
     // Consume from insurance limiter with different options
     rateLimiter
-      .consume(testKey, 1, {customDuration: 1})
+      .consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext <= 1000).to.equal(true);
         done();

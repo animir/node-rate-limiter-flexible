@@ -34,7 +34,6 @@ describe('RateLimiterRes response object', () => {
   });
 
   it('returns object on toJSON call', () => {
-    const rateLimiterRes = new RateLimiterRes();
     rateLimiterRes.msBeforeNext = 12;
     rateLimiterRes.remainingPoints = 3;
     rateLimiterRes.consumedPoints = 2;
@@ -44,12 +43,11 @@ describe('RateLimiterRes response object', () => {
       remainingPoints: 3,
       msBeforeNext: 12,
       consumedPoints: 2,
-      isFirstInDuration: true
+      isFirstInDuration: true,
     });
   });
 
   it('returns JSON string on toString call', () => {
-    const rateLimiterRes = new RateLimiterRes();
     rateLimiterRes.msBeforeNext = 2;
     rateLimiterRes.remainingPoints = 0;
     rateLimiterRes.consumedPoints = 5;

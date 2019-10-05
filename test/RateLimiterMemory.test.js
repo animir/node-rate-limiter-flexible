@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-expressions */
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
-describe('RateLimiterMemory with fixed window', function () {
+describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest() {
   this.timeout(5000);
 
   it('consume 1 point', (done) => {
@@ -35,7 +36,9 @@ describe('RateLimiterMemory with fixed window', function () {
 
   it('execute evenly over duration with minimum delay 20 ms', (done) => {
     const testKey = 'consumeEvenlyMinDelay';
-    const rateLimiterMemory = new RateLimiterMemory({ points: 100, duration: 1, execEvenly: true, execEvenlyMinDelayMs: 20 });
+    const rateLimiterMemory = new RateLimiterMemory({
+      points: 100, duration: 1, execEvenly: true, execEvenlyMinDelayMs: 20,
+    });
     rateLimiterMemory.consume(testKey)
       .then(() => {
         const timeFirstConsume = Date.now();
@@ -55,7 +58,9 @@ describe('RateLimiterMemory with fixed window', function () {
 
   it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
-    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5, execEvenly: true, execEvenlyMinDelayMs: 1 });
+    const rateLimiterMemory = new RateLimiterMemory({
+      points: 2, duration: 5, execEvenly: true, execEvenlyMinDelayMs: 1,
+    });
     rateLimiterMemory.consume(testKey)
       .then(() => {
         const timeFirstConsume = Date.now();
@@ -245,7 +250,7 @@ describe('RateLimiterMemory with fixed window', function () {
   it('consume applies options.customDuration to set expire', (done) => {
     const testKey = 'options.customDuration';
     const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
-    rateLimiterMemory.consume(testKey, 1, {customDuration: 1})
+    rateLimiterMemory.consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();
@@ -258,7 +263,7 @@ describe('RateLimiterMemory with fixed window', function () {
   it('penalty applies options.customDuration to set expire', (done) => {
     const testKey = 'options.customDuration';
     const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
-    rateLimiterMemory.penalty(testKey, 1, {customDuration: 1})
+    rateLimiterMemory.penalty(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();
@@ -271,7 +276,7 @@ describe('RateLimiterMemory with fixed window', function () {
   it('reward applies options.customDuration to set expire', (done) => {
     const testKey = 'options.customDuration';
     const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
-    rateLimiterMemory.reward(testKey, 1, {customDuration: 1})
+    rateLimiterMemory.reward(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();

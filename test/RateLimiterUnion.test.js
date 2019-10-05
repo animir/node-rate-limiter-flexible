@@ -1,3 +1,4 @@
+// eslint-disable no-unused-expressions
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterUnion = require('../lib/RateLimiterUnion');

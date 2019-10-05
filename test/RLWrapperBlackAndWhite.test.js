@@ -1,4 +1,4 @@
-const { describe, it, beforeEach } = require('mocha');
+const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RLWrapperBlackAndWhite = require('../lib/RLWrapperBlackAndWhite');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
@@ -358,9 +358,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isWhite: (key) => {
-        return key === 'test';
-      },
+      isWhite: key => key === 'test',
     });
     limiterWrapped
       .consume('test')
@@ -381,9 +379,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === 'test';
-      },
+      isBlack: key => key === 'test',
     });
     limiterWrapped
       .consume('test')
@@ -404,9 +400,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === 'test';
-      },
+      isBlack: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -430,9 +424,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === 'test';
-      },
+      isBlack: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -456,9 +448,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === 'test';
-      },
+      isBlack: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -482,9 +472,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === 'test';
-      },
+      isBlack: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -509,12 +497,8 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: (key) => {
-        return key === testKey;
-      },
-      isWhite: (key) => {
-        return key === testKey;
-      },
+      isBlack: key => key === testKey,
+      isWhite: key => key === testKey,
     });
     limiter.consume(testKey)
       .then(() => {

@@ -1,17 +1,21 @@
+/* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable security/detect-object-injection */
 const cluster = require('cluster');
 const sinon = require('sinon');
-const {describe, it, after} = require('mocha');
-const {expect} = require('chai');
-const {RateLimiterClusterMaster, RateLimiterCluster} = require('../lib/RateLimiterCluster');
+const { describe, it, after } = require('mocha');
+const { expect } = require('chai');
+const { RateLimiterClusterMaster, RateLimiterCluster } = require('../lib/RateLimiterCluster');
+
 const masterEvents = [];
 const workerEvents = [];
 
 const worker = {
   send: (data) => {
-    workerEvents.forEach(cb => {
+    workerEvents.forEach((cb) => {
       cb(data);
-    })
-  }
+    });
+  },
 };
 
 global.process.on = (eventName, cb) => {
@@ -20,12 +24,12 @@ global.process.on = (eventName, cb) => {
   }
 };
 global.process.send = (data) => {
-  masterEvents.forEach(cb => {
+  masterEvents.forEach((cb) => {
     cb(worker, data);
-  })
+  });
 };
 
-describe('RateLimiterCluster', function () {
+describe('RateLimiterCluster', function RateLimiterClusterTest() {
   let rateLimiterClusterMaster;
   let clusterStubOn;
   this.timeout(5000);
@@ -48,7 +52,7 @@ describe('RateLimiterCluster', function () {
 
   it('consume 1 point', (done) => {
     const key = 'consume1';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
     rateLimiterCluster.consume(key)
       .then((res) => {
         expect(res.remainingPoints).to.equal(1);
@@ -61,7 +65,7 @@ describe('RateLimiterCluster', function () {
 
   it('reject on consuming more than maximum points', (done) => {
     const key = 'reject';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
     rateLimiterCluster.consume(key, 3)
       .then(() => {
 
@@ -105,7 +109,7 @@ describe('RateLimiterCluster', function () {
     const key = 'use keyPrefix from options';
 
     const keyPrefix = 'test';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix });
     rateLimiterCluster.consume(key)
       .then(() => {
         expect(typeof rateLimiterClusterMaster._rateLimiters[keyPrefix]._memoryStorage._storage[`${keyPrefix}:${key}`]
@@ -119,8 +123,8 @@ describe('RateLimiterCluster', function () {
 
   it('create 2 rate limiters depending on keyPrefix', (done) => {
     const keyPrefixes = ['create1', 'create2'];
-    const rateLimiterClusterprocess1 = new RateLimiterCluster({keyPrefix: keyPrefixes[0]});
-    const rateLimiterClusterprocess2 = new RateLimiterCluster({keyPrefix: keyPrefixes[1]});
+    const rateLimiterClusterprocess1 = new RateLimiterCluster({ keyPrefix: keyPrefixes[0] });
+    const rateLimiterClusterprocess2 = new RateLimiterCluster({ keyPrefix: keyPrefixes[1] });
     rateLimiterClusterprocess1.consume('key1')
       .then(() => {
         rateLimiterClusterprocess2.consume('key2')
@@ -128,15 +132,15 @@ describe('RateLimiterCluster', function () {
             const createdKeyLimiters = Object.keys(rateLimiterClusterMaster._rateLimiters);
             expect(createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1 && createdKeyLimiters.indexOf(keyPrefixes[0]) !== -1).to.equal(true);
             done();
-          })
+          });
       });
   });
 
   it('penalty', (done) => {
     const key = 'penalty';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
     rateLimiterCluster.penalty(key)
-      .then(res => {
+      .then((res) => {
         expect(res.remainingPoints).to.equal(1);
         done();
       });
@@ -144,11 +148,11 @@ describe('RateLimiterCluster', function () {
 
   it('reward', (done) => {
     const key = 'reward';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
     rateLimiterCluster.consume(key)
       .then(() => {
         rateLimiterCluster.reward(key)
-          .then(res => {
+          .then((res) => {
             expect(res.remainingPoints).to.equal(2);
             done();
           });
@@ -157,7 +161,7 @@ describe('RateLimiterCluster', function () {
 
   it('block', (done) => {
     const key = 'block';
-    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: key });
     rateLimiterCluster.block(key, 2)
       .then((res) => {
         expect(res.msBeforeNext > 1000 && res.msBeforeNext <= 2000).to.equal(true);
@@ -167,20 +171,20 @@ describe('RateLimiterCluster', function () {
 
   it('get', (done) => {
     const key = 'get';
-    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: key });
     rateLimiterCluster.consume(key)
       .then(() => {
         rateLimiterCluster.get(key)
           .then((res) => {
             expect(res.consumedPoints).to.equal(1);
             done();
-          })
+          });
       });
   });
 
   it('get null', (done) => {
     const key = 'getnull';
-    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 1, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 1, duration: 1, keyPrefix: key });
     rateLimiterCluster.get(key)
       .then((res) => {
         expect(res).to.equal(null);
@@ -190,21 +194,21 @@ describe('RateLimiterCluster', function () {
 
   it('delete', (done) => {
     const key = 'deletetrue';
-    const rateLimiterCluster = new RateLimiterCluster({points: 1, duration: 10, keyPrefix: key});
+    const rateLimiterCluster = new RateLimiterCluster({ points: 1, duration: 10, keyPrefix: key });
     rateLimiterCluster.consume(key)
       .then(() => {
         rateLimiterCluster.delete(key)
           .then((res) => {
             expect(res).to.equal(true);
             done();
-          })
+          });
       });
   });
 
   it('consume applies options.customDuration to set expire', (done) => {
     const key = 'consume.customDuration';
-    const rateLimiterCluster = new RateLimiterCluster({points: 2, duration: 5, keyPrefix: key});
-    rateLimiterCluster.consume(key, 1, {customDuration: 1})
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
+    rateLimiterCluster.consume(key, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.msBeforeNext <= 1000).to.be.true;
         done();
