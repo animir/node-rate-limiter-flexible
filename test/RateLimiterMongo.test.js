@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 const {
   describe, it, beforeEach, before,
 } = require('mocha');
@@ -6,7 +7,7 @@ const sinon = require('sinon');
 const RateLimiterMongo = require('../lib/RateLimiterMongo');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
-describe('RateLimiterMongo with fixed window', function () {
+describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   this.timeout(5000);
   let mongoClient;
   let mongoClientStub;
@@ -234,16 +235,14 @@ describe('RateLimiterMongo with fixed window', function () {
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       value: {
         points: 3,
-        expire: new Date(Date.now() + 1000).toISOString()
-      }
+        expire: new Date(Date.now() + 1000).toISOString(),
+      },
     });
 
-    expect(
-      res.msBeforeNext <= 1000
+    expect(res.msBeforeNext <= 1000
       && res.consumedPoints === 3
       && res.isFirstInDuration === false
-      && res.remainingPoints === 2
-    ).to.equal(true);
+      && res.remainingPoints === 2).to.equal(true);
   });
 
   it('get points', (done) => {
@@ -260,7 +259,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      storeClient: mongoClient, points: 1, duration: 1
+      storeClient: mongoClient, points: 1, duration: 1,
     });
 
     rateLimiter.get(testKey)
@@ -282,7 +281,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const rateLimiter = new RateLimiterMongo({
-      storeClient: mongoClient, points: 1, duration: 1
+      storeClient: mongoClient, points: 1, duration: 1,
     });
 
     rateLimiter.get(testKey)
@@ -303,7 +302,7 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     new RateLimiterMongo({
-      storeClient: mongoClient, dbName: 'test'
+      storeClient: mongoClient, dbName: 'test',
     });
 
     mongoClientStub.restore();
@@ -322,17 +321,15 @@ describe('RateLimiterMongo with fixed window', function () {
       storeClient: mongooseConnection,
     });
     expect(createIndex.called);
-  })
+  });
 
   it('delete key and return true', (done) => {
     const testKey = 'deletetrue';
-    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => {
-      return Promise.resolve({
-        result: {
-          n: 1
-        }
-      });
-    });
+    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => Promise.resolve({
+      result: {
+        n: 1,
+      },
+    }));
 
     const rateLimiter = new RateLimiterMongo({
       storeClient: mongoClient, points: 1, duration: 1, blockDuration: 2,
@@ -342,18 +339,16 @@ describe('RateLimiterMongo with fixed window', function () {
       .then((res) => {
         expect(res).to.equal(true);
         done();
-      })
+      });
   });
 
   it('delete returns false, if there is no key', (done) => {
     const testKey = 'deletefalse';
-    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => {
-      return Promise.resolve({
-        result: {
-          n: 0
-        }
-      });
-    });
+    sinon.stub(mongoCollection, 'deleteOne').callsFake(() => Promise.resolve({
+      result: {
+        n: 0,
+      },
+    }));
 
     const rateLimiter = new RateLimiterMongo({
       storeClient: mongoClient, points: 1, duration: 1, blockDuration: 2,
@@ -363,14 +358,11 @@ describe('RateLimiterMongo with fixed window', function () {
       .then((res) => {
         expect(res).to.equal(false);
         done();
-      })
+      });
   });
 
   it('uses tableName option to create collection', (done) => {
     const tableName = 'collection_name';
-    const mongoDb = {
-      collection: () => {},
-    };
 
     sinon.stub(mongoDb, 'collection').callsFake((name) => {
       expect(name).to.equal(tableName);
@@ -379,19 +371,19 @@ describe('RateLimiterMongo with fixed window', function () {
     });
 
     const client = {
-      db: () => mongoDb
-    }
+      db: () => mongoDb,
+    };
 
     new RateLimiterMongo({
       storeClient: client,
-      tableName: tableName
+      tableName,
     });
   });
 
   it('_upsert adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
     const testKey = '_upsert';
     const testAttrs = {
-      country: 'country1'
+      country: 'country1',
     };
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where) => {
       expect(where.country).to.equal(testAttrs.country);
@@ -414,7 +406,7 @@ describe('RateLimiterMongo with fixed window', function () {
   it('forced _upsert adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
     const testKey = '_upsertforce';
     const testAttrs = {
-      country: 'country2'
+      country: 'country2',
     };
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where) => {
       expect(where.country).to.equal(testAttrs.country);
@@ -437,7 +429,7 @@ describe('RateLimiterMongo with fixed window', function () {
   it('_get adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
     const testKey = '_get';
     const testAttrs = {
-      country: 'country3'
+      country: 'country3',
     };
     sinon.stub(mongoCollection, 'findOne').callsFake((where) => {
       expect(where.country).to.equal(testAttrs.country);
@@ -457,7 +449,7 @@ describe('RateLimiterMongo with fixed window', function () {
   it('_delete adds options.attrs to where clause to find document by additional attributes in conjunction with key', (done) => {
     const testKey = '_delete';
     const testAttrs = {
-      country: 'country4'
+      country: 'country4',
     };
     sinon.stub(mongoCollection, 'deleteOne').callsFake((where) => {
       expect(where.country).to.equal(testAttrs.country);

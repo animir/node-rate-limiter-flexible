@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 const {
   describe, it, beforeEach, afterEach,
 } = require('mocha');
@@ -6,7 +7,7 @@ const sinon = require('sinon');
 const RateLimiterPostgres = require('../lib/RateLimiterPostgres');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
-describe('RateLimiterPostgres with fixed window', function () {
+describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTest() {
   this.timeout(5000);
   const pgClient = {
     query: () => {},
@@ -26,19 +27,19 @@ describe('RateLimiterPostgres with fixed window', function () {
     pgClientStub.restore();
     pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.reject(Error('test')));
 
-      const rateLimiter = new RateLimiterPostgres({
-        storeClient: pgClient, storeType: 'client', points: 2, duration: 5
-      }, (e) => {
-        expect(e instanceof Error).to.equal(true);
-        done();
-      }); // eslint-disable-line
+    new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
+    }, (e) => {
+      expect(e instanceof Error).to.equal(true);
+      done();
+    });
   });
 
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -60,7 +61,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'consumerej';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 1, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 1, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -116,7 +117,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'get';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -138,7 +139,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'getnull';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -161,7 +162,8 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'geterror';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client',
+      storeClient: pgClient,
+      storeType: 'client',
       points: 1,
       duration: 1,
       insuranceLimiter: new RateLimiterMemory({
@@ -187,7 +189,8 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'postgreserrorblock';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client',
+      storeClient: pgClient,
+      storeType: 'client',
       points: 1,
       duration: 1,
       insuranceLimiter: new RateLimiterMemory({
@@ -213,7 +216,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'deletetrue';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -224,7 +227,7 @@ describe('RateLimiterPostgres with fixed window', function () {
         .then((res) => {
           expect(res).to.equal(true);
           done();
-        })
+        });
     });
   });
 
@@ -232,7 +235,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'deletefalse';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').resolves({
@@ -243,7 +246,7 @@ describe('RateLimiterPostgres with fixed window', function () {
         .then((res) => {
           expect(res).to.equal(false);
           done();
-        })
+        });
     });
   });
 
@@ -251,7 +254,7 @@ describe('RateLimiterPostgres with fixed window', function () {
     const testKey = 'deleteerr';
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', points: 2, duration: 5
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
     }, () => {
       pgClientStub.restore();
       pgClientStub = sinon.stub(pgClient, 'query').rejects(new Error());
@@ -259,7 +262,7 @@ describe('RateLimiterPostgres with fixed window', function () {
       rateLimiter.delete(testKey)
         .catch(() => {
           done();
-        })
+        });
     });
   });
 
@@ -271,14 +274,14 @@ describe('RateLimiterPostgres with fixed window', function () {
     Promise.all([
       new Promise((resolve) => {
         rateLimiter1 = new RateLimiterPostgres({
-          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname1'
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname1',
         }, () => {
           resolve();
         });
       }),
       new Promise((resolve) => {
         rateLimiter2 = new RateLimiterPostgres({
-          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname2'
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname2',
         }, () => {
           resolve();
         });
@@ -289,7 +292,7 @@ describe('RateLimiterPostgres with fixed window', function () {
         queryName1 = q.name;
         return Promise.resolve({
           rows: [{ points: 1, expire: 5000 }],
-        })
+        });
       });
 
       rateLimiter1.consume('test')
@@ -300,7 +303,7 @@ describe('RateLimiterPostgres with fixed window', function () {
             done();
             return Promise.resolve({
               rows: [{ points: 1, expire: 5000 }],
-            })
+            });
           });
 
           rateLimiter2.consume('test');
@@ -310,12 +313,12 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('set client type to "client" by constructor name for Client', (done) => {
     class Client {
-      Client(){};
-      query(){};
+      Client() {}
+      query() {}
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Client()
+      storeClient: new Client(),
     }, () => {
       expect(rateLimiter.clientType).to.equal('client');
       done();
@@ -324,12 +327,12 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('set client type to "pool" by constructor name for Pool', (done) => {
     class Pool {
-      Pool(){};
-      query(){};
+      Pool() {}
+      query() {}
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Pool()
+      storeClient: new Pool(),
     }, () => {
       expect(rateLimiter.clientType).to.equal('pool');
       done();
@@ -338,12 +341,12 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('set client type to "sequelize" by constructor name for Sequelize', (done) => {
     class Sequelize {
-      Sequelize(){};
-      query(){};
+      Sequelize() {}
+      query() {}
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Sequelize()
+      storeClient: new Sequelize(),
     }, () => {
       expect(rateLimiter.clientType).to.equal('sequelize');
       done();
@@ -353,7 +356,7 @@ describe('RateLimiterPostgres with fixed window', function () {
   it('throw error if it is not possible to define client type', (done) => {
     try {
       new RateLimiterPostgres({
-        storeClient: {}
+        storeClient: {},
       });
     } catch (err) {
       expect(err instanceof Error).to.equal(true);
@@ -363,14 +366,14 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('private _getConnection returns client for Pool', (done) => {
     class Pool {
-      Pool(){};
-      query(){};
+      Pool() {}
+      query() {}
     }
 
     const client = new Pool();
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client
+      storeClient: client,
     }, () => {
       rateLimiter._getConnection()
         .then((conn) => {
@@ -382,19 +385,17 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('private _getConnection returns connection from manager for Sequelize', (done) => {
     class Sequelize {
-      Sequelize(){};
-      query(){};
+      Sequelize() {}
+      query() {}
     }
 
     const client = new Sequelize();
     client.connectionManager = {
-      getConnection: () => {
-        return Promise.resolve(123);
-      }
+      getConnection: () => Promise.resolve(123),
     };
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client
+      storeClient: client,
     }, () => {
       rateLimiter._getConnection()
         .then((res) => {
@@ -406,15 +407,13 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('private _getConnection returns acquire connection from Knex', (done) => {
     class Knex {
-      Knex(){};
-      query(){};
+      Knex() {}
+      query() {}
     }
 
     const client = new Knex();
     client.client = {
-      acquireConnection: () => {
-        return Promise.resolve(321);
-      }
+      acquireConnection: () => Promise.resolve(321),
     };
 
     const rateLimiter = new RateLimiterPostgres({
@@ -431,14 +430,14 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('Pool does not require specific connection releasing', (done) => {
     class Pool {
-      Pool(){};
-      query(){};
+      Pool() {}
+      query() {}
     }
 
     const client = new Pool();
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client
+      storeClient: client,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(true);
       done();
@@ -447,19 +446,17 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('Sequelize release connection from manager', (done) => {
     class Sequelize {
-      Sequelize(){};
-      query(){};
+      Sequelize() {}
+      query() {}
     }
 
     const client = new Sequelize();
     client.connectionManager = {
-      releaseConnection: () => {
-        return 123;
-      }
+      releaseConnection: () => 123,
     };
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client
+      storeClient: client,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(123);
       done();
@@ -468,15 +465,13 @@ describe('RateLimiterPostgres with fixed window', function () {
 
   it('Knex release connection from client', (done) => {
     class Knex {
-      Knex(){};
-      query(){};
+      Knex() {}
+      query() {}
     }
 
     const client = new Knex();
     client.client = {
-      releaseConnection: () => {
-        return 321;
-      }
+      releaseConnection: () => 321,
     };
 
     const rateLimiter = new RateLimiterPostgres({

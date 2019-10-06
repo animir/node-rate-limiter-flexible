@@ -7,8 +7,8 @@
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha --recursive",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "eslint": "node_modules/eslint/bin/eslint.js --quiet lib/**/**.js",
-    "eslint-fix": "node_modules/eslint/bin/eslint.js --fix lib/**/**.js"
+    "eslint": "node_modules/eslint/bin/eslint.js --quiet lib/**/**.js test/**/**.js",
+    "eslint-fix": "node_modules/eslint/bin/eslint.js --fix lib/**/**.js test/**/**.js"
   },
   "repository": {
     "type": "git",

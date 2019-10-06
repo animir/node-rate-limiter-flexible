@@ -2,7 +2,7 @@ const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const MemoryStorage = require('../../../lib/component/MemoryStorage/MemoryStorage');
 
-describe('MemoryStorage', function () {
+describe('MemoryStorage', function MemoryStorageTest() {
   const testKey = 'test';
   const val = 34;
   let storage;

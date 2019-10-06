@@ -1,10 +1,12 @@
-const {describe, it, beforeEach} = require('mocha');
-const {expect} = require('chai');
+/* eslint-disable no-unused-expressions */
+/* eslint-disable prefer-promise-reject-errors */
+const { describe, it, beforeEach } = require('mocha');
+const { expect } = require('chai');
 const sinon = require('sinon');
 const redisMock = require('redis-mock');
 const Memcached = require('memcached-mock');
 const ExpressBruteFlexible = require('../lib/ExpressBruteFlexible');
-const limiters = require("../index");
+const limiters = require('../index');
 
 const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   middleware(req, res, (err) => {
@@ -17,7 +19,7 @@ const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   });
 });
 
-describe('ExpressBruteFlexible', function () {
+describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
   this.timeout(10000);
 
   const resObj = {
@@ -66,7 +68,7 @@ describe('ExpressBruteFlexible', function () {
   };
 
   const pgClientErrored = {
-    query: () => Promise.reject({code: 0}),
+    query: () => Promise.reject({ code: 0 }),
   };
 
   beforeEach((done) => {
@@ -80,7 +82,7 @@ describe('ExpressBruteFlexible', function () {
       freeRetries: 1,
     });
 
-    brute.prevent({ip: '127.0.0.1'}, resObj, () => {
+    brute.prevent({ ip: '127.0.0.1' }, resObj, () => {
       done();
     });
   });
@@ -89,15 +91,15 @@ describe('ExpressBruteFlexible', function () {
     const brute = new ExpressBruteFlexible(ExpressBruteFlexible.LIMITER_TYPES.MEMCACHE, {
       storeClient: memcacheMockClient,
       freeRetries: 2,
-      handleStoreError: function (err) {
+      handleStoreError(err) {
         done(err);
-      }
+      },
     });
 
     const next = sinon.spy();
     Promise.all([
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, resObj, next),
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, resObj, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, resObj, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, resObj, next),
     ]).then(() => {
       expect(next.calledTwice).to.equal(true);
       done();
@@ -108,18 +110,18 @@ describe('ExpressBruteFlexible', function () {
     const brute = new ExpressBruteFlexible(ExpressBruteFlexible.LIMITER_TYPES.MEMCACHE, {
       storeClient: memcacheMockClient,
       freeRetries: 0,
-      handleStoreError: function (err) {
+      handleStoreError(err) {
         done(err);
       },
-      failCallback: function (req, res, next) {
-        next({message: 'blocked'});
-      }
+      failCallback(req, res, next) {
+        next({ message: 'blocked' });
+      },
     });
 
     const next = sinon.spy();
     Promise.all([
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, resObj, next),
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, resObj, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, resObj, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, resObj, next),
     ]).then(() => {
       expect(next.calledOnce).to.equal(true);
       done();
@@ -130,30 +132,30 @@ describe('ExpressBruteFlexible', function () {
     const brute = new ExpressBruteFlexible('memory', {
       freeRetries: 0,
       minWait: 1000,
-      failCallback: function (req, res, next, nextValidRequestDate) {
+      failCallback(req, res, next, nextValidRequestDate) {
         res.status(403);
         res.send({
           error: {
-            nextValidRequestDate: nextValidRequestDate,
-          }
+            nextValidRequestDate,
+          },
         });
         next();
-      }
+      },
     });
 
     const next = sinon.spy();
     const mockRes = Object.assign({}, resObj);
     const resStatusSpy = sinon.spy(mockRes, 'status');
     const resSendSpy = sinon.spy(mockRes, 'send');
-    makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next)
+    makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next)
       .then(() => {
-        makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next)
+        makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next)
           .then(() => {
             expect(resStatusSpy.calledWith(403)).to.equal(true);
             const spySendCall = resSendSpy.getCall(0);
             const blockDuration = spySendCall.args[0].error.nextValidRequestDate.getTime() - Date.now();
             expect(blockDuration > 0 && blockDuration <= 1000).to.equal(true);
-          })
+          });
       });
   });
 
@@ -163,14 +165,14 @@ describe('ExpressBruteFlexible', function () {
       freeRetries: 0,
       minWait: 2000,
       maxWait: 3000,
-      failCallback: function (req, res, next, nextValidRequestDate) {
+      failCallback(req, res, next, nextValidRequestDate) {
         res.send({
           error: {
-            nextValidRequestDate: nextValidRequestDate,
-          }
+            nextValidRequestDate,
+          },
         });
         next();
-      }
+      },
     });
 
     let maximumBlockDuration = 0;
@@ -185,18 +187,18 @@ describe('ExpressBruteFlexible', function () {
     const next = sinon.spy();
     const resSendSpy = sinon.spy(mockRes, 'send');
     Promise.all([
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
     ]).then(() => {
       setTimeout(() => {
         Promise.all([
-          makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-          makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+          makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+          makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
         ]).then(() => {
           setTimeout(() => {
             Promise.all([
-              makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-              makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+              makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+              makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
             ]).then(() => {
               setTimeout(() => {
                 expect(maximumBlockDuration <= 3000).to.be.true;
@@ -217,14 +219,14 @@ describe('ExpressBruteFlexible', function () {
       minWait: 2000,
       maxWait: 10000,
       lifetime: 10000,
-      failCallback: function (req, res, next, nextValidRequestDate) {
+      failCallback(req, res, next, nextValidRequestDate) {
         res.send({
           error: {
-            nextValidRequestDate: nextValidRequestDate,
-          }
+            nextValidRequestDate,
+          },
         });
         next();
-      }
+      },
     });
 
     let sequenceLength = 0;
@@ -244,18 +246,18 @@ describe('ExpressBruteFlexible', function () {
 
     const next = sinon.spy();
     Promise.all([
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-      makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+      makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
     ]).then(() => {
       setTimeout(() => {
         Promise.all([
-          makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-          makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+          makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+          makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
         ]).then(() => {
           setTimeout(() => {
             Promise.all([
-              makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
-              makeRequest(brute.prevent, {ip: '127.0.0.1'}, mockRes, next),
+              makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
+              makeRequest(brute.prevent, { ip: '127.0.0.1' }, mockRes, next),
             ]).then(() => {
               setTimeout(() => {
                 expect(sequenceLength).to.equal(3);
@@ -276,7 +278,7 @@ describe('ExpressBruteFlexible', function () {
       maxWait: 5000,
     });
 
-    const req = {ip: '127.0.0.1'};
+    const req = { ip: '127.0.0.1' };
 
     brute.prevent(req, resObj, () => {
       expect(typeof req.brute.reset).to.equal('function');
@@ -294,10 +296,10 @@ describe('ExpressBruteFlexible', function () {
       freeRetries: 1,
       minWait: 1000,
       maxWait: 5000,
-      attachResetToRequest: false
+      attachResetToRequest: false,
     });
 
-    const req = {ip: '127.0.0.1'};
+    const req = { ip: '127.0.0.1' };
 
     brute.prevent(req, resObj, () => {
       expect(typeof req.brute === 'undefined' || typeof req.brute.reset === 'undefined').to.be.true;
@@ -311,12 +313,12 @@ describe('ExpressBruteFlexible', function () {
       freeRetries: 1,
       minWait: 1000,
       maxWait: 5000,
-      attachResetToRequest: false
+      attachResetToRequest: false,
     });
 
     const middleware = brute.getMiddleware();
 
-    const req = {ip: '127.0.0.1'};
+    const req = { ip: '127.0.0.1' };
 
     middleware(req, resObj, done);
   });
@@ -328,17 +330,17 @@ describe('ExpressBruteFlexible', function () {
       minWait: 1000,
       maxWait: 5000,
       attachResetToRequest: false,
-      handleStoreError: function (err) {
+      handleStoreError(err) {
         done(err);
-      }
+      },
     });
 
     const getKeySpy = sinon.spy(ExpressBruteFlexible, '_getKey');
     const middleware = brute.getMiddleware({
-      ignoreIP: true
+      ignoreIP: true,
     });
 
-    const req = {ip: '127.0.0.1'};
+    const req = { ip: '127.0.0.1' };
 
     middleware(req, resObj, () => {
       const getKeySpyCall = getKeySpy.getCall(0);
@@ -403,7 +405,7 @@ describe('ExpressBruteFlexible', function () {
 
     const ip = '127.0.0.1';
 
-    brute.prevent({ip}, resObj, () => {
+    brute.prevent({ ip }, resObj, () => {
       brute.reset(ip, undefined, () => {
         const key = ExpressBruteFlexible._getKey([ip, brute.name]);
         brute.freeLimiter.get(key)
@@ -420,9 +422,9 @@ describe('ExpressBruteFlexible', function () {
       storeClient: pgClientMock,
       storeType: 'client',
       freeRetries: 1,
-      handleStoreError: function () {
+      handleStoreError() {
         done();
-      }
+      },
     });
 
     const ip = '127.0.0.1';

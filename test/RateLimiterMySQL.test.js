@@ -5,7 +5,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterMySQL = require('../lib/RateLimiterMySQL');
 
-describe('RateLimiterMySQL with fixed window', function () {
+describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
   this.timeout(5000);
   const mysqlClient = {
     query: () => {},
@@ -34,7 +34,7 @@ describe('RateLimiterMySQL with fixed window', function () {
     }, (e) => {
       expect(e instanceof Error).to.equal(true);
       done();
-      });
+    });
   });
 
   it('consume 1 point', (done) => {
@@ -191,14 +191,14 @@ describe('RateLimiterMySQL with fixed window', function () {
     }, () => {
       mysqlClientStub.restore();
       sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
-        cb(null, {affectedRows: 1});
+        cb(null, { affectedRows: 1 });
       });
 
       rateLimiter.delete(testKey)
         .then((res) => {
           expect(res).to.equal(true);
           done();
-        })
+        });
     });
   });
 
@@ -210,14 +210,14 @@ describe('RateLimiterMySQL with fixed window', function () {
     }, () => {
       mysqlClientStub.restore();
       sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
-        cb(null, {affectedRows: 0});
+        cb(null, { affectedRows: 0 });
       });
 
       rateLimiter.delete(testKey)
         .then((res) => {
           expect(res).to.equal(false);
           done();
-        })
+        });
     });
   });
 
@@ -235,7 +235,7 @@ describe('RateLimiterMySQL with fixed window', function () {
       rateLimiter.delete(testKey)
         .catch(() => {
           done();
-        })
+        });
     });
   });
 
@@ -243,7 +243,6 @@ describe('RateLimiterMySQL with fixed window', function () {
     const rateLimiter = new RateLimiterMySQL({
       storeClient: mysqlClient, storeType: 'sequelize',
     }, () => {
-
       const rlStub = sinon.stub(rateLimiter, '_getConnection').callsFake(() => {
         done();
         return Promise.resolve(mysqlClient);

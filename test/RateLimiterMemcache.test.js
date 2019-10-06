@@ -1,20 +1,18 @@
-const {describe, it, beforeEach} = require('mocha');
-const {expect} = require('chai');
+const { describe, it, beforeEach } = require('mocha');
+const { expect } = require('chai');
 const RateLimiterMemcache = require('../lib/RateLimiterMemcache');
 const Memcached = require('memcached-mock');
 
-describe('RateLimiterMemcache', function () {
+describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
   this.timeout(5000);
   const memcacheMockClient = new Memcached('localhost:11211');
 
   const memcacheUnavailableClient = new Proxy({}, {
-    get: (func, name) => {
-      return function(...args) {
-        const cb = args.pop();
-        cb(Error('Server Unavailable'));
-      };
-    }
-  })
+    get: () => (...args) => {
+      const cb = args.pop();
+      cb(Error('Server Unavailable'));
+    },
+  });
 
   beforeEach((done) => {
     memcacheMockClient.flush(done);
@@ -267,7 +265,7 @@ describe('RateLimiterMemcache', function () {
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterMemcache({keyPrefix, storeClient: memcacheMockClient});
+    const rateLimiter = new RateLimiterMemcache({ keyPrefix, storeClient: memcacheMockClient });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });
@@ -404,7 +402,7 @@ describe('RateLimiterMemcache', function () {
               .then((resGet) => {
                 expect(resGet).to.equal(null);
                 done();
-              })
+              });
           });
       });
   });
@@ -426,7 +424,7 @@ describe('RateLimiterMemcache', function () {
           .then((resGet) => {
             expect(resGet).to.equal(null);
             done();
-          })
+          });
       });
   });
 
@@ -457,9 +455,9 @@ describe('RateLimiterMemcache', function () {
     rateLimiter
       .consume(testKey, 2)
       .then(() => {
-        expect.fail("should not be resolved");
+        expect.fail('should not be resolved');
       })
-      .catch((rejRes) => {
+      .catch(() => {
         done();
       });
   });
