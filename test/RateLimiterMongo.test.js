@@ -13,6 +13,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   let mongoClientStub;
   let mongoDb;
   let mongoCollection;
+  let stubMongoDbCollection;
 
   before(() => {
     mongoClient = {
@@ -23,7 +24,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       collection: () => {},
     };
 
-    sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
+    stubMongoDbCollection = sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
   });
 
@@ -364,8 +365,11 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   it('uses tableName option to create collection', (done) => {
     const tableName = 'collection_name';
 
-    sinon.stub(mongoDb, 'collection').callsFake((name) => {
+    stubMongoDbCollection.restore();
+    stubMongoDbCollection = sinon.stub(mongoDb, 'collection').callsFake((name) => {
       expect(name).to.equal(tableName);
+      stubMongoDbCollection.restore();
+      stubMongoDbCollection = sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
       done();
       return mongoCollection;
     });
@@ -468,5 +472,55 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   it('set indexKeyPrefix empty {} if not provided', () => {
     const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
     expect(Object.keys(rateLimiter.indexKeyPrefix).length).to.equal(0);
+  });
+
+  it('does not expire key if duration set to 0', (done) => {
+    const testKey = 'neverexpire';
+    const stubFindOneAndUpdate = sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
+      const res = {
+        value: {
+          points: 1,
+          expire: null,
+        },
+      };
+      return Promise.resolve(res);
+    });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 0 });
+    rateLimiter.consume(testKey, 1)
+      .then(() => {
+        stubFindOneAndUpdate.restore();
+        const stubFindOneAndUpdate2 = sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
+          const res = {
+            value: {
+              points: 2,
+              expire: null,
+            },
+          };
+          return Promise.resolve(res);
+        });
+        rateLimiter.consume(testKey, 1)
+          .then(() => {
+            stubFindOneAndUpdate2.restore();
+            const stubFindOne = sinon.stub(mongoCollection, 'findOne').callsFake(() => Promise.resolve({
+              value: {
+                points: 2,
+                expire: null,
+              },
+            }));
+            rateLimiter.get(testKey)
+              .then((res) => {
+                expect(res.consumedPoints).to.equal(2);
+                expect(res.msBeforeNext).to.equal(-1);
+                stubFindOne.restore();
+                done();
+              });
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
   });
 });

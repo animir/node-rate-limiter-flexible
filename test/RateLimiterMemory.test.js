@@ -285,4 +285,27 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         done(Error('must not reject'));
       });
   });
+
+  it('does not expire key if duration set to 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 0 });
+    rateLimiterMemory.consume(testKey, 1)
+      .then(() => {
+        rateLimiterMemory.consume(testKey, 1)
+          .then(() => {
+            rateLimiterMemory.get(testKey)
+              .then((res) => {
+                expect(res.consumedPoints).to.equal(2);
+                expect(res.msBeforeNext).to.equal(-1);
+                done();
+              });
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });

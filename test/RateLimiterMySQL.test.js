@@ -252,4 +252,66 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       rlStub.restore();
     });
   });
+
+  it('does not expire key if duration set to 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient,
+      storeType: 'connection',
+      points: 2,
+      duration: 0,
+    }, () => {
+      mysqlClientStub.restore();
+      const queryStub = sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        const res = [
+          { points: 1, expire: null },
+        ];
+        if (Array.isArray(data)) {
+          cb(null, res);
+        } else {
+          data(null);
+        }
+      });
+      rateLimiter.consume(testKey, 1)
+        .then(() => {
+          queryStub.restore();
+          const queryStub2 = sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+            const res = [
+              { points: 2, expire: null },
+            ];
+            if (Array.isArray(data)) {
+              cb(null, res);
+            } else {
+              data(null);
+            }
+          });
+          rateLimiter.consume(testKey, 1)
+            .then(() => {
+              queryStub2.restore();
+              sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+                const res = [
+                  { points: 2, expire: null },
+                ];
+                if (Array.isArray(data)) {
+                  cb(null, res);
+                } else {
+                  data(null);
+                }
+              });
+              rateLimiter.get(testKey)
+                .then((res) => {
+                  expect(res.consumedPoints).to.equal(2);
+                  expect(res.msBeforeNext).to.equal(-1);
+                  done();
+                });
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
 });
