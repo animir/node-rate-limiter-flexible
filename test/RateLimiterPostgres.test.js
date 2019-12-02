@@ -482,4 +482,41 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
       done();
     });
   });
+
+  it('does not expire key if duration set to 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient,
+      storeType: 'connection',
+      points: 2,
+      duration: 0,
+    }, () => {
+      pgClientStub.restore();
+      const queryStub = sinon.stub(pgClient, 'query').resolves({
+        rows: [{ points: 1, expire: null }],
+      });
+      rateLimiter.consume(testKey, 1)
+        .then(() => {
+          queryStub.restore();
+          sinon.stub(pgClient, 'query').resolves({
+            rows: [{ points: 2, expire: null }],
+          });
+          rateLimiter.consume(testKey, 1)
+            .then(() => {
+              rateLimiter.get(testKey)
+                .then((res) => {
+                  expect(res.consumedPoints).to.equal(2);
+                  expect(res.msBeforeNext).to.equal(-1);
+                  done();
+                });
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
 });
