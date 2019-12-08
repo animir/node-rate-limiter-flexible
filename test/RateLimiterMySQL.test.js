@@ -326,7 +326,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       mysqlClientStub.restore();
       const queryStub = sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
         const res = [
-          {points: 3, expire: null},
+          { points: 3, expire: null },
         ];
         if (Array.isArray(data)) {
           cb(null, res);
@@ -344,7 +344,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
                 queryStub.restore();
                 done();
               });
-          }, 1000)
+          }, 1000);
         })
         .catch((err) => {
           done(err);

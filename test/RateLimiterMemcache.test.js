@@ -1,5 +1,5 @@
-const {describe, it, beforeEach} = require('mocha');
-const {expect} = require('chai');
+const { describe, it, beforeEach } = require('mocha');
+const { expect } = require('chai');
 const RateLimiterMemcache = require('../lib/RateLimiterMemcache');
 const Memcached = require('memcached-mock');
 
@@ -265,7 +265,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterMemcache({keyPrefix, storeClient: memcacheMockClient});
+    const rateLimiter = new RateLimiterMemcache({ keyPrefix, storeClient: memcacheMockClient });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });
@@ -490,7 +490,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
 
   it('does not expire key if duration set to 0', (done) => {
     const testKey = 'neverexpire';
-    const rateLimiter = new RateLimiterMemcache({storeClient: memcacheMockClient, points: 2, duration: 0});
+    const rateLimiter = new RateLimiterMemcache({ storeClient: memcacheMockClient, points: 2, duration: 0 });
     rateLimiter.consume(testKey, 1)
       .then(() => {
         rateLimiter.consume(testKey, 1)
@@ -513,7 +513,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
 
   it('block key forever, if secDuration is 0', (done) => {
     const testKey = 'neverexpire';
-    const rateLimiter = new RateLimiterMemcache({storeClient: memcacheMockClient, points: 1, duration: 1});
+    const rateLimiter = new RateLimiterMemcache({ storeClient: memcacheMockClient, points: 1, duration: 1 });
     rateLimiter.block(testKey, 0)
       .then(() => {
         setTimeout(() => {
@@ -523,7 +523,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
               expect(res.msBeforeNext).to.equal(-1);
               done();
             });
-        }, 1000)
+        }, 1000);
       })
       .catch((err) => {
         done(err);

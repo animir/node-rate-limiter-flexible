@@ -541,7 +541,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
                 queryStub.restore();
                 done();
               });
-          }, 1000)
+          }, 1000);
         })
         .catch((err) => {
           done(err);

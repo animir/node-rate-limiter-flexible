@@ -553,7 +553,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
               stubFindOne.restore();
               done();
             });
-        }, 1000)
+        }, 1000);
       })
       .catch((err) => {
         done(err);
