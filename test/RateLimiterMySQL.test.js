@@ -314,4 +314,41 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
         });
     });
   });
+
+  it('block key forever, if secDuration is 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient,
+      storeType: 'connection',
+      points: 2,
+      duration: 1,
+    }, () => {
+      mysqlClientStub.restore();
+      const queryStub = sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        const res = [
+          {points: 3, expire: null},
+        ];
+        if (Array.isArray(data)) {
+          cb(null, res);
+        } else {
+          data(null);
+        }
+      });
+      rateLimiter.block(testKey, 0)
+        .then(() => {
+          setTimeout(() => {
+            rateLimiter.get(testKey)
+              .then((res) => {
+                expect(res.consumedPoints).to.equal(3);
+                expect(res.msBeforeNext).to.equal(-1);
+                queryStub.restore();
+                done();
+              });
+          }, 1000)
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
 });

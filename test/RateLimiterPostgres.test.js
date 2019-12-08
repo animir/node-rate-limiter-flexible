@@ -519,4 +519,33 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
         });
     });
   });
+  it('block key forever, if secDuration is 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient,
+      storeType: 'connection',
+      points: 2,
+      duration: 1,
+    }, () => {
+      pgClientStub.restore();
+      const queryStub = sinon.stub(pgClient, 'query').resolves({
+        rows: [{ points: 3, expire: null }],
+      });
+      rateLimiter.block(testKey, 0)
+        .then(() => {
+          setTimeout(() => {
+            rateLimiter.get(testKey)
+              .then((res) => {
+                expect(res.consumedPoints).to.equal(3);
+                expect(res.msBeforeNext).to.equal(-1);
+                queryStub.restore();
+                done();
+              });
+          }, 1000)
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
 });

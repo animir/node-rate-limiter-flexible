@@ -308,4 +308,23 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         done(err);
       });
   });
+
+  it('block key forever, if secDuration is 0', (done) => {
+    const testKey = 'neverexpire';
+    const rateLimiter = new RateLimiterMemory({points: 1, duration: 1});
+    rateLimiter.block(testKey, 0)
+      .then(() => {
+        setTimeout(() => {
+          rateLimiter.get(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(2);
+              expect(res.msBeforeNext).to.equal(-1);
+              done();
+            });
+        }, 1000)
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });

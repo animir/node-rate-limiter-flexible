@@ -523,4 +523,40 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
         done(err);
       });
   });
+
+  it('block key forever, if secDuration is 0', (done) => {
+    const testKey = 'neverexpire';
+    const stubFindOneAndUpdate = sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
+      const res = {
+        value: {
+          points: 2,
+          expire: null,
+        },
+      };
+      return Promise.resolve(res);
+    });
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 1, duration: 1 });
+    rateLimiter.block(testKey, 0)
+      .then(() => {
+        setTimeout(() => {
+          stubFindOneAndUpdate.restore();
+          const stubFindOne = sinon.stub(mongoCollection, 'findOne').callsFake(() => Promise.resolve({
+            value: {
+              points: 2,
+              expire: null,
+            },
+          }));
+          rateLimiter.get(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(2);
+              expect(res.msBeforeNext).to.equal(-1);
+              stubFindOne.restore();
+              done();
+            });
+        }, 1000)
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });

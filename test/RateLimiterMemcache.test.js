@@ -516,12 +516,14 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
     const rateLimiter = new RateLimiterMemcache({storeClient: memcacheMockClient, points: 1, duration: 1});
     rateLimiter.block(testKey, 0)
       .then(() => {
-        rateLimiter.get(testKey)
-          .then((res) => {
-            expect(res.consumedPoints).to.equal(2);
-            expect(res.msBeforeNext).to.equal(-1);
-            done();
-          });
+        setTimeout(() => {
+          rateLimiter.get(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(2);
+              expect(res.msBeforeNext).to.equal(-1);
+              done();
+            });
+        }, 1000)
       })
       .catch((err) => {
         done(err);
