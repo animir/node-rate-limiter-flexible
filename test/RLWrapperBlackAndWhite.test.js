@@ -350,7 +350,7 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
-  it('consume resolved if isWhite func returns true', (done) => {
+  it('consume resolved if legacy isWhite func returns true', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
       duration: 1,
@@ -371,7 +371,28 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
-  it('consume rejected if isBlack func returns true', (done) => {
+  it('consume resolved if isWhiteListed func returns true', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 1,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      isWhiteListed: key => key === 'test',
+    });
+    limiterWrapped
+      .consume('test')
+      .then((res) => {
+        expect(res.remainingPoints === Number.MAX_SAFE_INTEGER).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('consume rejected if legacy isBlack func returns true', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
       duration: 1,
@@ -392,7 +413,7 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
-  it('consume even if blacked when runAction set to true', (done) => {
+  it('consume rejected if isBlackListed func returns true', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
       duration: 1,
@@ -400,7 +421,28 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: key => key === 'test',
+      isBlackListed: key => key === 'test',
+    });
+    limiterWrapped
+      .consume('test')
+      .then(() => {
+        done(Error('must not resolve'));
+      })
+      .catch((rej) => {
+        expect(rej.msBeforeNext === Number.MAX_SAFE_INTEGER).to.equal(true);
+        done();
+      });
+  });
+
+  it('consume even if black listed when runAction set to true', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 1,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      isBlackListed: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -416,7 +458,7 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
-  it('block even if blacked when runAction set to true', (done) => {
+  it('block even if black listed when runAction set to true', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
       duration: 1,
@@ -424,7 +466,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: key => key === 'test',
+      isBlackListed: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -448,7 +490,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: key => key === 'test',
+      isBlackListed: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -472,7 +514,7 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: key => key === 'test',
+      isBlackListed: key => key === 'test',
       runActionAnyway: true,
     });
     limiterWrapped
@@ -497,8 +539,8 @@ describe('RLWrapperBlackAndWhite ', () => {
 
     const limiterWrapped = new RLWrapperBlackAndWhite({
       limiter,
-      isBlack: key => key === testKey,
-      isWhite: key => key === testKey,
+      isBlackListed: key => key === testKey,
+      isWhiteListed: key => key === testKey,
     });
     limiter.consume(testKey)
       .then(() => {

@@ -78,12 +78,18 @@ interface IRLWrapperBlackAndWhiteOptions {
     limiter: RateLimiterAbstract;
     blackList?: string [] | number[];
     whiteList?: string[] | number[];
-
-    isBlack?(key: string | number): boolean;
-
-    isWhite?(key: string | number): boolean;
-
+    isBlackListed?(key: any): boolean;
+    isWhiteListed?(key: any): boolean;
     runActionAnyway?: boolean;
+
+    /**
+     * @deprecated Use isBlackListed instead
+     */
+    isBlack?(key: string | number): boolean;
+    /**
+     * @deprecated Use isWhiteListed instead
+     */
+    isWhite?(key: string | number): boolean;
 }
 
 export class RateLimiterMemory extends RateLimiterAbstract {
