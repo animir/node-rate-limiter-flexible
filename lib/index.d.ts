@@ -1,3 +1,10 @@
+export interface IRateLimiterResOptions {
+    msBeforeNext?: number;
+    remainingPoints?: number;
+    consumedPoints?: number;
+    isFirstInDuration?: boolean;
+}
+
 export class RateLimiterRes {
     constructor(remainingPoints?: number, msBeforeNext?: number, consumedPoints?: number, isFirstInDuration?: boolean);
 
