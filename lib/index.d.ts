@@ -1,4 +1,14 @@
+/**
+ * @deprecated Use IRateLimiterRes instead
+ */
 export interface IRateLimiterResOptions {
+    msBeforeNext?: number;
+    remainingPoints?: number;
+    consumedPoints?: number;
+    isFirstInDuration?: boolean;
+}
+
+export interface IRateLimiterRes {
     msBeforeNext?: number;
     remainingPoints?: number;
     consumedPoints?: number;
