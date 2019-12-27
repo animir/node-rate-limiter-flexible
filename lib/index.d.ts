@@ -6,7 +6,7 @@ export interface IRateLimiterResOptions {
 }
 
 export class RateLimiterRes {
-    constructor(opts: IRateLimiterResOptions);
+    constructor(remainingPoints?: number, msBeforeNext?: number, consumedPoints?: number, isFirstInDuration?: boolean);
 
     readonly msBeforeNext: number;
     readonly remainingPoints: number;
