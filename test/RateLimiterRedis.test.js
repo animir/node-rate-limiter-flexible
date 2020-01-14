@@ -764,7 +764,42 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
               expect(res.msBeforeNext).to.equal(-1);
               done();
             });
-        }, 1000);
+        }, 2000);
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('set points by key', (done) => {
+    const testKey = 'set';
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1 });
+    rateLimiter.set(testKey, 12)
+      .then(() => {
+        rateLimiter.get(testKey)
+          .then((res) => {
+            expect(res.consumedPoints).to.equal(12);
+            done();
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('set points by key forever', (done) => {
+    const testKey = 'setforever';
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1 });
+    rateLimiter.set(testKey, 12, 0)
+      .then(() => {
+        setTimeout(() => {
+          rateLimiter.get(testKey)
+            .then((res) => {
+              expect(res.consumedPoints).to.equal(12);
+              expect(res.msBeforeNext).to.equal(-1);
+              done();
+            });
+        }, 1100);
       })
       .catch((err) => {
         done(err);

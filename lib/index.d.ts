@@ -45,6 +45,8 @@ export class RateLimiterAbstract {
 
     get(key: string | number, options?: {[key: string]: any }): Promise<RateLimiterRes|null>;
 
+    set(key: string | number, points: number, secDuration: number, options?: {[key: string]: any }): Promise<RateLimiterRes>;
+
     delete(key: string | number, options?: {[key: string]: any }): Promise<boolean>;
 
     getKey(key: string | number): string;
@@ -139,6 +141,8 @@ export class RateLimiterMongo extends RateLimiterStoreAbstract {
     block(key: string | number, secDuration: number, options?: IRateLimiterMongoFunctionOptions): Promise<RateLimiterRes>;
 
     get(key: string | number, options?: IRateLimiterMongoFunctionOptions): Promise<RateLimiterRes|null>;
+
+    set(key: string | number, points: number, secDuration: number, options?: IRateLimiterMongoFunctionOptions): Promise<RateLimiterRes>;
 
     delete(key: string | number, options?: IRateLimiterMongoFunctionOptions): Promise<boolean>;
 }
