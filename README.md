@@ -11,7 +11,7 @@
 
 ## node-rate-limiter-flexible
 
-**rate-limiter-flexible** limits number of actions by key and protects from DDoS and brute force attacks at any scale.
+**rate-limiter-flexible** counts and limits number of actions by key and protects from DDoS and brute force attacks at any scale.
 
 It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
 
@@ -133,7 +133,9 @@ Some copy/paste examples on Wiki:
 
     `Default: 1` 
     
-    Number of seconds before consumed points are reset
+    Number of seconds before consumed points are reset.
+    
+    Never reset points, if `duration` is set to 0.
 
 * **storeClient** 
 
@@ -166,6 +168,7 @@ Read detailed description on Wiki.
 
 * [consume(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterconsumekey-points--1) Consume points by key.
 * [get(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitergetkey) Get `RateLimiterRes` or `null`.
+* [set(key, points, secDuration)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitersetkey-points-secduration) Set points by key.
 * [block(key, secDuration)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterblockkey-secduration) Block key for `secDuration` seconds.
 * [delete(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterdeletekey) Reset consumed points.
 * [penalty(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterpenaltykey-points--1) Increase number of consumed points in current duration.

@@ -260,6 +260,19 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
       });
   });
 
+  it('consume applies options.customDuration to set not expiring key', (done) => {
+    const testKey = 'options.customDuration.forever';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
+    rateLimiterMemory.consume(testKey, 1, { customDuration: 0 })
+      .then((res) => {
+        expect(res.msBeforeNext === -1).to.be.true;
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
   it('penalty applies options.customDuration to set expire', (done) => {
     const testKey = 'options.customDuration';
     const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
