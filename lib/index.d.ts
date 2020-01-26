@@ -65,6 +65,10 @@ interface IRateLimiterOptions {
     blockDuration?: number;
 }
 
+interface IRateLimiterClusterOptions extends IRateLimiterOptions{
+    timeoutMs?: number;
+}
+
 interface IRateLimiterStoreOptions extends IRateLimiterOptions{
     storeClient: any;
     storeType?: string;
@@ -73,7 +77,6 @@ interface IRateLimiterStoreOptions extends IRateLimiterOptions{
     insuranceLimiter?: RateLimiterAbstract;
     dbName?: string;
     tableName?: string;
-    timeoutMs?: number;
 }
 
 interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions{
@@ -109,7 +112,7 @@ export class RateLimiterMemory extends RateLimiterAbstract {
 }
 
 export class RateLimiterCluster extends RateLimiterAbstract {
-    constructor(opts: IRateLimiterStoreOptions);
+    constructor(opts: IRateLimiterClusterOptions);
 }
 
 export class RateLimiterClusterMaster {
