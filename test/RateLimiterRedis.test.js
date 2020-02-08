@@ -10,6 +10,24 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5000);
   const redisMockClient = redisMock.createClient();
 
+  // Mock eval function with almost the same behaviour as Lua script
+  // It gives 99% sure, that all work as expected
+  redisMockClient.eval = function (script, numberOfKeys, rlKey, points, secDuration, callback) {
+    const multi = redisMockClient.multi();
+    if (secDuration > 0) {
+      multi.set(rlKey, 0, 'EX', secDuration, 'NX');
+    }
+
+    multi.incrby(rlKey, points)
+      .pttl(rlKey)
+      .exec((err, res) => {
+        const finalRes = secDuration > 0
+          ? [res[1], res[2]]
+          : res;
+        callback(err, finalRes);
+      });
+  };
+
   // emulate closed RedisClient
   class RedisClient {
     multi() {
@@ -26,6 +44,9 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   const redisClientClosed = new Proxy(redisClientClosedRaw, {
     get: (func, name) => {
+      if (name === 'defineCommand') {
+        return undefined;
+      }
       if (name in redisClientClosedRaw) {
         return redisClientClosedRaw[name];
       }

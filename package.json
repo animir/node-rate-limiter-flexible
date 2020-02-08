@@ -49,7 +49,7 @@
     "istanbul": "^0.4.5",
     "memcached-mock": "^0.1.0",
     "mocha": "^5.1.1",
-    "redis-mock": "^0.22.0",
+    "redis-mock": "^0.48.0",
     "sinon": "^5.0.10"
   }
 }
