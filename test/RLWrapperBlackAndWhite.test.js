@@ -350,27 +350,6 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
-  it('consume resolved if legacy isWhite func returns true', (done) => {
-    const limiter = new RateLimiterMemory({
-      points: 1,
-      duration: 1,
-    });
-
-    const limiterWrapped = new RLWrapperBlackAndWhite({
-      limiter,
-      isWhite: key => key === 'test',
-    });
-    limiterWrapped
-      .consume('test')
-      .then((res) => {
-        expect(res.remainingPoints === Number.MAX_SAFE_INTEGER).to.equal(true);
-        done();
-      })
-      .catch(() => {
-        done(Error('must not reject'));
-      });
-  });
-
   it('consume resolved if isWhiteListed func returns true', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
@@ -389,27 +368,6 @@ describe('RLWrapperBlackAndWhite ', () => {
       })
       .catch(() => {
         done(Error('must not reject'));
-      });
-  });
-
-  it('consume rejected if legacy isBlack func returns true', (done) => {
-    const limiter = new RateLimiterMemory({
-      points: 1,
-      duration: 1,
-    });
-
-    const limiterWrapped = new RLWrapperBlackAndWhite({
-      limiter,
-      isBlack: key => key === 'test',
-    });
-    limiterWrapped
-      .consume('test')
-      .then(() => {
-        done(Error('must not resolve'));
-      })
-      .catch((rej) => {
-        expect(rej.msBeforeNext === Number.MAX_SAFE_INTEGER).to.equal(true);
-        done();
       });
   });
 
