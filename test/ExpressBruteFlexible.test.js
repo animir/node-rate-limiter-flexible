@@ -7,6 +7,7 @@ const redisMock = require('redis-mock');
 const Memcached = require('memcached-mock');
 const ExpressBruteFlexible = require('../lib/ExpressBruteFlexible');
 const limiters = require('../index');
+const { redisEvalMock } = require('./helper');
 
 const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   middleware(req, res, (err) => {
@@ -33,6 +34,7 @@ describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
 
   const memcacheMockClient = new Memcached('localhost:11211');
   const redisMockClient = redisMock.createClient();
+  redisMockClient.eval = redisEvalMock(redisMockClient);
 
   const mongoCollection = {
     createIndex: () => {
