@@ -1,13 +1,3 @@
-/**
- * @deprecated Use IRateLimiterRes instead
- */
-export interface IRateLimiterResOptions {
-    msBeforeNext?: number;
-    remainingPoints?: number;
-    consumedPoints?: number;
-    isFirstInDuration?: boolean;
-}
-
 export interface IRateLimiterRes {
     msBeforeNext?: number;
     remainingPoints?: number;
@@ -96,15 +86,6 @@ interface IRLWrapperBlackAndWhiteOptions {
     isBlackListed?(key: any): boolean;
     isWhiteListed?(key: any): boolean;
     runActionAnyway?: boolean;
-
-    /**
-     * @deprecated Use isBlackListed instead
-     */
-    isBlack?(key: string | number): boolean;
-    /**
-     * @deprecated Use isWhiteListed instead
-     */
-    isWhite?(key: string | number): boolean;
 }
 
 export class RateLimiterMemory extends RateLimiterAbstract {
