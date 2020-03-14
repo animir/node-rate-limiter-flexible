@@ -162,4 +162,6 @@ export class RateLimiterQueue {
 
 export class BurstyRateLimiter {
     constructor(rateLimiter: RateLimiterAbstract, burstLimiter: RateLimiterAbstract)
+
+    consume(key: string | number, pointsToConsume?: number, options?: IRateLimiterMongoFunctionOptions): Promise<RateLimiterRes>;
 }
