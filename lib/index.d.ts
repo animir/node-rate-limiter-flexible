@@ -12,7 +12,7 @@ export class RateLimiterRes {
     readonly remainingPoints: number;
     readonly consumedPoints: number;
     readonly isFirstInDuration: boolean;
-    
+
     toString(): string;
     toJSON(): {
         remainingPoints: number;
@@ -158,4 +158,8 @@ interface IRateLimiterQueueOpts {
 
 export class RateLimiterQueue {
     constructor(limiterFlexible: RateLimiterAbstract, opts?: IRateLimiterQueueOpts)
+}
+
+export class BurstyRateLimiter {
+    constructor(rateLimiter: RateLimiterAbstract, burstLimiter: RateLimiterAbstract)
 }
