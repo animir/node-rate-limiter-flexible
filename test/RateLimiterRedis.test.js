@@ -5,7 +5,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redisMock = require('redis-mock');
-const { redisEvalMock } = require('./helper');
+const { redisEvalMock, getRedisClientClosed } = require('./helper');
 
 describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5000);
@@ -13,34 +13,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   redisMockClient.eval = redisEvalMock(redisMockClient);
 
-  // emulate closed RedisClient
-  class RedisClient {
-    multi() {
-      const multi = redisMockClient.multi();
-      multi.exec = (cb) => {
-        cb(new Error('closed'), []);
-      };
-
-      return multi;
-    }
-  }
-
-  const redisClientClosedRaw = new RedisClient();
-
-  const redisClientClosed = new Proxy(redisClientClosedRaw, {
-    get: (func, name) => {
-      if (name === 'defineCommand') {
-        return undefined;
-      }
-      if (name in redisClientClosedRaw) {
-        return redisClientClosedRaw[name];
-      }
-      return function (...args) {
-        const cb = args.pop();
-        cb(Error('closed'));
-      };
-    },
-  });
+  const redisClientClosed = getRedisClientClosed(redisMockClient);
 
   beforeEach((done) => {
     redisMockClient.flushall(done);
