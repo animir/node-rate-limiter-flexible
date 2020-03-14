@@ -17,7 +17,7 @@ It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _Mongo
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
-**Traffic bursts** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
+**Traffic bursts.** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
 
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
