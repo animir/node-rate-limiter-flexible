@@ -17,6 +17,8 @@ It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _Mongo
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
+**Traffic bursts** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
+
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
 **Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
@@ -80,11 +82,11 @@ const headers = {
 * no race conditions
 * no production dependencies
 * TypeScript declaration bundled
-* in-memory Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
+* allow traffic burst with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
+* Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
-* shape traffic with Leaky Bucket analogy [Read about Leaky Bucket analogy](https://github.com/animir/node-rate-limiter-flexible/wiki/Leaky-Bucket-Analogy-execute-actions-evenly)
-* useful `get`, `block`, `delete`, `penalty` and `reward` methods
+* useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
 
 ### Middlewares and plugins
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
@@ -110,6 +112,7 @@ Some copy/paste examples on Wiki:
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
+* [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
