@@ -25,7 +25,9 @@ It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _Mongo
 
 **Ready for growth.** It provides unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them. 
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
+
+**In memory blocks.** Avoid extra requests to store with [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed). 
 
 It uses **fixed window** as it is much faster than rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
@@ -197,6 +199,8 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 6. PostgreSQL 7.48 ms (with connection pool max 100)
 7. MySQL     14.59 ms (with connection pool 100)
 ```
+
+Note, you can speed up limiters with [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) option.
 
 ## Contribution
 
