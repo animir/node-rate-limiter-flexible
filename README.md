@@ -149,7 +149,7 @@ Some copy/paste examples on Wiki:
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
 * [blockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#blockduration) Block for N seconds, if consumed more than points.
-* [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) Against powerful DoS.
+* [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) Avoid extra requests to store.
 * [inmemoryBlockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockduration)
 * [insuranceLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#insurancelimiter) Make it more stable with less efforts.
 * [storeType](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#storetype) Have to be set to `knex`, if you use it.
