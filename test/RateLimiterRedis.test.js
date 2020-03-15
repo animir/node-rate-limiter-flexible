@@ -223,6 +223,25 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  it('reject after block key in memory for msBeforeNext, if consumed more than points', (done) => {
+    const testKey = 'blockmempointsreject';
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 1,
+      duration: 5,
+      inmemoryBlockOnConsumed: 1,
+    });
+    rateLimiter
+      .consume(testKey, 2)
+      .then(() => {
+        done(new Error('must not'));
+      })
+      .catch(() => {
+        expect(rateLimiter._inmemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
+        done();
+      });
+  });
+
   it('expire inmemory blocked key', (done) => {
     const testKey = 'blockmem2';
     const rateLimiter = new RateLimiterRedis({
