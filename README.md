@@ -126,6 +126,10 @@ Some copy/paste examples on Wiki:
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue
 
+### Changelog
+
+See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) for detailed changelog.
+
 ## Basic Options
 
 * **points** 
@@ -159,7 +163,7 @@ Some copy/paste examples on Wiki:
 * [tableName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablename) Table/collection.
 * [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL and PostgreSQL.
 
-Cut off load picks:
+Smooth out traffic picks:
 * [execEvenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenly)
 * [execEvenlyMinDelayMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenlymindelayms)
 
@@ -218,3 +222,5 @@ It has to implement at least 4 methods:
 * `_delete` deletes all key related data and returns `true` on deleted, `false` if key is not found.
 
 All other methods depends on store. See `RateLimiterRedis` or `RateLimiterPostgres` for example.
+
+Note: all changes should be covered by tests.

@@ -102,4 +102,28 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
           });
       });
   });
+
+  it('getTokensRemaining returns maximum if internal limiter by key does not exist', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 23, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.getTokensRemaining('test')
+      .then((tokensRemaining) => {
+        expect(tokensRemaining).to.equal(23);
+        done();
+      });
+  });
+
+  it('creates internal instance by key and removes tokens from it', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 2, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.removeTokens(1, 'customkey')
+      .then((remainingTokens) => {
+        expect(remainingTokens).to.equal(1);
+        rlQueue.getTokensRemaining()
+          .then((defaultTokensRemaining) => {
+            expect(defaultTokensRemaining).to.equal(2);
+            done();
+          });
+      });
+  });
 });
