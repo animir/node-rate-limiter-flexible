@@ -7,7 +7,7 @@ const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redisMock = require('redis-mock');
 const { redisEvalMock, getRedisClientClosed } = require('./helper');
 
-describe.only('BurstyRateLimiter', () => {
+describe('BurstyRateLimiter', () => {
   it('consume 1 point from limiter', (done) => {
     const testKey = 'consume1';
     const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
@@ -36,7 +36,7 @@ describe.only('BurstyRateLimiter', () => {
       .then(() => {
         bursty.consume(testKey)
           .then((res) => {
-            expect(res.consumedPoints).to.equal(2);
+            expect(res.consumedPoints).to.equal(3);
             expect(res.remainingPoints).to.equal(0);
             expect(res.msBeforeNext <= 1000).to.equal(true);
             expect(res.isFirstInDuration).to.equal(false);
@@ -65,7 +65,7 @@ describe.only('BurstyRateLimiter', () => {
                 done(new Error('must not'));
               })
               .catch((rej) => {
-                expect(rej.consumedPoints).to.equal(2);
+                expect(rej.consumedPoints).to.equal(5);
                 expect(rej.remainingPoints).to.equal(0);
                 expect(rej.msBeforeNext <= 1000).to.equal(true);
                 expect(rej.isFirstInDuration).to.equal(false);
