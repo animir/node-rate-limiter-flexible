@@ -51,6 +51,19 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     }, 1000);
   });
 
+  it('callback called even if tableCreated option is true', (done) => {
+    mysqlClientStub.restore();
+    sinon.stub(mysqlClient, 'query').callsFake((q, cb) => {
+      cb();
+    });
+
+    const rateLimiter = new RateLimiterMySQL({ // eslint-disable-line
+      storeClient: mysqlClient, storeType: 'connection', tableCreated: true,
+    }, () => {
+      done();
+    });
+  });
+
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
 

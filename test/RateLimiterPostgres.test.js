@@ -49,6 +49,17 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     }, 1000);
   });
 
+  it('callback called even if tableCreated option is true', (done) => {
+    pgClientStub.restore();
+    pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.resolve());
+
+    new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', tableCreated: true,
+    }, () => {
+      done();
+    });
+  });
+
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
 
