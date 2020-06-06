@@ -67,6 +67,7 @@ interface IRateLimiterStoreOptions extends IRateLimiterOptions{
     insuranceLimiter?: RateLimiterAbstract;
     dbName?: string;
     tableName?: string;
+    tableCreated?: boolean;
 }
 
 interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions{

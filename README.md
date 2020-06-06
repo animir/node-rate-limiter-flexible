@@ -161,6 +161,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 * [storeType](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#storetype) Have to be set to `knex`, if you use it.
 * [dbName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#dbname) Where to store points.
 * [tableName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablename) Table/collection.
+* [tableCreated](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablecreated) Is table already created in MySQL or PostgreSQL.
 * [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL and PostgreSQL.
 
 Smooth out traffic picks:
