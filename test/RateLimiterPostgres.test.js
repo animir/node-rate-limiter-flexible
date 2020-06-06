@@ -36,17 +36,17 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
   });
 
   it('do not create a table if tableCreated option is true', (done) => {
-    const pgClient = {
+    const pgClientTableCreated = {
       query: () => {},
     };
-    sinon.spy(pgClient, "query")
+    sinon.spy(pgClientTableCreated, 'query');
     const rateLimiter = new RateLimiterPostgres({ // eslint-disable-line
-      storeClient: pgClient, storeType: 'client', tableCreated: true,
+      storeClient: pgClientTableCreated, storeType: 'client', tableCreated: true,
     });
     setTimeout(() => {
-      expect(pgClient.query.callCount).to.equal(0)
-      done()
-    }, 1000)
+      expect(pgClientTableCreated.query.callCount).to.equal(0);
+      done();
+    }, 1000);
   });
 
   it('consume 1 point', (done) => {

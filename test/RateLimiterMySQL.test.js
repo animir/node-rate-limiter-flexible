@@ -38,17 +38,17 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
   });
 
   it('do not create a table if tableCreated option is true', (done) => {
-    const mysqlClient = {
+    const mysqlClientTableCreated = {
       query: () => {},
     };
-    sinon.spy(mysqlClient, "query")
+    sinon.spy(mysqlClientTableCreated, 'query');
     const rateLimiter = new RateLimiterMySQL({ // eslint-disable-line
-      storeClient: mysqlClient, storeType: 'connection', tableCreated: true,
+      storeClient: mysqlClientTableCreated, storeType: 'connection', tableCreated: true,
     });
     setTimeout(() => {
-      expect(mysqlClient.query.callCount).to.equal(0)
-      done()
-    }, 1000)
+      expect(mysqlClientTableCreated.query.callCount).to.equal(0);
+      done();
+    }, 1000);
   });
 
   it('consume 1 point', (done) => {
