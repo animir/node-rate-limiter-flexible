@@ -1,6 +1,7 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
+const BurstyLimiter = require('../lib/BurstyRateLimiter');
 const RateLimiterQueue = require('../lib/RateLimiterQueue');
 const RateLimiterQueueError = require('../lib/component/RateLimiterQueueError');
 
@@ -14,6 +15,44 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       .then((remainingTokens) => {
         expect(remainingTokens).to.equal(1);
         done();
+      });
+  });
+
+  it('remove 2 tokens from bursty limiter and returns correct remainingTokens 0', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const blMemory = new RateLimiterMemory({ points: 1, duration: 3 });
+    const burstyLimiter = new BurstyLimiter(rlMemory, blMemory);
+    const rlQueue = new RateLimiterQueue(burstyLimiter);
+    const startTime = Date.now();
+    rlQueue.removeTokens(1)
+      .then((remainingTokens1) => {
+        expect(remainingTokens1).to.equal(0);
+        rlQueue.removeTokens(1)
+          .then((remainingTokens2) => {
+            expect(remainingTokens2).to.equal(0);
+            expect(Date.now() - startTime < 1000).to.equal(true);
+            done();
+          });
+      });
+  });
+
+  it('remove 2 tokens from bursty limiter and wait 1 more', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const blMemory = new RateLimiterMemory({ points: 1, duration: 3 });
+    const burstyLimiter = new BurstyLimiter(rlMemory, blMemory);
+    const rlQueue = new RateLimiterQueue(burstyLimiter);
+    const startTime = Date.now();
+    rlQueue.removeTokens(1)
+      .then(() => {
+        rlQueue.removeTokens(1)
+          .then(() => {
+            rlQueue.removeTokens(1)
+              .then((remainingTokens) => {
+                expect(remainingTokens).to.equal(0);
+                expect(Date.now() - startTime > 1000).to.equal(true);
+                done();
+              });
+          });
       });
   });
 

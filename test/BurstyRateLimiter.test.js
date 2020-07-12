@@ -145,4 +145,44 @@ describe('BurstyRateLimiter', () => {
         done(err);
       });
   });
+
+  it('consume and get return the combined RateLimiterRes of both limiters with correct msBeforeNext', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 10 });
+    const rlBurstMemory = new RateLimiterMemory({ points: 20, duration: 1 });
+
+    const bl = new BurstyRateLimiter(rlMemory, rlBurstMemory);
+
+    bl.consume('keyGet', 1)
+      .then((firstConsumeRes) => {
+        expect(firstConsumeRes.isFirstInDuration).to.equal(true);
+        bl.consume('keyGet', 1)
+          .then((res) => {
+            expect(res.consumedPoints).to.equal(2);
+            expect(res.remainingPoints).to.equal(0);
+            expect(res.msBeforeNext <= 1000).to.equal(true);
+            expect(res.isFirstInDuration).to.equal(false);
+
+            bl.get('keyGet')
+              .then((rlRes) => {
+                expect(rlRes.consumedPoints).to.equal(2);
+                expect(rlRes.remainingPoints).to.equal(-1);
+                expect(rlRes.msBeforeNext <= 1000).to.equal(true);
+                done();
+              })
+              .catch(err => done(err));
+          })
+          .catch((err) => {
+            done(err);
+          });
+      });
+  });
+
+  it('returns points from limiter', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 10 });
+    const rlBurstMemory = new RateLimiterMemory({ points: 20, duration: 1 });
+
+    const brl = new BurstyRateLimiter(rlMemory, rlBurstMemory);
+    expect(brl.points).to.equal(1);
+    done();
+  });
 });

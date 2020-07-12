@@ -158,7 +158,7 @@ interface IRateLimiterQueueOpts {
 }
 
 export class RateLimiterQueue {
-    constructor(limiterFlexible: RateLimiterAbstract, opts?: IRateLimiterQueueOpts);
+    constructor(limiterFlexible: RateLimiterAbstract | BurstyRateLimiter, opts?: IRateLimiterQueueOpts);
 
     getTokensRemaining(key?: string | number): Promise<RateLimiterRes>;
 
