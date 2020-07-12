@@ -247,6 +247,18 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
       });
   });
 
+  it('delete resolves false if key is not set', (done) => {
+    const testKey = 'deletekey2';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5 });
+    rateLimiterMemory.delete(testKey)
+      .then((res) => {
+        expect(res).to.equal(false);
+        done();
+      }).catch(() => {
+      done(Error('must not reject'));
+    });
+  });
+
   it('consume applies options.customDuration to set expire', (done) => {
     const testKey = 'options.customDuration';
     const rateLimiterMemory = new RateLimiterMemory({ points: 1, duration: 5 });
