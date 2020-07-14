@@ -216,10 +216,11 @@ Make sure you've launched `npm run eslint` before creating PR, all errors have t
 You can try to run `npm run eslint-fix` to fix some issues.
 
 Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
-It has to implement at least 4 methods:
+It has to implement 4 methods:
 * `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object.
-* `_upsert` inserts or updates limits data by key and returns raw data.
-* `_get` returns raw data by key.
+* `_upsert` must be atomic. it inserts or updates value by key and returns raw data. it must support `forceExpire` mode 
+    to overwrite key expiration time.
+* `_get` returns raw data by key or `null` if there is no key.
 * `_delete` deletes all key related data and returns `true` on deleted, `false` if key is not found.
 
 All other methods depends on store. See `RateLimiterRedis` or `RateLimiterPostgres` for example.
