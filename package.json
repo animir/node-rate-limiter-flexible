@@ -4,11 +4,11 @@
   "description": "Node.js rate limiter by key and protection from DDoS and Brute-Force attacks in process Memory, Redis, MongoDb, Memcached, MySQL, PostgreSQL, Cluster or PM",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha --recursive",
+    "test": "istanbul -v cover -- _mocha --recursive",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
-    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "eslint": "node_modules/eslint/bin/eslint.js --quiet lib/**/**.js test/**/**.js",
-    "eslint-fix": "node_modules/eslint/bin/eslint.js --fix lib/**/**.js test/**/**.js"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "eslint": "eslint --quiet lib/**/**.js test/**/**.js",
+    "eslint-fix": "eslint --fix lib/**/**.js test/**/**.js"
   },
   "repository": {
     "type": "git",
