@@ -49,4 +49,23 @@ describe('MemoryStorage', function MemoryStorageTest() {
   it('return false, if there is no record to delete', () => {
     expect(storage.delete(testKey)).to.equal(false);
   });
+
+  it('should not fail in the absence of Timeout::unref', (done) => {
+    // Node (where we most likely be running tests) provides `Timeout.prototype.unref`, however
+    // MemoryStorage should run in environments where `Timeout.prototype.unref` is not provided
+    // (e.g. browsers). For this test we remove `unref` from `Timeout.prototype` only for the
+    // duration of this test, to verify that MemoryStorage.prototype.set won't throw.
+    const handle = setTimeout(() => {}, 0);
+    const isHandleObject = typeof handle === 'object' && !!handle.constructor;
+    let timeoutUnref;
+    if (isHandleObject) {
+      timeoutUnref = handle.constructor.prototype.unref;
+      delete handle.constructor.prototype.unref;
+    }
+    expect(() => new MemoryStorage().set('key', 0, 0.001)).to.not.throw();
+    setTimeout(done, 250);
+    if (isHandleObject) {
+      handle.constructor.prototype.unref = timeoutUnref;
+    }
+  });
 });
