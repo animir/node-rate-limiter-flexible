@@ -38,6 +38,14 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     sinon.stub(mongoCollection, 'createIndex').callsFake(() => {});
   });
 
+  it('throws error if storeClient not set', (done) => {
+    try {
+      new RateLimiterMongo({ points: 2, duration: 5 });
+    } catch (err) {
+      done()
+    }
+  });
+
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
