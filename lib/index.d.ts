@@ -160,9 +160,9 @@ interface IRateLimiterQueueOpts {
 export class RateLimiterQueue {
     constructor(limiterFlexible: RateLimiterAbstract | BurstyRateLimiter, opts?: IRateLimiterQueueOpts);
 
-    getTokensRemaining(key?: string | number): Promise<number|Error>;
+    getTokensRemaining(key?: string | number): Promise<number>;
 
-    removeTokens(tokens: number, key?: string | number): Promise<number|Error>;
+    removeTokens(tokens: number, key?: string | number): Promise<number>;
 }
 
 export class BurstyRateLimiter {
