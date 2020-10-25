@@ -23,7 +23,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     mysqlClientStub.restore();
   });
 
-  it('throw error if can not create db or table', (done) => {
+  it('call back with error if can not create db or table', (done) => {
     mysqlClientStub.restore();
     sinon.stub(mysqlClient, 'query').callsFake((q, cb) => {
       cb(Error('test'));
@@ -35,6 +35,41 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       expect(e instanceof Error).to.equal(true);
       done();
     });
+  });
+
+  it('get connection from pool', (done) => {
+    const poolConnectionReleaseFn = sinon.spy();
+    const mysqlPoolClient = {
+      query: (q, data, cb) => {
+        const res = [
+          { points: 1, expire: 1000 },
+        ];
+        cb(null, res);
+      },
+      getConnection: (cb) => {cb(null, mysqlPoolClient)},
+      release: poolConnectionReleaseFn,
+    };
+
+    let rateLimiter
+
+    process.on('unhandledRejection', (err) => console.error(err))
+
+    new Promise((resolve) => {
+      rateLimiter = new RateLimiterMySQL({
+        storeClient: mysqlPoolClient, storeType: 'pool', points: 2, duration: 5, tableCreated: true,
+      }, () => {
+        resolve();
+      });
+    }).then(() => {
+      rateLimiter.get('testPool')
+        .then((rlRes) => {
+          expect(poolConnectionReleaseFn.calledOnce).to.equal(true);
+          expect(rlRes.consumedPoints).to.equal(1);
+          done();
+        })
+    }).catch((err) => {
+      done(err);
+    })
   });
 
   it('do not create a table if tableCreated option is true', (done) => {
