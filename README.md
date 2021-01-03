@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/animir/node-rate-limiter-flexible.png)](https://travis-ci.org/animir/node-rate-limiter-flexible)
 [![Coverage Status](https://coveralls.io/repos/animir/node-rate-limiter-flexible/badge.svg?branch=master)](https://coveralls.io/r/animir/node-rate-limiter-flexible?branch=master)
 [![npm version](https://badge.fury.io/js/rate-limiter-flexible.svg)](https://www.npmjs.com/package/rate-limiter-flexible)
-![npm](https://img.shields.io/npm/dt/rate-limiter-flexible.svg)
+![npm](https://img.shields.io/npm/dm/rate-limiter-flexible.svg)
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
 
