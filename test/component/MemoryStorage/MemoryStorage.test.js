@@ -40,6 +40,14 @@ describe('MemoryStorage', function MemoryStorageTest() {
     done();
   });
 
+  it('incrby should create record if expiresAt is not set', (done) => {
+    storage.set(testKey, val)
+    expect(storage.get(testKey).expiresAt).to.equal(undefined);
+    storage.incrby(testKey, val, 5);
+    expect(storage.get(testKey).expiresAt !== null).to.equal(true);
+    done();
+  });
+
   it('should delete record and return true, if it was there', () => {
     storage.set(testKey, val, 10);
     expect(storage.delete(testKey)).to.equal(true);
