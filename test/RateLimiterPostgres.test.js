@@ -453,6 +453,28 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('private _getConnection returns client for TypeORM', (done) => {
+    class Pool {
+      Pool() {}
+      query() {}
+    }
+
+    const typeORMConnection = {
+      driver: { master: new Pool()}
+    }
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: typeORMConnection,
+      storeType: 'typeorm',
+    }, () => {
+      rateLimiter._getConnection()
+        .then((conn) => {
+          expect(conn).to.equal(typeORMConnection.driver.master);
+          done();
+        });
+    });
+  });
+
   it('Pool does not require specific connection releasing', (done) => {
     class Pool {
       Pool() {}
@@ -504,6 +526,25 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
       storeType: 'knex',
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(321);
+      done();
+    });
+  });
+
+  it('TypeORM does not require specific connection releasing', (done) => {
+    class Pool {
+      Pool() {}
+      query() {}
+    }
+
+    const typeORMConnection = {
+      driver: { master: new Pool()}
+    }
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: typeORMConnection,
+      storeType: 'typeorm',
+    }, () => {
+      expect(rateLimiter._releaseConnection()).to.equal(true);
       done();
     });
   });
