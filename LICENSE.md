@@ -1,4 +1,4 @@
-## ISC License
+## ISC License (ISC)
 
 Copyright 2019 Roman Voloboev
 
