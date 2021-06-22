@@ -15,7 +15,8 @@
     "url": "git+https://github.com/animir/node-rate-limiter-flexible.git"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "lib"
   ],
   "keywords": [
     "authorization",
