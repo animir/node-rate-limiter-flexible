@@ -1,11 +1,14 @@
 /* eslint-disable no-new */
 const {
-  describe, it, beforeEach, before,
+  describe, it, beforeEach, before, after,
 } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterMongo = require('../lib/RateLimiterMongo');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
+
+// Run tests with `MONGODB_CONNECT=true npm test`
+const connectToDb = process.env.MONGODB_CONNECT === 'true';
 
 describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   this.timeout(5000);
@@ -14,8 +17,10 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   let mongoDb;
   let mongoCollection;
   let stubMongoDbCollection;
+  let mongoClientReal;
+  let mongoClientReal4;
 
-  before(() => {
+  before((done) => {
     mongoClient = {
       db: () => {},
     };
@@ -26,6 +31,37 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
 
     stubMongoDbCollection = sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
+
+    if (connectToDb) {
+      const { MongoClient } = require('mongodb'); // eslint-disable-line global-require
+      const { MongoClient: MongoClient4 } = require('../node_modules/mongodb-4/lib/'); // eslint-disable-line global-require
+
+      mongoClientReal = new MongoClient('mongodb://localhost:27017', { useUnifiedTopology: true });
+      mongoClientReal4 = new MongoClient4('mongodb://localhost:27017', { useUnifiedTopology: true });
+
+      const connectMongo = client => new Promise((resolve, reject) => {
+        client.connect((err) => {
+          if (err) {
+            client.close();
+
+            return reject(err);
+          }
+
+          return resolve();
+        });
+      });
+
+      Promise.all([connectMongo(mongoClientReal), connectMongo(mongoClientReal4)]).then(() => done());
+    } else {
+      done();
+    }
+  });
+
+  after(() => {
+    if (connectToDb) {
+      mongoClientReal.close();
+      mongoClientReal4.close();
+    }
   });
 
   beforeEach(() => {
@@ -560,6 +596,44 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
               done();
             });
         }, 1000);
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (driver v3)', function test(done) {
+    if (!mongoClientReal) {
+      this.skip();
+    }
+
+    const testKey = 'consume1v3';
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClientReal, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        rateLimiter.delete(testKey);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (driver v4)', function test(done) {
+    if (!mongoClientReal4) {
+      this.skip();
+    }
+
+    const testKey = 'consume1v4';
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClientReal4, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        rateLimiter.delete(testKey);
+        done();
       })
       .catch((err) => {
         done(err);
