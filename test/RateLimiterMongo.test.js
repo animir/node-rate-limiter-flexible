@@ -42,7 +42,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     try {
       new RateLimiterMongo({ points: 2, duration: 5 });
     } catch (err) {
-      done()
+      done();
     }
   });
 
@@ -335,9 +335,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   it('delete key and return true', (done) => {
     const testKey = 'deletetrue';
     sinon.stub(mongoCollection, 'deleteOne').callsFake(() => Promise.resolve({
-      result: {
-        n: 1,
-      },
+      deletedCount: 1,
     }));
 
     const rateLimiter = new RateLimiterMongo({
