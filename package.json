@@ -49,8 +49,6 @@
     "istanbul": "^0.4.5",
     "memcached-mock": "^0.1.0",
     "mocha": "^5.1.1",
-    "mongodb": "^3.6.9",
-    "mongodb-4": "npm:mongodb@4.0.0-beta.5",
     "redis-mock": "^0.48.0",
     "sinon": "^5.0.10"
   }
