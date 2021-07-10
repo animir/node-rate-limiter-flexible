@@ -18,6 +18,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   before(() => {
     mongoClient = {
       db: () => {},
+      topology: {},
     };
 
     mongoDb = {
@@ -42,7 +43,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     try {
       new RateLimiterMongo({ points: 2, duration: 5 });
     } catch (err) {
-      done()
+      done();
     }
   });
 
@@ -335,9 +336,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   it('delete key and return true', (done) => {
     const testKey = 'deletetrue';
     sinon.stub(mongoCollection, 'deleteOne').callsFake(() => Promise.resolve({
-      result: {
-        n: 1,
-      },
+      deletedCount: 1,
     }));
 
     const rateLimiter = new RateLimiterMongo({
@@ -562,6 +561,58 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
               done();
             });
         }, 1000);
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (driver v3)', (done) => {
+    const testKey = 'consume1v3';
+    sinon.stub(mongoClient, 'topology').value({ s: { options: { metadata: { driver: { version: '3.6' } } } } });
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
+      expect(upsertOptions.returnOriginal).to.equal(false);
+
+      const res = {
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (driver v4)', (done) => {
+    const testKey = 'consume1v4';
+    sinon.stub(mongoClient, 'topology').value({ s: { options: { metadata: { driver: { version: '4.0' } } } } });
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
+      expect(upsertOptions.returnDocument).to.equal('after');
+
+      const res = {
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
       })
       .catch((err) => {
         done(err);
