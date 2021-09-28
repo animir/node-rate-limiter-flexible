@@ -85,7 +85,7 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
         expect(rateLimiter._inmemoryBlockedKeys._keys.key1).not.eq(undefined);
         expect(rateLimiter._inmemoryBlockedKeys._keys.key2).not.eq(undefined);
 
-        rateLimiter.deleteInMemory();
+        rateLimiter.deleteInMemoryBlockedAll();
         expect(rateLimiter._inmemoryBlockedKeys._keys.key1).eq(undefined);
         expect(rateLimiter._inmemoryBlockedKeys._keys.key2).eq(undefined);
 
