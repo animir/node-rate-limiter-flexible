@@ -184,6 +184,7 @@ Read detailed description on Wiki.
 * [set(key, points, secDuration)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitersetkey-points-secduration) Set points by key.
 * [block(key, secDuration)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterblockkey-secduration) Block key for `secDuration` seconds.
 * [delete(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterdeletekey) Reset consumed points.
+* [deleteInMemoryBlockedAll](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterdeleteinmemoryblockedall)
 * [penalty(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterpenaltykey-points--1) Increase number of consumed points in current duration.
 * [reward(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterrewardkey-points--1) Decrease number of consumed points in current duration.
 * [getKey(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitergetkeykey) Get internal prefixed key.
