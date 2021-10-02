@@ -304,6 +304,27 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       });
   });
 
+  it('get points return NULL if key is not set and store returns undefined', (done) => {
+    const testKey = 'getnull';
+
+    sinon.stub(mongoCollection, 'findOne').callsFake(() => {
+      return Promise.resolve(undefined);
+    });
+
+    const rateLimiter = new RateLimiterMongo({
+      storeClient: mongoClient, points: 1, duration: 1,
+    });
+
+    rateLimiter.get(testKey)
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('use dbName from options if db is function', () => {
     mongoClientStub.restore();
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake((dbName) => {
