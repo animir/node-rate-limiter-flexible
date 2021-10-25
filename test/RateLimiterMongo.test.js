@@ -10,6 +10,7 @@ const RateLimiterMemory = require('../lib/RateLimiterMemory');
 describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   this.timeout(5000);
   let mongoClient;
+  let mongoClientV4;
   let mongoClientStub;
   let mongoDb;
   let mongoCollection;
@@ -21,12 +22,18 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       topology: {},
     };
 
+    mongoClientV4 = {
+      collection: () => {},
+      client: {},
+    };
+
     mongoDb = {
       collection: () => {},
     };
 
     stubMongoDbCollection = sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
     mongoClientStub = sinon.stub(mongoClient, 'db').callsFake(() => mongoDb);
+    sinon.stub(mongoClientV4, 'collection').callsFake(() => mongoCollection);
   });
 
   beforeEach(() => {
@@ -630,6 +637,32 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     });
 
     const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (driver v4.1.3)', (done) => {
+    const testKey = 'consume1v4.1.3';
+    sinon.stub(mongoClientV4, 'client').value({ topology: { s: { options: { metadata: { driver: { version: '4.1.3' } } } } } });
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
+      expect(upsertOptions.returnDocument).to.equal('after');
+
+      const res = {
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClientV4, points: 2, duration: 5 });
     rateLimiter.consume(testKey)
       .then((res) => {
         expect(res.consumedPoints).to.equal(1);
