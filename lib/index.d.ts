@@ -141,6 +141,7 @@ export class RateLimiterAbstract {
     /**
      * Get RateLimiterRes in current duration. It always returns RateLimiterRes.isFirstInDuration=false.
      * @param key is usually IP address or some unique client id
+     * @param options
      * @returns  Promise, which:
      * - `resolved` with RateLimiterRes if key is set
      * - `resolved` with null if key is NOT set or expired
@@ -205,6 +206,11 @@ export class RateLimiterAbstract {
 
 export class RateLimiterStoreAbstract extends RateLimiterAbstract {
     constructor(opts: IRateLimiterStoreOptions);
+
+    /**
+     * Cleanup keys blocked in current process memory
+     */
+    deleteInMemoryBlockedAll(): void;
 }
 
 interface IRateLimiterOptions {
