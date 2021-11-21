@@ -93,10 +93,13 @@ const headers = {
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
 
-### Middlewares and plugins
+### Middlewares,  plugins and other packages
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
 * [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
 * [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
+* GraphQL [graphql-rate-limit-directive](https://www.npmjs.com/package/graphql-rate-limit-directive)
+* NestJS try [nestjs-rate-limiter](https://www.npmjs.com/package/nestjs-rate-limiter)
+* Fastify based NestJS app try [nestjs-fastify-rate-limiter](https://www.npmjs.com/package/nestjs-fastify-rate-limiter)
 
 Some copy/paste examples on Wiki:
 * [Minimal protection against password brute-force](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#minimal-protection-against-password-brute-force)
