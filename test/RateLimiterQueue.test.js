@@ -165,4 +165,19 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
           });
       });
   });
+
+  it('getTokensRemaining returns maximum if internal limiter does not have data', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 23, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.removeTokens(1, 'nodata')
+      .then(() => {
+        setTimeout(() => {
+          rlQueue.getTokensRemaining('nodata')
+            .then((tokensRemaining) => {
+              expect(tokensRemaining).to.equal(23);
+              done();
+            });
+        }, 1001)
+      })
+  });
 });
