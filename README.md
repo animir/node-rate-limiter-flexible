@@ -4,6 +4,7 @@
 ![npm](https://img.shields.io/npm/dm/rate-limiter-flexible.svg)
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
+[![download-size](https://packagephobia.now.sh/badge?p=rate-limiter-flexible)](https://packagephobia.now.sh/result?p=rate-limiter-flexible)
 
 [node-image]: https://img.shields.io/badge/node.js-%3E=_6.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
@@ -21,6 +22,8 @@ It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _Mongo
 **Traffic bursts.** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
 
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
+
+**Small.** Install size is ~120kb. No dependencies.
 
 **Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
 
