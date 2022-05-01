@@ -237,6 +237,10 @@ interface IRateLimiterStoreOptions extends IRateLimiterOptions {
     tableCreated?: boolean;
 }
 
+interface IRateLimiterStoreNoAutoExpiryOptions extends IRateLimiterStoreOptions {
+    clearExpiredByTimeout?: boolean;
+}
+
 interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
     indexKeyPrefix?: {
         [key: string]: any;
@@ -326,11 +330,11 @@ export class RateLimiterMongo extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterMySQL extends RateLimiterStoreAbstract {
-    constructor(opts: IRateLimiterStoreOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterPostgres extends RateLimiterStoreAbstract {
-    constructor(opts: IRateLimiterStoreOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterMemcache extends RateLimiterStoreAbstract {}
