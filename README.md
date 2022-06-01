@@ -42,6 +42,8 @@ It uses **fixed window** as it is much faster than rolling window.
 
 ## Basic Example
 
+Points can be consumed by IP address, user ID, authorisation token, API route or any other string.
+
 ```javascript
 const opts = {
   points: 6, // 6 points
