@@ -361,6 +361,7 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         rateLimiter.get(testKey)
           .then((res) => {
             expect(res.consumedPoints).to.equal(12);
+            expect(res.remainingPoints).to.equal(0);
             done();
           });
       })
