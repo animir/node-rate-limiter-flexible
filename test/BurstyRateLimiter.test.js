@@ -165,7 +165,7 @@ describe('BurstyRateLimiter', () => {
             bl.get('keyGet')
               .then((rlRes) => {
                 expect(rlRes.consumedPoints).to.equal(2);
-                expect(rlRes.remainingPoints).to.equal(-1);
+                expect(rlRes.remainingPoints).to.equal(0);
                 expect(rlRes.msBeforeNext <= 1000).to.equal(true);
                 done();
               })
