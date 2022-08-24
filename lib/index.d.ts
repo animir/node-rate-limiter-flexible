@@ -278,6 +278,8 @@ export class RateLimiterClusterMasterPM2 {
 
 export class RateLimiterRedis extends RateLimiterStoreAbstract {}
 
+export class RateLimiterRedisNext extends RateLimiterStoreAbstract {}
+
 export interface IRateLimiterMongoFunctionOptions {
     attrs: { [key: string]: any };
 }
