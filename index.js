@@ -1,5 +1,4 @@
 const RateLimiterRedis = require('./lib/RateLimiterRedis');
-const RateLimiterRedisNext = require('./lib/RateLimiterRedisNext');
 const RateLimiterMongo = require('./lib/RateLimiterMongo');
 const RateLimiterMySQL = require('./lib/RateLimiterMySQL');
 const RateLimiterPostgres = require('./lib/RateLimiterPostgres');
@@ -14,7 +13,6 @@ const RateLimiterRes = require('./lib/RateLimiterRes');
 
 module.exports = {
   RateLimiterRedis,
-  RateLimiterRedisNext,
   RateLimiterMongo,
   RateLimiterMySQL,
   RateLimiterPostgres,

@@ -247,6 +247,10 @@ interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
     };
 }
 
+interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
+    storeClientVersion?: number;
+}
+
 interface ICallbackReady {
     (error?: Error): void;
 }
@@ -276,9 +280,9 @@ export class RateLimiterClusterMasterPM2 {
     constructor(pm2: any);
 }
 
-export class RateLimiterRedis extends RateLimiterStoreAbstract {}
-
-export class RateLimiterRedisNext extends RateLimiterStoreAbstract {}
+export class RateLimiterRedis extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterRedisOptions);
+}
 
 export interface IRateLimiterMongoFunctionOptions {
     attrs: { [key: string]: any };
