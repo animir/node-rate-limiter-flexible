@@ -15,6 +15,8 @@
 
 It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
 
+Memory limiter also works in browser.
+
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
 **Traffic bursts.** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
