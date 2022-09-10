@@ -19,7 +19,7 @@ Memory limiter also works in browser.
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
-**Traffic bursts.** Replace Token Bucket with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
+Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter).
 
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
