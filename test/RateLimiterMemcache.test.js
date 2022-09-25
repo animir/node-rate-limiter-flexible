@@ -178,14 +178,14 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
-  it('block key in memory when inmemory block options set up', (done) => {
+  it('block key in memory when inMemory block options set up', (done) => {
     const testKey = 'blockmem';
     const rateLimiter = new RateLimiterMemcache({
       storeClient: memcacheMockClient,
       points: 1,
       duration: 5,
-      inmemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 10,
+      inmemoryBlockOnConsumed: 2, // @deprecated Kept to test backward compatability
+      inmemoryBlockDuration: 10, // @deprecated Kept to test backward compatability
     });
     rateLimiter
       .consume(testKey)
@@ -205,14 +205,14 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
-  it('expire inmemory blocked key', (done) => {
+  it('expire inMemory blocked key', (done) => {
     const testKey = 'blockmem2';
     const rateLimiter = new RateLimiterMemcache({
       storeClient: memcacheMockClient,
       points: 1,
       duration: 1,
-      inmemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 2,
+      inMemoryBlockOnConsumed: 2,
+      inMemoryBlockDuration: 2,
     });
     // It blocks on the first consume as consumed points more than available
     rateLimiter
@@ -235,11 +235,11 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
-  it('throws error when inmemoryBlockOnConsumed is not set, but inmemoryBlockDuration is set', (done) => {
+  it('throws error when inMemoryBlockOnConsumed is not set, but inMemoryBlockDuration is set', (done) => {
     try {
       const rateLimiter = new RateLimiterMemcache({
         storeClient: memcacheMockClient,
-        inmemoryBlockDuration: 2,
+        inMemoryBlockDuration: 2,
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -248,12 +248,12 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
     }
   });
 
-  it('throws error when inmemoryBlockOnConsumed less than points', (done) => {
+  it('throws error when inMemoryBlockOnConsumed less than points', (done) => {
     try {
       const rateLimiter = new RateLimiterMemcache({
         storeClient: memcacheMockClient,
         points: 2,
-        inmemoryBlockOnConsumed: 1,
+        inMemoryBlockOnConsumed: 1,
       });
       rateLimiter.reward('test');
     } catch (err) {

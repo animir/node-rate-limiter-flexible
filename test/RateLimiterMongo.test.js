@@ -168,7 +168,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       });
   });
 
-  it('block key inmemory when inmemory block options set up', (done) => {
+  it('block key in memory when inMemory block options set up', (done) => {
     const testKey = 'blockmem';
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {
       const res = {
@@ -184,15 +184,15 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       storeClient: mongoClient,
       points: 2,
       duration: 5,
-      inmemoryBlockOnConsumed: 10,
-      inmemoryBlockDuration: 10,
+      inMemoryBlockOnConsumed: 10,
+      inMemoryBlockDuration: 10,
     });
     rateLimiter.consume(testKey)
       .then(() => {
         done(Error('have to reject'));
       })
       .catch(() => {
-        expect(rateLimiter._inmemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
+        expect(rateLimiter._inMemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
         done();
       });
   });

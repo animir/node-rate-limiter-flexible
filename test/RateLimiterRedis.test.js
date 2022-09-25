@@ -178,14 +178,14 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('block key in memory when inmemory block options set up', (done) => {
+  it('block key in memory when inMemory block options set up', (done) => {
     const testKey = 'blockmem';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      inmemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 10,
+      inMemoryBlockOnConsumed: 2,
+      inMemoryBlockDuration: 10,
     });
     rateLimiter
       .consume(testKey)
@@ -210,12 +210,12 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      inmemoryBlockOnConsumed: 1,
+      inMemoryBlockOnConsumed: 1,
     });
     rateLimiter
       .consume(testKey)
       .then(() => {
-        expect(rateLimiter._inmemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
+        expect(rateLimiter._inMemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
         done();
       })
       .catch((rejRes) => {
@@ -229,7 +229,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      inmemoryBlockOnConsumed: 1,
+      inMemoryBlockOnConsumed: 1,
     });
     rateLimiter
       .consume(testKey, 2)
@@ -237,19 +237,19 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         done(new Error('must not'));
       })
       .catch(() => {
-        expect(rateLimiter._inmemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
+        expect(rateLimiter._inMemoryBlockedKeys.msBeforeExpire(rateLimiter.getKey(testKey)) > 0).to.equal(true);
         done();
       });
   });
 
-  it('expire inmemory blocked key', (done) => {
+  it('expire inMemory blocked key', (done) => {
     const testKey = 'blockmem2';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
       points: 1,
       duration: 1,
-      inmemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 2,
+      inMemoryBlockOnConsumed: 2,
+      inmemoryBlockDuration: 2, // @deprecated Kept to test backward compatability
     });
     // It blocks on the first consume as consumed points more than available
     rateLimiter
@@ -271,11 +271,11 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('throws error when inmemoryBlockOnConsumed is not set, but inmemoryBlockDuration is set', (done) => {
+  it('throws error when inMemoryBlockOnConsumed is not set, but inMemoryBlockDuration is set', (done) => {
     try {
       const rateLimiter = new RateLimiterRedis({
         storeClient: redisMockClient,
-        inmemoryBlockDuration: 2,
+        inMemoryBlockDuration: 2,
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -284,12 +284,12 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     }
   });
 
-  it('throws error when inmemoryBlockOnConsumed less than points', (done) => {
+  it('throws error when inMemoryBlockOnConsumed less than points', (done) => {
     try {
       const rateLimiter = new RateLimiterRedis({
         storeClient: redisMockClient,
         points: 2,
-        inmemoryBlockOnConsumed: 1,
+        inmemoryBlockOnConsumed: 1, // @deprecated Kept to test backward compatability
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -722,8 +722,8 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 5,
       blockDuration: 10,
-      inmemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 10,
+      inMemoryBlockOnConsumed: 2,
+      inMemoryBlockDuration: 10,
     });
     rateLimiter
       .consume(testKey)

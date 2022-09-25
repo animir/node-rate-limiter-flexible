@@ -71,8 +71,8 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
       duration: 1,
       // avoid fire block method
       blockDuration: 0,
-      inmemoryBlockOnConsumed: 1,
-      inmemoryBlockDuration: 1,
+      inMemoryBlockOnConsumed: 1,
+      inMemoryBlockDuration: 1,
       keyPrefix: '',
     });
 
@@ -82,12 +82,12 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
       rateLimiter.consume('key2', 2),
     ])
       .then(() => {
-        expect(rateLimiter._inmemoryBlockedKeys._keys.key1).not.eq(undefined);
-        expect(rateLimiter._inmemoryBlockedKeys._keys.key2).not.eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.key1).not.eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.key2).not.eq(undefined);
 
-        rateLimiter.deleteInMemoryBlockedAll();
-        expect(rateLimiter._inmemoryBlockedKeys._keys.key1).eq(undefined);
-        expect(rateLimiter._inmemoryBlockedKeys._keys.key2).eq(undefined);
+        rateLimiter.deleteinMemoryBlockedAll();
+        expect(rateLimiter._inMemoryBlockedKeys._keys.key1).eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.key2).eq(undefined);
 
         done();
       })
@@ -102,17 +102,17 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
       duration: 1,
       // avoid fire block method
       blockDuration: 0,
-      inmemoryBlockOnConsumed: 1,
-      inmemoryBlockDuration: 1,
+      inMemoryBlockOnConsumed: 1,
+      inMemoryBlockDuration: 1,
       keyPrefix: '',
     });
 
     // should start blocking
     rateLimiter.consume('key', 2).catch(() => {
-      expect(rateLimiter._inmemoryBlockedKeys._keys.key).not.eq(undefined);
+      expect(rateLimiter._inMemoryBlockedKeys._keys.key).not.eq(undefined);
 
       rateLimiter.delete('key').then((isExist) => {
-        expect(rateLimiter._inmemoryBlockedKeys._keys.key).eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.key).eq(undefined);
         expect(isExist).eq(true);
 
         done();

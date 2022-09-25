@@ -29,7 +29,7 @@ Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node
 
 **Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
-**In memory blocks.** Avoid extra requests to store with [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
+**In memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
 **Deno compatible** See [this example](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4) 
 
@@ -164,8 +164,8 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
 * [blockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#blockduration) Block for N seconds, if consumed more than points.
-* [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) Avoid extra requests to store.
-* [inmemoryBlockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockduration)
+* [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) Avoid extra requests to store.
+* [inMemoryBlockDuration](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockduration)
 * [insuranceLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#insurancelimiter) Make it more stable with less efforts.
 * [storeType](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#storetype) Have to be set to `knex`, if you use it.
 * [dbName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#dbname) Where to store points.
@@ -215,7 +215,7 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 7. MySQL     14.59 ms (with connection pool 100)
 ```
 
-Note, you can speed up limiters with [inmemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) option.
+Note, you can speed up limiters with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) option.
 
 ## Contribution
 

@@ -229,7 +229,15 @@ interface IRateLimiterClusterOptions extends IRateLimiterOptions {
 interface IRateLimiterStoreOptions extends IRateLimiterOptions {
     storeClient: any;
     storeType?: string;
+    inMemoryBlockOnConsumed?: number;
+    inMemoryBlockDuration?: number;
+    /**
+    * @deprecated Use camelCased inMemoryBlockOnConsumed option
+    */
     inmemoryBlockOnConsumed?: number;
+    /**
+    * @deprecated Use camelCased inMemoryBlockOnConsumed option
+    */
     inmemoryBlockDuration?: number;
     insuranceLimiter?: RateLimiterAbstract;
     dbName?: string;
