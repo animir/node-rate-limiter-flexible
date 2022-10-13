@@ -551,6 +551,48 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  describe('disconnected redis client', () => {
+    it('get points with disconnected ioredis', (done) => {
+      const testKey = 'get';
+
+      const disconnectedIoRedis = {
+        status: 'closed',
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedIoRedis,
+        points: 2,
+        duration: 1,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Not connected');
+          done();
+        });
+    });
+
+    it('get points with disconnected node-redis', (done) => {
+      const testKey = 'get';
+
+      const disconnectedIoRedis = {
+        isReady: () => false,
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedIoRedis,
+        points: 2,
+        duration: 1,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Not connected');
+          done();
+        });
+    });
+  });
+
   it('get returns NULL if key is not set', (done) => {
     const testKey = 'getnull';
 
