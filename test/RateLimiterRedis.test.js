@@ -552,7 +552,40 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   });
 
   describe('disconnected redis client', () => {
-    it('get points with disconnected ioredis', (done) => {
+    it('attempt to invoke redis if rejectIfRedisNotReady is not set', (done) => {
+      const testKey = 'get';
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisClientClosed,
+        points: 2,
+        duration: 1,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('closed');
+          done();
+        });
+    });
+
+    it('get throws error with mock redis', (done) => {
+      const testKey = 'get';
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisClientClosed,
+        points: 2,
+        duration: 1,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+    it('get throws error with disconnected ioredis', (done) => {
       const testKey = 'get';
 
       const disconnectedIoRedis = {
@@ -563,16 +596,17 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: disconnectedIoRedis,
         points: 2,
         duration: 1,
+        rejectIfRedisNotReady: true,
       });
       rateLimiter
         .consume(testKey)
         .catch((error) => {
-          expect(error.message).to.equal('Not connected');
+          expect(error.message).to.equal('Redis connection is not ready');
           done();
         });
     });
 
-    it('get points with disconnected node-redis', (done) => {
+    it('get throws error with disconnected node-redis', (done) => {
       const testKey = 'get';
 
       const disconnectedIoRedis = {
@@ -583,11 +617,12 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: disconnectedIoRedis,
         points: 2,
         duration: 1,
+        rejectIfRedisNotReady: true,
       });
       rateLimiter
         .consume(testKey)
         .catch((error) => {
-          expect(error.message).to.equal('Not connected');
+          expect(error.message).to.equal('Redis connection is not ready');
           done();
         });
     });
