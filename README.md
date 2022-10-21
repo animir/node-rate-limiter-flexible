@@ -180,6 +180,7 @@ Smooth out traffic picks:
 Specific:
 * [indexKeyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#indexkeyprefix) Combined indexes of MongoDB.
 * [timeoutMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#timeoutms) For Cluster.
+* [rejectIfRedisNotReady](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#rejectifredisnotready)
 
 ## API
 
