@@ -46,7 +46,7 @@ It uses **fixed window** as it is much faster than rolling window.
   
   ```javascript
   // CommonJS
-  const RateLimiterMemory = require("rate-limiter-flexible");
+  const { RateLimiterMemory } = require("rate-limiter-flexible");
 
   // or
 
