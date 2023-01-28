@@ -42,6 +42,18 @@ It uses **fixed window** as it is much faster than rolling window.
 
 `yarn add rate-limiter-flexible`
 
+## Import
+  
+  ```javascript
+  // CommonJS
+  const RateLimiterMemory = require("rate-limiter-flexible");
+
+  // or
+
+  // ECMAScript 
+  import { RateLimiterMemory } from "rate-limiter-flexible";
+  ```
+
 ## Basic Example
 
 Points can be consumed by IP address, user ID, authorisation token, API route or any other string.
