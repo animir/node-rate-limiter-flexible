@@ -185,4 +185,38 @@ describe('BurstyRateLimiter', () => {
     expect(brl.points).to.equal(1);
     done();
   });
+
+  it('returns null if key does not exist', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 10 });
+    const rlBurstMemory = new RateLimiterMemory({ points: 20, duration: 1 });
+
+    const brl = new BurstyRateLimiter(rlMemory, rlBurstMemory);
+    brl.get('test-null')
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      });
+  });
+
+  it('returns msBeforeNext=0 if key is not set on bursty limiter', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 10 });
+    const rlBurstMemory = new RateLimiterMemory({ points: 20, duration: 1 });
+
+    const testKey = 'test-burst-null'
+    const brl = new BurstyRateLimiter(rlMemory, rlBurstMemory);
+    rlMemory.consume(testKey)
+      .then(async () => {
+        brl.get(testKey)
+          .then((res) => {
+            expect(res.msBeforeNext).to.equal(0);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          })
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });
