@@ -6,7 +6,7 @@ const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redis = require("redis");
 
-describe.only('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
+describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5500);
   let redisMockClient;
 
