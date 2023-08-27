@@ -140,7 +140,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
             redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
               expect(consumedPoints).to.equal('2');
               done();
-            });    
+            });
           })
           .catch((err) => {
             done(err);
@@ -253,7 +253,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 1,
       inMemoryBlockOnConsumed: 2,
-      inmemoryBlockDuration: 2, // @deprecated Kept to test backward compatability
+      inMemoryBlockDuration: 2,
       useIoredis: true
     });
     // It blocks on the first consume as consumed points more than available
@@ -295,7 +295,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       const rateLimiter = new RateLimiterRedis({
         storeClient: redisMockClient,
         points: 2,
-        inmemoryBlockOnConsumed: 1, // @deprecated Kept to test backward compatability
+        inMemoryBlockOnConsumed: 1,
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -326,7 +326,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     const testKey = 'rediserror2';
 
     const redisClientClosed = new Redis();
-    
+
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
       points: 1,
@@ -379,7 +379,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     const testKey = 'rediserror4';
 
     const redisClientClosed = new Redis();
-    
+
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
       points: 1,

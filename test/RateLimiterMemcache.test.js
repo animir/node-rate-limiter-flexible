@@ -184,8 +184,8 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       storeClient: memcacheMockClient,
       points: 1,
       duration: 5,
-      inmemoryBlockOnConsumed: 2, // @deprecated Kept to test backward compatability
-      inmemoryBlockDuration: 10, // @deprecated Kept to test backward compatability
+      inMemoryBlockOnConsumed: 2,
+      inMemoryBlockDuration: 10,
     });
     rateLimiter
       .consume(testKey)
