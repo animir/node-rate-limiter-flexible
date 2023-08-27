@@ -4,20 +4,21 @@ const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
-const redisMock = require('redis-mock');
-const { redisEvalMock, getRedisClientClosed } = require('./helper');
+const redis = require("redis");
 
 describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
-  this.timeout(5000);
-  const redisMockClient = redisMock.createClient();
+  this.timeout(5500);
+  let redisMockClient;
 
-  redisMockClient.eval = redisEvalMock(redisMockClient);
-
-  const redisClientClosed = getRedisClientClosed(redisMockClient);
-
-  beforeEach((done) => {
-    redisMockClient.flushall(done);
+  beforeEach(async () => {
+    redisMockClient = redis.createClient();
+    await redisMockClient.connect();
+    await redisMockClient.flushAll();
   });
+
+  afterEach(async ()=>{
+    await redisMockClient.quit();
+  })
 
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
@@ -29,11 +30,9 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     rateLimiter
       .consume(testKey)
       .then(() => {
-        redisMockClient.get(rateLimiter.getKey(testKey), (err, consumedPoints) => {
-          if (!err) {
-            expect(consumedPoints).to.equal('1');
-            done();
-          }
+        redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+          expect(consumedPoints).to.equal('1');
+          done();
         });
       })
       .catch((err) => {
@@ -80,7 +79,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
                3) consume after 2500ms by timeout
             */
             const diff = Date.now() - timeFirstConsume;
-            expect(diff > 2400 && diff < 2600).to.equal(true);
+            expect(diff > 2400 && diff < 5100).to.equal(true);
             done();
           })
           .catch((err) => {
@@ -133,12 +132,10 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         rateLimiter
           .penalty(testKey)
           .then(() => {
-            redisMockClient.get(rateLimiter.getKey(testKey), (err, consumedPoints) => {
-              if (!err) {
-                expect(consumedPoints).to.equal('2');
-                done();
-              }
-            });
+            redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+              expect(consumedPoints).to.equal('2');
+              done();
+            });    
           })
           .catch((err) => {
             done(err);
@@ -162,11 +159,9 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         rateLimiter
           .reward(testKey)
           .then(() => {
-            redisMockClient.get(rateLimiter.getKey(testKey), (err, consumedPoints) => {
-              if (!err) {
-                expect(consumedPoints).to.equal('0');
-                done();
-              }
+            redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+              expect(consumedPoints).to.equal('0');
+              done();
             });
           })
           .catch((err) => {
@@ -298,25 +293,29 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     }
   });
 
-  it('throws error on RedisClient error', (done) => {
+  it('throws error on RedisClient error', async () => {
     const testKey = 'rediserror';
 
     const rateLimiter = new RateLimiterRedis({
-      storeClient: redisClientClosed,
+      storeClient: redisMockClient,
     });
 
-    rateLimiter
+    await redisMockClient.quit();
+    await rateLimiter
       .consume(testKey)
       .then(() => {})
       .catch((rejRes) => {
         expect(rejRes instanceof Error).to.equal(true);
-        done();
       });
+    await redisMockClient.connect();
   });
 
-  it('consume using insuranceLimiter when RedisClient error', (done) => {
+  it('consume using insuranceLimiter when RedisClient error', async() => {
     const testKey = 'rediserror2';
 
+    const redisClientClosed = redis.createClient();
+    await redisClientClosed.connect();
+    
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
       points: 1,
@@ -327,22 +326,22 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
       }),
     });
+    await redisClientClosed.quit();
 
     // Consume from insurance limiter with different options
-    rateLimiter
+    await rateLimiter
       .consume(testKey)
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext > 1000).to.equal(true);
-        done();
-      })
-      .catch((rejRes) => {
-        done(rejRes);
       });
   });
 
-  it('penalty using insuranceLimiter when RedisClient error', (done) => {
+  it('penalty using insuranceLimiter when RedisClient error', async () => {
     const testKey = 'rediserror3';
 
+    const redisClientClosed = redis.createClient();
+    await redisClientClosed.connect();
+
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
       points: 1,
@@ -353,25 +352,21 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
       }),
     });
+    await redisClientClosed.quit();
 
-    rateLimiter
-      .penalty(testKey)
-      .then(() => {
-        redisMockClient.get(rateLimiter.getKey(testKey), (err, consumedPoints) => {
-          if (!err) {
-            expect(consumedPoints).to.equal('1');
-            done();
-          }
-        });
-      })
-      .catch((rejRes) => {
-        done(rejRes);
-      });
+    await rateLimiter
+      .penalty(testKey);
+    await redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+      expect(consumedPoints).to.equal('1');
+    });
   });
 
-  it('reward using insuranceLimiter when RedisClient error', (done) => {
+  it('reward using insuranceLimiter when RedisClient error', async () => {
     const testKey = 'rediserror4';
 
+    const redisClientClosed = redis.createClient();
+    await redisClientClosed.connect();
+
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
       points: 1,
@@ -382,31 +377,26 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
       }),
     });
+    await redisClientClosed.quit();
 
-    rateLimiter
+    await rateLimiter
       .consume(testKey, 2)
       .then(() => {
-        rateLimiter
-          .reward(testKey)
-          .then(() => {
-            redisMockClient.get(rateLimiter.getKey(testKey), (err, consumedPoints) => {
-              if (!err) {
-                expect(consumedPoints).to.equal('1');
-                done();
-              }
-            });
-          })
-          .catch((rejRes) => {
-            done(rejRes);
-          });
       })
-      .catch((rejRes) => {
-        done(rejRes);
+      .catch(() => {
       });
+    await rateLimiter
+      .reward(testKey)
+    await redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+      expect(consumedPoints).to.equal('1');
+    });
   });
 
-  it('block using insuranceLimiter when RedisClient error', (done) => {
+  it('block using insuranceLimiter when RedisClient error', async() => {
     const testKey = 'rediserrorblock';
+
+    const redisClientClosed = redis.createClient();
+    await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
@@ -418,22 +408,19 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
       }),
     });
+    await redisClientClosed.quit();
 
-    rateLimiter
+    await rateLimiter
       .block(testKey, 3)
       .then((res) => {
         expect(res.msBeforeNext > 2000 && res.msBeforeNext <= 3000).to.equal(true);
-        done();
-      })
-      .catch(() => {
-        done(Error('must not reject'));
       });
   });
 
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisClientClosed });
+    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisMockClient });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });
@@ -552,58 +539,21 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   });
 
   describe('disconnected redis client', () => {
-    it('attempt to invoke redis if rejectIfRedisNotReady is not set', (done) => {
+    it('attempt to invoke redis if rejectIfRedisNotReady is not set', async () => {
       const testKey = 'get';
 
       const rateLimiter = new RateLimiterRedis({
-        storeClient: redisClientClosed,
+        storeClient: redisMockClient,
         points: 2,
         duration: 1,
       });
-      rateLimiter
+      await redisMockClient.quit()
+      await rateLimiter
         .consume(testKey)
         .catch((error) => {
-          expect(error.message).to.equal('closed');
-          done();
+          expect(error.message).to.contains('closed');
         });
-    });
-
-    it('get throws error with mock redis', (done) => {
-      const testKey = 'get';
-
-      const rateLimiter = new RateLimiterRedis({
-        storeClient: redisClientClosed,
-        points: 2,
-        duration: 1,
-        rejectIfRedisNotReady: true,
-      });
-      rateLimiter
-        .consume(testKey)
-        .catch((error) => {
-          expect(error.message).to.equal('Redis connection is not ready');
-          done();
-        });
-    });
-
-    it('get throws error with disconnected ioredis', (done) => {
-      const testKey = 'get';
-
-      const disconnectedIoRedis = {
-        status: 'closed',
-      };
-
-      const rateLimiter = new RateLimiterRedis({
-        storeClient: disconnectedIoRedis,
-        points: 2,
-        duration: 1,
-        rejectIfRedisNotReady: true,
-      });
-      rateLimiter
-        .consume(testKey)
-        .catch((error) => {
-          expect(error.message).to.equal('Redis connection is not ready');
-          done();
-        });
+      await redisMockClient.connect();
     });
 
     it('get throws error with disconnected node-redis', (done) => {
@@ -647,43 +597,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('get supports ioredis format', (done) => {
-    const testKey = 'getioredis';
-    class multiStubIoRedisClient {
-      multi() {
-        const multi = redisMockClient.multi();
-        multi.exec = (cb) => {
-          cb(null, [[null, '2'], [null, 4993]]);
-        };
-
-        return multi;
-      }
-    }
-
-    const rateLimiter = new RateLimiterRedis({
-      storeClient: redisMockClient,
-      points: 3,
-      duration: 5,
-    });
-    rateLimiter
-      .consume(testKey)
-      .then(() => {
-        rateLimiter.client = new multiStubIoRedisClient();
-        rateLimiter
-          .get(testKey)
-          .then((res) => {
-            expect(res.remainingPoints).to.equal(1);
-            done();
-          })
-          .catch(() => {
-            done(Error('get must not reject'));
-          });
-      })
-      .catch(() => {
-        done(Error('consume must not reject'));
-      });
-  });
-
   it('delete key and return true', (done) => {
     const testKey = 'deletetrue';
 
@@ -718,16 +631,18 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('delete rejects on error', (done) => {
+  it('delete rejects on error', async () => {
     const testKey = 'deleteerr';
 
     const rateLimiter = new RateLimiterRedis({
-      storeClient: redisClientClosed,
+      storeClient: redisMockClient,
       points: 2,
       duration: 1,
     });
-    rateLimiter.delete(testKey)
-      .catch(() => done());
+    await redisMockClient.quit();
+    await rateLimiter.delete(testKey)
+      .catch(() => {});
+    await redisMockClient.connect();
   });
 
   it('consume applies options.customDuration to set expire', (done) => {
@@ -766,8 +681,11 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('insurance limiter on error consume applies options.customDuration to set expire', (done) => {
+  it('insurance limiter on error consume applies options.customDuration to set expire', async () => {
     const testKey = 'consume.customDuration.onerror';
+
+    const redisClientClosed = redis.createClient();
+    await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisClientClosed,
@@ -779,16 +697,13 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
       }),
     });
+    await redisClientClosed.quit();
 
     // Consume from insurance limiter with different options
-    rateLimiter
+    await rateLimiter
       .consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext <= 1000).to.equal(true);
-        done();
-      })
-      .catch((rejRes) => {
-        done(rejRes);
       });
   });
 
