@@ -7,3 +7,4 @@ test
 coverage
 img
 .github
+docker-compose.yml
