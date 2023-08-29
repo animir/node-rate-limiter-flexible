@@ -26,7 +26,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 5,
-      useIoredis: true,
     });
     rateLimiter
       .consume(testKey)
@@ -47,7 +46,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      useIoredis: true,
     });
     rateLimiter
       .consume(testKey, 2)
@@ -65,7 +63,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 2,
       duration: 5,
       execEvenly: true,
-      useIoredis: true,
     });
     rateLimiter
       .consume(testKey)
@@ -102,7 +99,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       duration: 1,
       execEvenly: true,
       execEvenlyMinDelayMs: 20,
-      useIoredis: true,
     });
     rateLimiter
       .consume(testKey)
@@ -129,7 +125,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 3,
       duration: 5,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -157,7 +152,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -187,7 +181,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       duration: 5,
       inMemoryBlockOnConsumed: 2,
       inMemoryBlockDuration: 10,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -213,7 +206,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 5,
       inMemoryBlockOnConsumed: 1,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -233,7 +225,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 5,
       inMemoryBlockOnConsumed: 1,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey, 2)
@@ -254,7 +245,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       duration: 1,
       inMemoryBlockOnConsumed: 2,
       inMemoryBlockDuration: 2,
-      useIoredis: true
     });
     // It blocks on the first consume as consumed points more than available
     rateLimiter
@@ -281,7 +271,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       const rateLimiter = new RateLimiterRedis({
         storeClient: redisMockClient,
         inMemoryBlockDuration: 2,
-        useIoredis: true
       });
       rateLimiter.reward('test');
     } catch (err) {
@@ -309,7 +298,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
-      useIoredis: true
     });
 
     await redisMockClient.disconnect();
@@ -335,9 +323,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 2,
         duration: 2,
         storeClient: redisMockClient,
-        useIoredis: true
       }),
-      useIoredis: true
     });
     await redisClientClosed.disconnect();
 
@@ -362,9 +348,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 2,
         duration: 2,
         storeClient: redisMockClient,
-        useIoredis: true
       }),
-      useIoredis: true
     });
     await redisClientClosed.disconnect();
 
@@ -388,9 +372,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 2,
         duration: 2,
         storeClient: redisMockClient,
-        useIoredis: true
       }),
-      useIoredis: true
     });
     await redisClientClosed.disconnect();
 
@@ -420,9 +402,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 1,
         duration: 1,
         storeClient: redisMockClient,
-        useIoredis: true
       }),
-      useIoredis: true
     });
     await redisClientClosed.disconnect();
 
@@ -436,7 +416,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisMockClient, useIoredis: true });
+    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisMockClient });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });
@@ -448,7 +428,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 1,
       blockDuration: 2,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey, 2)
@@ -468,7 +447,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 1,
       blockDuration: 2,
-      useIoredis: true
     });
     sinon.stub(rateLimiter, '_block').callsFake(() => Promise.reject(new Error()));
     rateLimiter
@@ -489,7 +467,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       points: 1,
       duration: 1,
       blockDuration: 2,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey, 2)
@@ -517,7 +494,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 1,
       duration: 1,
-      useIoredis: true
     });
     rateLimiter.block(testKey, 2).then(() => {
       rateLimiter
@@ -539,7 +515,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 1,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -567,7 +542,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         storeClient: redisMockClient,
         points: 2,
         duration: 1,
-        useIoredis: true
       });
       await redisMockClient.disconnect()
       await rateLimiter
@@ -628,7 +602,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 1,
-      useIoredis: true
     });
     rateLimiter
       .get(testKey)
@@ -648,7 +621,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 1,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -668,7 +640,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 1,
-      useIoredis: true
     });
     rateLimiter.delete(testKey)
       .then((resDel) => {
@@ -684,7 +655,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 1,
-      useIoredis: true
     });
     await redisMockClient.disconnect();
     await rateLimiter.delete(testKey)
@@ -698,7 +668,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 5,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey, 1, { customDuration: 1 })
@@ -717,7 +686,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 5,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey, 1, { customDuration: 1 })
@@ -743,9 +711,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 2,
         duration: 3,
         storeClient: redisMockClient,
-        useIoredis: true
       }),
-      useIoredis: true
     });
     await redisClientClosed.disconnect();
 
@@ -766,7 +732,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       blockDuration: 10,
       inMemoryBlockOnConsumed: 2,
       inMemoryBlockDuration: 10,
-      useIoredis: true
     });
     rateLimiter
       .consume(testKey)
@@ -791,7 +756,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   it('does not expire key if duration set to 0', (done) => {
     const testKey = 'neverexpire';
-    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 2, duration: 0, useIoredis: true });
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 2, duration: 0 });
     rateLimiter.consume(testKey, 1)
       .then(() => {
         rateLimiter.consume(testKey, 1)
@@ -814,7 +779,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   it('block key forever, if secDuration is 0', (done) => {
     const testKey = 'neverexpire';
-    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1, useIoredis: true });
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1 });
     rateLimiter.block(testKey, 0)
       .then(() => {
         setTimeout(() => {
@@ -833,7 +798,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   it('set points by key', (done) => {
     const testKey = 'set';
-    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1, useIoredis: true });
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1 });
     rateLimiter.set(testKey, 12)
       .then(() => {
         rateLimiter.get(testKey)
@@ -849,7 +814,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
 
   it('set points by key forever', (done) => {
     const testKey = 'setforever';
-    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1, useIoredis: true });
+    const rateLimiter = new RateLimiterRedis({ storeClient: redisMockClient, points: 1, duration: 1 });
     rateLimiter.set(testKey, 12, 0)
       .then(() => {
         setTimeout(() => {
