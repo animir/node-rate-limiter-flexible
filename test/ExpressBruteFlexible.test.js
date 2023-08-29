@@ -3,11 +3,10 @@
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const redisMock = require('redis-mock');
 const Memcached = require('memcached-mock');
 const ExpressBruteFlexible = require('../lib/ExpressBruteFlexible');
 const limiters = require('../index');
-const { redisEvalMock } = require('./helper');
+const redis = require("redis");
 
 const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   middleware(req, res, (err) => {
@@ -20,7 +19,7 @@ const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   });
 });
 
-describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
+describe('ExpressBruteFlexible', async function ExpressBruteFlexibleTest() {
   this.timeout(10000);
 
   const resObj = {
@@ -33,8 +32,9 @@ describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
   };
 
   const memcacheMockClient = new Memcached('localhost:11211');
-  const redisMockClient = redisMock.createClient();
-  redisMockClient.eval = redisEvalMock(redisMockClient);
+  const redisMockClient = redis.createClient();
+  await redisMockClient.connect();
+  await redisMockClient.flushAll();
 
   const mongoCollection = {
     createIndex: () => {
@@ -74,8 +74,9 @@ describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
   };
 
   beforeEach((done) => {
-    memcacheMockClient.flush(() => {
-      redisMockClient.flushall(done);
+    memcacheMockClient.flush(async () => {
+      await redisMockClient.flushAll();
+      done()
     });
   });
 

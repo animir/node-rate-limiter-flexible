@@ -4,8 +4,7 @@ const { expect } = require('chai');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 const BurstyRateLimiter = require('../lib/BurstyRateLimiter');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
-const redisMock = require('redis-mock');
-const { redisEvalMock, getRedisClientClosed } = require('./helper');
+const Redis = require("ioredis");
 
 describe('BurstyRateLimiter', () => {
   it('consume 1 point from limiter', (done) => {
@@ -80,70 +79,74 @@ describe('BurstyRateLimiter', () => {
       });
   });
 
-  it('do not consume from burst limiter, if rate limiter consume rejected with error', (done) => {
+  it('do not consume from burst limiter, if rate limiter consume rejected with error', async() => {
     const testKey = 'consume-rejected-with-error';
-    const redisMockClient = redisMock.createClient();
-    redisMockClient.eval = redisEvalMock(redisMockClient);
-    const redisClientClosed = getRedisClientClosed(redisMockClient);
+    const redisMockClient = new Redis();
+    const redisClientClosed = new Redis();
+    await redisClientClosed.disconnect();
     const rlRedisClosed = new RateLimiterRedis({
       storeClient: redisClientClosed,
+      useIoredis: true,
     });
     const blRedis = new RateLimiterRedis({
       storeClient: redisMockClient,
       keyPrefix: 'bursty',
       points: 1,
       duration: 1,
+      useIoredis: true,
     });
     const bursty = new BurstyRateLimiter(rlRedisClosed, blRedis);
-    bursty.consume(testKey)
-      .then(() => {
-        done(new Error('must not'));
-      })
-      .catch((err) => {
-        expect(err instanceof Error).to.equal(true);
-        blRedis.get(testKey)
-          .then((res) => {
-            expect(res).to.equal(null);
-            done();
-          });
-      });
+
+    let testFailed = false
+    try {
+      await bursty.consume(testKey)
+      testFailed = true;
+    } catch(err) {
+      expect(err instanceof Error).to.equal(true);
+      try {
+        const rlRes = await rlRedis.get(testKey)
+        expect(rlRes).to.equal(null);
+      } catch (err2) {
+        testFailed = true;
+      }
+    }
+    if (testFailed) {
+      return new Error('must not');
+    }
   });
 
-  it('reject with burst limiter error if it happens', (done) => {
+  it('reject with burst limiter error if it happens', async() => {
     const testKey = 'consume-rejected-with-error';
-    const redisMockClient = redisMock.createClient();
-    redisMockClient.eval = redisEvalMock(redisMockClient);
-    const redisClientClosed = getRedisClientClosed(redisMockClient);
+    const redisMockClient = new Redis();
+    const redisClientClosed = new Redis();
+    await redisClientClosed.disconnect();
     const rlRedis = new RateLimiterRedis({
       storeClient: redisMockClient,
       points: 1,
       duration: 1,
+      useIoredis: true,
     });
     const blRedisClosed = new RateLimiterRedis({
       storeClient: redisClientClosed,
       keyPrefix: 'bursty',
+      useIoredis: true,
     });
     const bursty = new BurstyRateLimiter(rlRedis, blRedisClosed);
-    bursty.consume(testKey)
-      .then(() => {
-        bursty.consume(testKey)
-          .then(() => {
-            done(new Error('must not'));
-          })
-          .catch((err) => {
-            expect(err instanceof Error).to.equal(true);
-            rlRedis.get(testKey)
-              .then((rlRes) => {
-                expect(rlRes.consumedPoints).to.equal(2);
-                expect(rlRes.remainingPoints).to.equal(0);
-                expect(rlRes.msBeforeNext <= 1000).to.equal(true);
-                done();
-              });
-          });
-      })
-      .catch((err) => {
-        done(err);
-      });
+    await bursty.consume(testKey);
+    let testFailed = false
+    try {
+      await bursty.consume(testKey)
+      testFailed = true;
+    } catch(err) {
+      expect(err instanceof Error).to.equal(true);
+      const rlRes = await rlRedis.get(testKey)
+      expect(rlRes.consumedPoints).to.equal(2);
+      expect(rlRes.remainingPoints).to.equal(0);
+      expect(rlRes.msBeforeNext <= 1000).to.equal(true);
+    }
+    if (testFailed) {
+      throw new Error('must not');
+    }
   });
 
   it('consume and get return the combined RateLimiterRes of both limiters with correct msBeforeNext', (done) => {

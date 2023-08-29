@@ -51,7 +51,7 @@
     "ioredis": "^5.3.2",
     "istanbul": "^0.4.5",
     "memcached-mock": "^0.1.0",
-    "mocha": "^5.1.1",
+    "mocha": "^10.2.0",
     "redis": "^4.6.8",
     "redis-mock": "^0.48.0",
     "sinon": "^5.0.10"
