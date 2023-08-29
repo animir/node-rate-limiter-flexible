@@ -250,6 +250,7 @@ interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
 interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
   rejectIfRedisNotReady?: boolean;
   useIoredis?: boolean;
+  useRedis3AndLowerPackage?: boolean;
 }
 
 interface ICallbackReady {
