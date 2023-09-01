@@ -1,0 +1,46 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+
+    name: testing node@${{ matrix.node-version }}, redis@${{ matrix.redis-version }}
+
+    strategy:
+      matrix:
+        node-version: [lts/*, lts/-1, lts/-2, current]
+        redis-version: [7.0-alpine]
+        include:
+          - node-version: 'lts/*'
+            redis-version: 6-alpine
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - name: Start Redis
+        uses: supercharge/redis-github-action
+        with:
+          redis-version: ${{ matrix.redis-version }}
+      - run: yarn install --ignore-engines --frozen-lockfile --non-interactive
+      - run: yarn test
