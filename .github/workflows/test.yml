@@ -34,7 +34,8 @@ jobs:
         uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: npm
+          cache-dependency-path: ./package.json
       - name: Start Redis
         uses: supercharge/redis-github-action@1.7.0
         with:
