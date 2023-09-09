@@ -24,11 +24,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [lts/*, lts/-1, lts/-2, current]
-        redis-version: [7.0-alpine]
-        include:
-          - node-version: 'lts/*'
-            redis-version: 6-alpine
+        node-version: [14.x, 16.x, 18.x, 20.x]
+        redis-version: [6, 7]
 
     steps:
       - name: Checkout repository
