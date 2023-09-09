@@ -1,5 +1,6 @@
 .idea
 .gitignore
+.github
 .npmignore
 .travis.yml
 .eslintrc.json
