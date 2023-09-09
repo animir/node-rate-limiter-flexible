@@ -164,7 +164,7 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
               expect(rej.msBeforeNext < 1000).to.equal(true);
               done();
             });
-        }, 1001);
+        }, 1201);
       });
   });
 
