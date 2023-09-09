@@ -108,6 +108,7 @@ describe('BurstyRateLimiter', () => {
         testFailed = true;
       }
     }
+    await redisMockClient.disconnect();
     if (testFailed) {
       return new Error('must not');
     }
@@ -140,6 +141,7 @@ describe('BurstyRateLimiter', () => {
       expect(rlRes.remainingPoints).to.equal(0);
       expect(rlRes.msBeforeNext <= 1000).to.equal(true);
     }
+    await redisMockClient.disconnect();
     if (testFailed) {
       throw new Error('must not');
     }

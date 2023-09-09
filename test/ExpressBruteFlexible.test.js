@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prefer-promise-reject-errors */
-const { describe, it, beforeEach } = require('mocha');
+const { describe, it, beforeEach, after} = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const Memcached = require('memcached-mock');
@@ -79,6 +79,10 @@ describe('ExpressBruteFlexible', async function ExpressBruteFlexibleTest() {
       done()
     });
   });
+
+  after(async () => {
+    await redisMockClient.quit();
+  })
 
   it('allows 1 request with 1 free try', (done) => {
     const brute = new ExpressBruteFlexible('memory', {
