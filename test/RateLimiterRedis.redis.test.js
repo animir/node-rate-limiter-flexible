@@ -512,7 +512,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2100);
       });
   });
 
