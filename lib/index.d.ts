@@ -247,10 +247,14 @@ interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
     };
 }
 
+interface IRateLimiterPostgresOptions extends IRateLimiterStoreNoAutoExpiryOptions {
+    schemaName?: string;
+}
+
 interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
-  rejectIfRedisNotReady?: boolean;
-  useRedisPackage?: boolean;
-  useRedis3AndLowerPackage?: boolean;
+    rejectIfRedisNotReady?: boolean;
+    useRedisPackage?: boolean;
+    useRedis3AndLowerPackage?: boolean;
 }
 
 interface ICallbackReady {
@@ -283,7 +287,7 @@ export class RateLimiterClusterMasterPM2 {
 }
 
 export class RateLimiterRedis extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterRedisOptions);
+    constructor(opts: IRateLimiterRedisOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {
@@ -342,10 +346,10 @@ export class RateLimiterMySQL extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterPostgres extends RateLimiterStoreAbstract {
-    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterPostgresOptions, cb?: ICallbackReady);
 }
 
-export class RateLimiterMemcache extends RateLimiterStoreAbstract {}
+export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 
 export class RateLimiterUnion {
     constructor(...limiters: RateLimiterAbstract[]);
