@@ -41,6 +41,7 @@
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
   "types": "./lib/index.d.ts",
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.431.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
     "eslint": "^4.19.1",
