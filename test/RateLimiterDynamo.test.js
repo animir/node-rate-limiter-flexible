@@ -26,11 +26,27 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             storeClient: dynamoClient
         },
         (data) => {
-            console.log(data);
             done();
         }
         );
         
+    });
+
+    it('get item from DynamoDB', (done) => {
+        const testKey = 'test';
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient
+        },
+        () => {
+            rateLimiter.get('test')
+            .then((response) => {
+                done();
+            })
+            .catch((err) => {
+                done(err);
+            });
+        }
+        );
     });
     
 })
