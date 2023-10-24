@@ -7,7 +7,8 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     this.timeout(5000);
 
     const dynamoClient = new DynamoDB({region: 'eu-central-1'});
-        
+    
+    
     it('instantiate DynamoDb client', (done) => {
         expect(dynamoClient).to.not.equal(null);
         done();
@@ -59,7 +60,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
     it('delete item from DynamoDB', (done) => {
         
-        const testKey = 'test';
+        const testKey = 'delete_test';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
         },
@@ -68,8 +69,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             .then((data) => {
                 rateLimiter.delete(testKey)
                 .then((response) => {
-                    console.log(response)
-                    expect(response).to.not.equal(null);
+                    expect(response).to.equal(true);
                     done();
                 })
                 .catch((err) => {
@@ -81,6 +81,60 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             })
         }
         );
+    });
+
+    it('delete NOT existing item from DynamoDB', (done) => {
+        
+        const testKey = 'delete_test_2';
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient
+        },
+        () => {
+            rateLimiter.set(testKey, 999, 10000)
+            .then((data) => {
+                rateLimiter.delete(testKey)
+                .then((response) => {
+                    expect(response).to.equal(true);
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+            })
+            .catch((err) => {
+                done(err);
+            })
+        }
+        );
+    });
+
+    it('consume 1 point', (done) => {
+        const testKey = 'consume1';
+
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient,
+            points: 2,
+            duration: 5
+        },
+        () => {
+            rateLimiter.set(testKey, 2, 5000)
+            .then((data) => {
+                rateLimiter.consume(testKey)
+                .then((result) => {
+                    console.log(result);
+                    expect(result.consumedPoints).to.equal(1);
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+            })
+            .catch((err) => {
+                done(err);
+            });
+
+        });
+        
     });
     
 })
