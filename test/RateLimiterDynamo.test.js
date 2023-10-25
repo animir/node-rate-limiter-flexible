@@ -117,12 +117,13 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             duration: 5
         },
         () => {
-            rateLimiter.set(testKey, 2, 5000)
+            rateLimiter.set(testKey, 1, 5000)
             .then((data) => {
                 rateLimiter.consume(testKey)
                 .then((result) => {
                     console.log(result);
                     expect(result.consumedPoints).to.equal(1);
+                    rateLimiter.delete(testKey);
                     done();
                 })
                 .catch((err) => {
