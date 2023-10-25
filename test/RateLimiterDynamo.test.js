@@ -8,7 +8,6 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
     const dynamoClient = new DynamoDB({region: 'eu-central-1'});
     
-    
     it('instantiate DynamoDb client', (done) => {
         expect(dynamoClient).to.not.equal(null);
         done();
@@ -117,11 +116,8 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             duration: 5
         },
         () => {
-            rateLimiter.set(testKey, 1, 5000)
-            .then((data) => {
-                rateLimiter.consume(testKey)
+            rateLimiter.consume(testKey)
                 .then((result) => {
-                    console.log(result);
                     expect(result.consumedPoints).to.equal(1);
                     rateLimiter.delete(testKey);
                     done();
@@ -129,10 +125,6 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
                 .catch((err) => {
                     done(err);
                 });
-            })
-            .catch((err) => {
-                done(err);
-            });
 
         });
         
