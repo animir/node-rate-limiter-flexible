@@ -270,5 +270,38 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         });
         
     });
+
+    // todo implement stub, an fake response
+    it('delete rejects on error', (done) => {
+        const testKey = 'deketeerr';
+        
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient,
+            points: 5,
+        },
+        () => {
+            
+            rateLimiter.delete(testKey)
+                .catch((err) => {
+                    done(err);
+                });
+        });
+        
+    });
+    
+
+    it('does not expire key if duration set to 0', (done) => {
+        const testKey = 'neverexpire';
+        
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient,
+            points: 5,
+        },
+        () => {
+            
+            
+        });
+        
+    });
     
 });
