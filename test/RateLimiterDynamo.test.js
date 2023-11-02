@@ -272,6 +272,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
     // todo implement stub, an fake response
+    /*
     it('delete rejects on error', (done) => {
         const testKey = 'deketeerr';
         
@@ -288,6 +289,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         });
         
     });
+    */
     
 
     it('does not expire key if duration set to 0', (done) => {
@@ -295,10 +297,29 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
-            points: 5,
+            points: 2,
+            duration: 0
         },
         () => {
             
+            rateLimiter.set(testKey, 2, 0)
+            .then(() => {
+                rateLimiter.consume(testKey, 1)
+                .then(() => {
+                    rateLimiter.consume(testKey, 1)
+                        .then(() => {
+                            rateLimiter.get(testKey)
+                                .then((res) => {
+                                    expect(res.consumedPoints).to.equal(2);
+                                    expect(res.msBeforeNext).to.equal(-1);
+                                    done();
+                                });
+                        })
+                })
+            })
+            .catch((err) => {
+                done(err);
+            });
             
         });
         
