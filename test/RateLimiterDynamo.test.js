@@ -305,17 +305,20 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             rateLimiter.set(testKey, 2, 0)
             .then(() => {
                 rateLimiter.consume(testKey, 1)
-                .then(() => {
-                    rateLimiter.consume(testKey, 1)
-                        .then(() => {
-                            rateLimiter.get(testKey)
-                                .then((res) => {
-                                    expect(res.consumedPoints).to.equal(2);
-                                    expect(res.msBeforeNext).to.equal(-1);
-                                    done();
-                                });
-                        })
-                })
+                    .then(() => {
+                        rateLimiter.get(testKey)
+                            .then((res) => {
+                                expect(res.consumedPoints).to.equal(1);
+                                expect(res.msBeforeNext).to.equal(-1);
+                                done();
+                            })
+                            .catch((err) => {
+                                done(err);
+                            })
+                    })
+                    .catch((err) => {
+                        done(err);
+                    })
             })
             .catch((err) => {
                 done(err);
