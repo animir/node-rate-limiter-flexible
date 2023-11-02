@@ -3,6 +3,10 @@ const { expect } = require('chai');
 const { describe, it, beforeEach } = require('mocha');
 const RateLimiterDynamo = require('../lib/RateLimiterDynamo');
 
+/*
+    In order to perform this tests, you need to set up you aws account credentials:
+    see here for more info: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+*/
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
     this.timeout(10000);
 
@@ -174,7 +178,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
         });
         
-      });
+    });
 
     it('return correct data with _getRateLimiterRes', () => {
         const testKey = 'test';
