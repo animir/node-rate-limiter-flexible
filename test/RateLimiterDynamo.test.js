@@ -2,13 +2,14 @@ const {DynamoDB} = require('@aws-sdk/client-dynamodb')
 const { expect } = require('chai');
 const { describe, it, beforeEach } = require('mocha');
 const RateLimiterDynamo = require('../lib/RateLimiterDynamo');
+const sinon = require('sinon');
 
 /*
     In order to perform this tests, you need to set up you aws account credentials:
     see here for more info: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 */
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
-    this.timeout(10000);
+    this.timeout(5000);
 
     const dynamoClient = new DynamoDB({region: 'eu-central-1'});
     
@@ -275,25 +276,28 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         
     });
 
-    // todo implement stub, an fake response
-    /*
     it('delete rejects on error', (done) => {
-        const testKey = 'deketeerr';
+        const testKey = 'deleteerr';
         
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-            
+           
+            sinon.stub(dynamoClient, 'deleteItem').callsFake(() => {
+                throw new Error('stub error');
+            });
+
             rateLimiter.delete(testKey)
-                .catch((err) => {
-                    done(err);
-                });
+            .catch(() => {
+                done();
+            });
+
+            dynamoClient.deleteItem.restore();
         });
         
     });
-    */
     
 
     it('does not expire key if duration set to 0', (done) => {
