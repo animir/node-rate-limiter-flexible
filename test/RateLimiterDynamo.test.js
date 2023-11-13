@@ -206,7 +206,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             const res = rateLimiter._getRateLimiterRes(
                 'test',
                 1,
-                { key: 'test', points: 3, expire: Date.now() + 1000}
+                { key: 'test', points: 3, expire: (Date.now() + 1000) / 1000}
                 );
 
             expect(res.msBeforeNext <= 1000 && 
