@@ -11,7 +11,7 @@ const sinon = require('sinon');
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
     this.timeout(5000);
 
-    const dynamoClient = new DynamoDB({region: 'eu-central-1'});
+    const dynamoClient = new DynamoDB({region: 'eu-central-1', endpoint: 'http://localhost:8000'});
     
     it('instantiate DynamoDb client', (done) => {
         expect(dynamoClient).to.not.equal(null);
