@@ -11,7 +11,14 @@ const sinon = require('sinon');
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
     this.timeout(5000);
 
-    const dynamoClient = new DynamoDB({endpoint: 'http://localhost:8000'});
+    const dynamoClient = new DynamoDB({
+        region: 'eu-central-1',
+        credentials: {
+            accessKeyId: 'fake', 
+            secretAccessKey: 'fake'
+        },
+        endpoint: 'http://localhost:8000'
+    });
     
     it('DynamoDb client connection', (done) => {
         expect(dynamoClient).to.not.equal(null);
