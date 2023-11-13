@@ -31,20 +31,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
           cache-dependency-path: ./package.json
+
       - name: Start Redis
         uses: supercharge/redis-github-action@1.7.0
         with:
           redis-version: ${{ matrix.redis-version }}
+
       - name: Start DynamoDB local
         uses: rrainn/dynamodb-action@v3.0.0
-        with: 
-          port: 8000
-          cors: '*'
+        
       - run: npm install
       - run: npm run test

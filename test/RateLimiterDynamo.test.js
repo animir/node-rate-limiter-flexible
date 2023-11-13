@@ -1,21 +1,27 @@
 const {DynamoDB} = require('@aws-sdk/client-dynamodb')
 const { expect } = require('chai');
-const { describe, it, beforeEach } = require('mocha');
+const { describe, it } = require('mocha');
 const RateLimiterDynamo = require('../lib/RateLimiterDynamo');
 const sinon = require('sinon');
 
 /*
-    In order to perform this tests, you need to set up you aws account credentials:
-    see here for more info: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+    In order to perform this tests, you need to run a local instance of dynamodb:
+    docker run -p 8000:8000 amazon/dynamodb-local
 */
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
     this.timeout(5000);
 
-    const dynamoClient = new DynamoDB({region: 'eu-central-1', endpoint: 'http://localhost:8000'});
+    const dynamoClient = new DynamoDB({endpoint: 'http://localhost:8000'});
     
-    it('instantiate DynamoDb client', (done) => {
+    it('DynamoDb client connection', (done) => {
         expect(dynamoClient).to.not.equal(null);
-        done();
+        dynamoClient.listTables()
+        .then((data) => {
+            done();
+        })
+        .catch((err) => {
+            done(err);
+        });
     });
 
     it('get item from DynamoDB', (done) => {
