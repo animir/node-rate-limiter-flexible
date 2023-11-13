@@ -83,11 +83,11 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
     const rlQueue = new RateLimiterQueue(rlMemory);
     const time = Date.now();
     rlQueue.removeTokens(1).then(() => {
-    });
-    rlQueue.removeTokens(1).then((remainingTokens) => {
-      expect(remainingTokens).to.equal(0);
-      expect(Date.now() - time >= 1000).to.equal(true);
-      done();
+      rlQueue.removeTokens(1).then((remainingTokens) => {
+        expect(remainingTokens).to.equal(0);
+        expect(Date.now() - time >= 1000).to.equal(true);
+        done();
+      });
     });
   });
 
