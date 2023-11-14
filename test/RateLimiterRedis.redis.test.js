@@ -26,7 +26,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       storeClient: redisMockClient,
       points: 2,
       duration: 5,
-      useRedisPackage: true,
     });
     rateLimiter
       .consume(testKey)

@@ -243,8 +243,10 @@ You can try to run `npm run eslint-fix` to fix some issues.
 Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
 It has to implement 4 methods:
 * `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object.
-* `_upsert` must be atomic. it inserts or updates value by key and returns raw data. it must support `forceExpire` mode 
-    to overwrite key expiration time.
+* `_upsert` may be atomic or non-atomic upsert (increment). It inserts or updates value by key and returns raw data. 
+    If it doesn't make atomic upsert (increment), the class should be suffixed with `NonAtomic`, e.g. `RateLimiterRedisNonAtomic`. 
+    
+    It must support `forceExpire` mode to overwrite key expiration time.
 * `_get` returns raw data by key or `null` if there is no key.
 * `_delete` deletes all key related data and returns `true` on deleted, `false` if key is not found.
 
