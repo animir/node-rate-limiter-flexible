@@ -100,27 +100,21 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         );
     });
 
-    it('delete NOT existing item from DynamoDB', (done) => {
+    it('delete NOT existing item from DynamoDB return false', (done) => {
         
         const testKey = 'delete_test_2';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
         },
         () => {
-            rateLimiter.set(testKey, 999, 10000)
-            .then((data) => {
-                rateLimiter.delete(testKey)
-                .then((response) => {
-                    expect(response).to.equal(true);
-                    done();
-                })
-                .catch((err) => {
-                    done(err);
-                });
+            rateLimiter.delete(testKey)
+            .then((response) => {
+                expect(response).to.equal(false);
+                done();
             })
             .catch((err) => {
                 done(err);
-            })
+            });
         }
         );
     });
