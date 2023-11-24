@@ -388,3 +388,14 @@ export class BurstyRateLimiter {
         options?: IRateLimiterMongoFunctionOptions
     ): Promise<RateLimiterRes>;
 }
+
+interface IRateLimiterDynamoOptions extends IRateLimiterStoreOptions {
+    dynamoTableOpts?: {
+        readCapacityUnits: number;
+        writeCapacityUnits: number;
+    }
+}
+
+export class RateLimiterDynamo extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterDynamoOptions, cb?: ICallbackReady);
+}
