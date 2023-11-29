@@ -1,5 +1,5 @@
 {
-  "name": "rate-limiter-flexible",
+  "name": "rate-limiter-flexible-v2",
   "version": "3.0.4",
   "description": "Node.js rate limiter by key and protection from DDoS and Brute-Force attacks in process Memory, Redis, MongoDb, Memcached, MySQL, PostgreSQL, Cluster or PM",
   "main": "index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/animir/node-rate-limiter-flexible.git"
+    "url": "git+https://github.com/s-iwell/node-rate-limiter-flexible-v2"
   },
   "keywords": [
     "authorization",
@@ -33,12 +33,12 @@
     "ddos",
     "queue"
   ],
-  "author": "animir <animirr@gmail.com>",
+  "author": "Shivam <shivam.chaudhary@investwellonline.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/animir/node-rate-limiter-flexible/issues"
+    "url": "https://github.com/s-iwell/node-rate-limiter-flexible-v2/issues"
   },
-  "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
+  "homepage": "https://github.com/s-iwell/node-rate-limiter-flexible-v2#readme",
   "types": "./lib/index.d.ts",
   "devDependencies": {
     "chai": "^4.1.2",
