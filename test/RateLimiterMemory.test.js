@@ -388,4 +388,30 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         done(err);
       });
   });
+
+  it('consume should start new time window if previous already expired (msBeforeNext is negative)', (done) => {
+    const keyPrefix = 'test'
+    const testKey = 'consume-negative-before-next';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5, keyPrefix });
+    rateLimiterMemory.consume(testKey)
+      .then(() => {
+        expect(typeof rateLimiterMemory._memoryStorage._storage[`${keyPrefix}:${testKey}`] !== 'undefined')
+          .to.equal(true)
+        rateLimiterMemory._memoryStorage._storage[`${keyPrefix}:${testKey}`].expiresAt = new Date(Date.now() - 1000)
+
+        rateLimiterMemory.consume(testKey)
+          .then((res) => {
+            expect(res.consumedPoints).to.equal(1);
+            expect(res.remainingPoints).to.equal(1);
+            expect(res.msBeforeNext).to.equal(5000);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });
