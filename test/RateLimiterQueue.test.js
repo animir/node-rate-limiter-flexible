@@ -83,7 +83,10 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
     const rlQueue = new RateLimiterQueue(rlMemory);
     const time = Date.now();
     rlQueue.removeTokens(1).then(() => {
+      console.log('rlMemory', rlMemory._memoryStorage)
       rlQueue.removeTokens(1).then((remainingTokens) => {
+        console.log('rlMemory', rlMemory._memoryStorage)
+        console.log('Date.now() - time', Date.now() - time)
         expect(remainingTokens).to.equal(0);
         expect(Date.now() - time >= 1000).to.equal(true);
         done();
