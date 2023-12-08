@@ -49,6 +49,7 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
             rlQueue.removeTokens(1)
               .then((remainingTokens) => {
                 expect(remainingTokens).to.equal(0);
+                console.log('Date.now() - time', Date.now() - startTime)
                 expect(Date.now() - startTime >= 1000).to.equal(true);
                 done();
               });
