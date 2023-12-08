@@ -354,7 +354,7 @@ export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 export class RateLimiterUnion {
     constructor(...limiters: RateLimiterAbstract[]);
 
-    consume(key: string | number, points?: number): Promise<RateLimiterRes[]>;
+    consume(key: string | number, points?: number): Promise<Record<string, RateLimiterRes>>;
 }
 
 export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
