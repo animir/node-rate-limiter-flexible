@@ -246,7 +246,7 @@ describe('ExpressBruteFlexible', async function ExpressBruteFlexibleTest() {
       if (blockDuration > 1000 && blockDuration <= 2000 && sequenceLength === 1) {
         sequenceLength++;
       }
-      if (blockDuration > 2000 && blockDuration <= 4000 && sequenceLength === 2) {
+      if (blockDuration >= 2000 && blockDuration <= 4000 && sequenceLength === 2) {
         sequenceLength++;
       }
     };
