@@ -240,6 +240,8 @@ describe('ExpressBruteFlexible', async function ExpressBruteFlexibleTest() {
     const mockRes = Object.assign({}, resObj);
     mockRes.send = (obj) => {
       const blockDuration = obj.error.nextValidRequestDate.getTime() - Date.now();
+      console.log('sequenceLength', sequenceLength)
+      console.log('blockDuration', blockDuration)
       if (blockDuration > 1000 && blockDuration <= 2000 && sequenceLength === 0) {
         sequenceLength++;
       }
