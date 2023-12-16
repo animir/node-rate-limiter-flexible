@@ -41,6 +41,7 @@
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
   "types": "./lib/index.d.ts",
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.431.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
     "eslint": "^4.19.1",
@@ -49,7 +50,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-security": "^1.4.0",
     "ioredis": "^5.3.2",
-    "istanbul": "^0.4.5",
+    "istanbul": "^1.1.0-alpha.1",
     "memcached-mock": "^0.1.0",
     "mocha": "^10.2.0",
     "redis": "^4.6.8",
