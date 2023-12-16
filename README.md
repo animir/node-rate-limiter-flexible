@@ -137,6 +137,7 @@ Some copy/paste examples on Wiki:
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
+* [RateLimiterDynamo](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
 * [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
