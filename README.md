@@ -4,7 +4,7 @@
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
 
-[node-image]: https://img.shields.io/badge/node.js-%3E=_6.0-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_8.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 
 <img src="img/rlflx-logo-small.png" width="50" alt="Logo"/>
@@ -13,7 +13,7 @@
 
 **rate-limiter-flexible** counts and limits number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
+It works with _Redis_, process _Memory_, _DynamoDB_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
 
 Memory limiter also works in browser.
 
