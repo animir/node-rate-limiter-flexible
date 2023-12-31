@@ -2,3 +2,4 @@
 node_modules
 coverage
 package-lock.json
+.nyc_output/

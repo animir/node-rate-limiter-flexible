@@ -6,7 +6,7 @@
   "scripts": {
     "dc:up": "docker-compose -f docker-compose.yml up -d",
     "dc:down": "docker-compose -f docker-compose.yml down",
-    "test": "istanbul -v cover -- _mocha --recursive",
+    "test": "nyc  --reporter=html --reporter=text mocha",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "eslint": "eslint --quiet lib/**/**.js test/**/**.js",
@@ -53,6 +53,7 @@
     "istanbul": "^1.1.0-alpha.1",
     "memcached-mock": "^0.1.0",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "redis": "^4.6.8",
     "redis-mock": "^0.48.0",
     "sinon": "^17.0.1"
