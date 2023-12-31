@@ -5,3 +5,8 @@ services:
     container_name: cache
     ports:
       - 6379:6379
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamo
+    ports:
+      - 8000:8000

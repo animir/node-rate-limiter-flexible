@@ -4,10 +4,6 @@ const { describe, it } = require('mocha');
 const RateLimiterDynamo = require('../lib/RateLimiterDynamo');
 const sinon = require('sinon');
 
-/*
-    In order to perform this tests, you need to run a local instance of dynamodb:
-    docker run -p 8000:8000 amazon/dynamodb-local
-*/
 describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest() {
     this.timeout(5000);
 
