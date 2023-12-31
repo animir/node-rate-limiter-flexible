@@ -55,7 +55,7 @@
     "mocha": "^10.2.0",
     "redis": "^4.6.8",
     "redis-mock": "^0.48.0",
-    "sinon": "^5.0.10"
+    "sinon": "^17.0.1"
   },
   "browser": {
     "cluster": false,
