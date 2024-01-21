@@ -1,6 +1,8 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterQueueError = require('../../lib/component/RateLimiterQueueError');
+import mocha from 'mocha';
+import { expect } from 'chai';
+import RateLimiterQueueError from '../../lib/component/RateLimiterQueueError';
+
+const { describe, it } = mocha;
 
 describe('RateLimiterQueueError', () => {
   it('supports extra argument in constructor', (done) => {

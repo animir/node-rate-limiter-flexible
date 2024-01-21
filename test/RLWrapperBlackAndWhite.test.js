@@ -1,7 +1,8 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RLWrapperBlackAndWhite = require('../lib/RLWrapperBlackAndWhite');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
+import mocha from "mocha";
+import { expect } from "chai";
+import RLWrapperBlackAndWhite from "../lib/RLWrapperBlackAndWhite.js";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
+const { describe, it } = mocha;
 
 describe('RLWrapperBlackAndWhite ', () => {
   it('consume if not blacked', (done) => {

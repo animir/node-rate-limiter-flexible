@@ -1,9 +1,10 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
-const BurstyLimiter = require('../lib/BurstyRateLimiter');
-const RateLimiterQueue = require('../lib/RateLimiterQueue');
-const RateLimiterQueueError = require('../lib/component/RateLimiterQueueError');
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
+import BurstyLimiter from "../lib/BurstyRateLimiter.js";
+import RateLimiterQueue from "../lib/RateLimiterQueue.js";
+import RateLimiterQueueError from "../lib/component/RateLimiterQueueError.js";
+const { describe, it } = mocha;
 
 describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
   this.timeout(5000);

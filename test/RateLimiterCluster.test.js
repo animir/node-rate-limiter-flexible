@@ -1,11 +1,12 @@
 /* eslint-env mocha */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable security/detect-object-injection */
-const cluster = require('cluster');
-const sinon = require('sinon');
-const { describe, it, after } = require('mocha');
-const { expect } = require('chai');
-const { RateLimiterClusterMaster, RateLimiterCluster } = require('../lib/RateLimiterCluster');
+import cluster from "cluster";
+import sinon from "sinon";
+import mocha from "mocha";
+import { expect } from "chai";
+import { RateLimiterClusterMaster, RateLimiterCluster } from "../lib/RateLimiterCluster.js";
+const { describe, it, after } = mocha;
 
 const masterEvents = [];
 const workerEvents = [];

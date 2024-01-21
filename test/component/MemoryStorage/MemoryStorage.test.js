@@ -1,6 +1,8 @@
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const MemoryStorage = require('../../../lib/component/MemoryStorage/MemoryStorage');
+import mocha from "mocha";
+import { expect } from "chai";
+import MemoryStorage from "../../../lib/component/MemoryStorage/MemoryStorage";
+
+const { describe, it, beforeEach } = mocha;
 
 describe('MemoryStorage', function MemoryStorageTest() {
   const testKey = 'test';

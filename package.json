@@ -1,13 +1,14 @@
 {
   "name": "rate-limiter-flexible",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Node.js rate limiter by key and protection from DDoS and Brute-Force attacks in process Memory, Redis, MongoDb, Memcached, MySQL, PostgreSQL, Cluster or PM",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dc:up": "docker-compose -f docker-compose.yml up -d",
     "dc:down": "docker-compose -f docker-compose.yml down",
-    "test": "nyc  --reporter=html --reporter=text mocha",
-    "debug-test": "mocha --inspect-brk lib/**/**.test.js",
+    "test": "c8 --reporter=html --reporter=text mocha -r esm",
+    "debug-test": "mocha -r esm --inspect-brk lib/**/**.test.js",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "eslint": "eslint --quiet lib/**/**.js test/**/**.js",
     "eslint-fix": "eslint --fix lib/**/**.js test/**/**.js"
@@ -17,21 +18,21 @@
     "url": "git+https://github.com/animir/node-rate-limiter-flexible.git"
   },
   "keywords": [
+    "ratelimter",
     "authorization",
     "security",
     "rate",
     "limit",
-    "ratelimter",
-    "brute",
-    "force",
     "bruteforce",
     "throttle",
+    "redis",
+    "mongodb",
+    "dynamodb",
+    "mysql",
+    "postgres",
     "koa",
     "express",
-    "hapi",
-    "auth",
-    "ddos",
-    "queue"
+    "hapi"
   ],
   "author": "animir <animirr@gmail.com>",
   "license": "ISC",
@@ -42,6 +43,7 @@
   "types": "./lib/index.d.ts",
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.431.0",
+    "c8": "^9.1.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
     "eslint": "^4.19.1",
@@ -49,11 +51,11 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-security": "^1.4.0",
+    "esm": "^3.2.25",
     "ioredis": "^5.3.2",
     "istanbul": "^1.1.0-alpha.1",
     "memcached-mock": "^0.1.0",
     "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
     "redis": "^4.6.8",
     "redis-mock": "^0.48.0",
     "sinon": "^17.0.1"

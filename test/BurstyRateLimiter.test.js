@@ -1,10 +1,11 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
+import BurstyRateLimiter from "../lib/BurstyRateLimiter.js";
+import RateLimiterRedis from "../lib/RateLimiterRedis.js";
+import Redis from "ioredis";
 /* eslint-disable no-unused-expressions */
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
-const BurstyRateLimiter = require('../lib/BurstyRateLimiter');
-const RateLimiterRedis = require('../lib/RateLimiterRedis');
-const Redis = require("ioredis");
+const { describe, it } = mocha;
 
 describe('BurstyRateLimiter', () => {
   it('consume 1 point from limiter', (done) => {

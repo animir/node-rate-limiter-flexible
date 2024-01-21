@@ -1,7 +1,8 @@
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterMemcache = require('../lib/RateLimiterMemcache');
-const Memcached = require('memcached-mock');
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterMemcache from "../lib/RateLimiterMemcache.js";
+import Memcached from "memcached-mock";
+const { describe, it, beforeEach } = mocha;
 
 describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
   this.timeout(5000);

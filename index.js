@@ -1,31 +1,45 @@
-const RateLimiterRedis = require('./lib/RateLimiterRedis');
-const RateLimiterMongo = require('./lib/RateLimiterMongo');
-const RateLimiterMySQL = require('./lib/RateLimiterMySQL');
-const RateLimiterPostgres = require('./lib/RateLimiterPostgres');
-const {RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluster} = require('./lib/RateLimiterCluster');
-const RateLimiterMemory = require('./lib/RateLimiterMemory');
-const RateLimiterMemcache = require('./lib/RateLimiterMemcache');
-const RLWrapperBlackAndWhite = require('./lib/RLWrapperBlackAndWhite');
-const RateLimiterUnion = require('./lib/RateLimiterUnion');
-const RateLimiterQueue = require('./lib/RateLimiterQueue');
-const BurstyRateLimiter = require('./lib/BurstyRateLimiter');
-const RateLimiterRes = require('./lib/RateLimiterRes');
-const RateLimiterDynamo = require('./lib/RateLimiterDynamo');
-
-module.exports = {
-  RateLimiterRedis,
-  RateLimiterMongo,
-  RateLimiterMySQL,
-  RateLimiterPostgres,
-  RateLimiterMemory,
-  RateLimiterMemcache,
-  RateLimiterClusterMaster,
-  RateLimiterClusterMasterPM2,
-  RateLimiterCluster,
-  RLWrapperBlackAndWhite,
-  RateLimiterUnion,
-  RateLimiterQueue,
-  BurstyRateLimiter,
-  RateLimiterRes,
-  RateLimiterDynamo
+import RateLimiterRedis from "./lib/RateLimiterRedis.js";
+import RateLimiterMongo from "./lib/RateLimiterMongo.js";
+import RateLimiterMySQL from "./lib/RateLimiterMySQL.js";
+import RateLimiterPostgres from "./lib/RateLimiterPostgres.js";
+import { RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluster } from "./lib/RateLimiterCluster.js";
+import RateLimiterMemory from "./lib/RateLimiterMemory.js";
+import RateLimiterMemcache from "./lib/RateLimiterMemcache.js";
+import RLWrapperBlackAndWhite from "./lib/RLWrapperBlackAndWhite.js";
+import RateLimiterUnion from "./lib/RateLimiterUnion.js";
+import RateLimiterQueue from "./lib/RateLimiterQueue.js";
+import BurstyRateLimiter from "./lib/BurstyRateLimiter.js";
+import RateLimiterRes from "./lib/RateLimiterRes.js";
+import RateLimiterDynamo from "./lib/RateLimiterDynamo.js";
+export { RateLimiterRedis };
+export { RateLimiterMongo };
+export { RateLimiterMySQL };
+export { RateLimiterPostgres };
+export { RateLimiterMemory };
+export { RateLimiterMemcache };
+export { RateLimiterClusterMaster };
+export { RateLimiterClusterMasterPM2 };
+export { RateLimiterCluster };
+export { RLWrapperBlackAndWhite };
+export { RateLimiterUnion };
+export { RateLimiterQueue };
+export { BurstyRateLimiter };
+export { RateLimiterRes };
+export { RateLimiterDynamo };
+export default {
+    RateLimiterRedis,
+    RateLimiterMongo,
+    RateLimiterMySQL,
+    RateLimiterPostgres,
+    RateLimiterMemory,
+    RateLimiterMemcache,
+    RateLimiterClusterMaster,
+    RateLimiterClusterMasterPM2,
+    RateLimiterCluster,
+    RLWrapperBlackAndWhite,
+    RateLimiterUnion,
+    RateLimiterQueue,
+    BurstyRateLimiter,
+    RateLimiterRes,
+    RateLimiterDynamo
 };

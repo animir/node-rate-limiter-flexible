@@ -1,7 +1,8 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
 /* eslint-disable no-unused-expressions */
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
+const { describe, it } = mocha;
 
 describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest() {
   this.timeout(5000);
