@@ -1,6 +1,7 @@
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterRes = require('../lib/RateLimiterRes');
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterRes from "../lib/RateLimiterRes.js";
+const { describe, it, beforeEach } = mocha;
 
 describe('RateLimiterRes response object', () => {
   let rateLimiterRes;

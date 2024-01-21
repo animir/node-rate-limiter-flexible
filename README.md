@@ -1,4 +1,3 @@
-[![Coverage Status](https://coveralls.io/repos/animir/node-rate-limiter-flexible/badge.svg?branch=master)](https://coveralls.io/r/animir/node-rate-limiter-flexible?branch=master)
 [![npm version](https://badge.fury.io/js/rate-limiter-flexible.svg)](https://www.npmjs.com/package/rate-limiter-flexible)
 ![npm](https://img.shields.io/npm/dm/rate-limiter-flexible.svg)
 [![node version][node-image]][node-url]
@@ -45,12 +44,6 @@ It uses **fixed window** as it is much faster than rolling window.
 ## Import
   
   ```javascript
-  // CommonJS
-  const { RateLimiterMemory } = require("rate-limiter-flexible");
-
-  // or
-
-  // ECMAScript 
   import { RateLimiterMemory } from "rate-limiter-flexible";
   ```
 
@@ -102,7 +95,6 @@ const headers = {
 * no race conditions
 * no production dependencies
 * TypeScript declaration bundled
-* allow traffic burst with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
 * Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)

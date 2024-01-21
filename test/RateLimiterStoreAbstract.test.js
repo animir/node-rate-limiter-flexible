@@ -1,8 +1,9 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterStoreAbstract from "../lib/RateLimiterStoreAbstract.js";
+import RateLimiterRes from "../lib/RateLimiterRes.js";
 /* eslint-disable security/detect-object-injection */
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterStoreAbstract = require('../lib/RateLimiterStoreAbstract');
-const RateLimiterRes = require('../lib/RateLimiterRes');
+const { describe, it } = mocha;
 
 class RateLimiterStoreMemory extends RateLimiterStoreAbstract {
   constructor(opts) {

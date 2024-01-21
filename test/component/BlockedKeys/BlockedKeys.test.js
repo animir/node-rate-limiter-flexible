@@ -1,6 +1,7 @@
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const BlockedKeys = require('../../../lib/component/BlockedKeys/BlockedKeys');
+import mocha from "mocha";
+import { expect } from "chai";
+const { describe, it, beforeEach } = mocha;
+import BlockedKeys from "../../../lib/component/BlockedKeys/BlockedKeys";
 
 describe('BlockedKeys', () => {
   let blockedKeys;

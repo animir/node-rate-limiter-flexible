@@ -1,11 +1,10 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import sinon from "sinon";
+import RateLimiterMongo from "../lib/RateLimiterMongo.js";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
 /* eslint-disable no-new */
-const {
-  describe, it, beforeEach, before,
-} = require('mocha');
-const { expect } = require('chai');
-const sinon = require('sinon');
-const RateLimiterMongo = require('../lib/RateLimiterMongo');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
+const { describe, it, beforeEach, before, } = mocha;
 
 describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   this.timeout(5000);

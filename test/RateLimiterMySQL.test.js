@@ -1,9 +1,9 @@
-const {
-  describe, it, beforeEach, afterEach,
-} = require('mocha');
-const { expect } = require('chai');
-const sinon = require('sinon');
-const RateLimiterMySQL = require('../lib/RateLimiterMySQL');
+import mocha from "mocha";
+import { expect } from "chai";
+import sinon from "sinon";
+import RateLimiterMySQL from "../lib/RateLimiterMySQL.js";
+/* eslint-disable no-new */
+const { describe, it, beforeEach, afterEach, } = mocha;
 
 describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
   this.timeout(5000);

@@ -1,11 +1,10 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import sinon from "sinon";
+import RateLimiterPostgres from "../lib/RateLimiterPostgres.js";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
 /* eslint-disable no-new */
-const {
-  describe, it, beforeEach, afterEach,
-} = require('mocha');
-const { expect } = require('chai');
-const sinon = require('sinon');
-const RateLimiterPostgres = require('../lib/RateLimiterPostgres');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
+const { describe, it, beforeEach, afterEach, } = mocha;
 
 describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTest() {
   this.timeout(5000);

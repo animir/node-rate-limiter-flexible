@@ -1,10 +1,11 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import sinon from "sinon";
+import RateLimiterRedis from "../lib/RateLimiterRedis.js";
+import Redis from "ioredis";
 /* eslint-disable new-cap */
 /* eslint-disable no-unused-expressions */
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const sinon = require('sinon');
-const RateLimiterRedis = require('../lib/RateLimiterRedis');
-const Redis = require("ioredis");
+const { describe, it, beforeEach } = mocha;
 
 describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5500);

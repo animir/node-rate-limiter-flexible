@@ -1,6 +1,7 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterAbstract = require('../lib/RateLimiterAbstract');
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterAbstract from "../lib/RateLimiterAbstract.js";
+const { describe, it } = mocha;
 
 describe('RateLimiterAbstract', function () {
   this.timeout(5000);

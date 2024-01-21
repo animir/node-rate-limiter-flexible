@@ -1,8 +1,9 @@
+import mocha from "mocha";
+import { expect } from "chai";
+import RateLimiterUnion from "../lib/RateLimiterUnion.js";
+import RateLimiterMemory from "../lib/RateLimiterMemory.js";
 // eslint-disable no-unused-expressions
-const { describe, it, beforeEach } = require('mocha');
-const { expect } = require('chai');
-const RateLimiterUnion = require('../lib/RateLimiterUnion');
-const RateLimiterMemory = require('../lib/RateLimiterMemory');
+const { describe, it, beforeEach } = mocha;
 
 describe('RateLimiterUnion with fixed window', () => {
   const keyPrefix1 = 'limit1';
