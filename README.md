@@ -52,6 +52,8 @@ It uses **fixed window** as it is much faster than rolling window.
 
   // ECMAScript 
   import { RateLimiterMemory } from "rate-limiter-flexible";
+  // or
+  import RateLimiterMemory from "rate-limiter-flexible/lib/RateLimiterMemory.js";
   ```
 
 ## Basic Example
