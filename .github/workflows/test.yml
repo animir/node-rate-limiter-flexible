@@ -67,10 +67,5 @@ jobs:
       - name: Start DynamoDB local
         uses: rrainn/dynamodb-action@v3.0.0
 
-      - name: Start PostgreSQL
-        uses: supercharge/postgres-github-action@1.0.0
-        with:
-          postgres-version: 'latest'
-
       - run: npm install
       - run: npm run test
