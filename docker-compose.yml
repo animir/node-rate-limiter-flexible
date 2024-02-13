@@ -10,3 +10,11 @@ services:
     container_name: dynamo
     ports:
       - 8000:8000
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
