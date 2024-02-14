@@ -3,7 +3,7 @@
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
 
-[node-image]: https://img.shields.io/badge/node.js-%3E=_14.0-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_16.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 
 <img src="img/rlflx-logo-small.png" width="50" alt="Logo"/>
