@@ -11,8 +11,11 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   let redisMockClient;
 
   beforeEach(async () => {
-    redisMockClient = new Redis();
-    //await redisMockClient.connect();
+    redisMockClient = new Redis({
+      port: 6379, // Redis port
+      host: '127.0.0.1', // Redis host
+    });
+    // await redisMockClient.connect();
   });
 
   afterEach(async ()=>{
