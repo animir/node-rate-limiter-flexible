@@ -5,13 +5,14 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const redis = require("redis");
+const redisOptions = require('./RedisOptions');
 
 describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5500);
   let redisMockClient;
 
   beforeEach(async () => {
-    redisMockClient = redis.createClient();
+    redisMockClient = redis.createClient(redisOptions);
     await redisMockClient.connect();
     await redisMockClient.flushAll();
   });
@@ -325,7 +326,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('consume using insuranceLimiter when RedisClient error', async() => {
     const testKey = 'rediserror2';
 
-    const redisClientClosed = redis.createClient();
+    const redisClientClosed = redis.createClient(redisOptions);
     await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
@@ -353,7 +354,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('penalty using insuranceLimiter when RedisClient error', async () => {
     const testKey = 'rediserror3';
 
-    const redisClientClosed = redis.createClient();
+    const redisClientClosed = redis.createClient(redisOptions);
     await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
@@ -380,7 +381,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('reward using insuranceLimiter when RedisClient error', async () => {
     const testKey = 'rediserror4';
 
-    const redisClientClosed = redis.createClient();
+    const redisClientClosed = redis.createClient(redisOptions);
     await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
@@ -413,7 +414,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('block using insuranceLimiter when RedisClient error', async() => {
     const testKey = 'rediserrorblock';
 
-    const redisClientClosed = redis.createClient();
+    const redisClientClosed = redis.createClient(redisOptions);
     await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({
@@ -717,7 +718,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('insurance limiter on error consume applies options.customDuration to set expire', async () => {
     const testKey = 'consume.customDuration.onerror';
 
-    const redisClientClosed = redis.createClient();
+    const redisClientClosed = redis.createClient(redisOptions);
     await redisClientClosed.connect();
 
     const rateLimiter = new RateLimiterRedis({

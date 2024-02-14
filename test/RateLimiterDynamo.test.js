@@ -13,7 +13,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             accessKeyId: 'fake', 
             secretAccessKey: 'fake'
         },
-        endpoint: 'http://localhost:8000'
+        endpoint: 'http://127.0.0.1:8000'
     });
     
     it('DynamoDb client connection', (done) => {
