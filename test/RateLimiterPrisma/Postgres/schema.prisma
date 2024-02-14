@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://root:secret@localhost:5432"
+  url      = "postgres://root:secret@127.0.0.1:5432"
 }
 
 model RateLimiterFlexible {
