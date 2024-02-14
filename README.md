@@ -108,6 +108,8 @@ const headers = {
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
 
+Full documentation is on [Wiki](https://github.com/animir/node-rate-limiter-flexible/wiki)
+
 ### Middlewares,  plugins and other packages
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
 * [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
