@@ -1,10 +1,9 @@
-[![Coverage Status](https://coveralls.io/repos/animir/node-rate-limiter-flexible/badge.svg?branch=master)](https://coveralls.io/r/animir/node-rate-limiter-flexible?branch=master)
 [![npm version](https://badge.fury.io/js/rate-limiter-flexible.svg)](https://www.npmjs.com/package/rate-limiter-flexible)
 ![npm](https://img.shields.io/npm/dm/rate-limiter-flexible.svg)
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
 
-[node-image]: https://img.shields.io/badge/node.js-%3E=_14.0-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_16.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 
 <img src="img/rlflx-logo-small.png" width="50" alt="Logo"/>
@@ -104,11 +103,12 @@ const headers = {
 * no race conditions
 * no production dependencies
 * TypeScript declaration bundled
-* allow traffic burst with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter)
 * Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
+
+Full documentation is on [Wiki](https://github.com/animir/node-rate-limiter-flexible/wiki)
 
 ### Middlewares,  plugins and other packages
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
@@ -137,15 +137,16 @@ Some copy/paste examples on Wiki:
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
+* [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
+* [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
+* [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
+* [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
-* [RateLimiterRedis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
-* [RateLimiterDynamo](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
-* [RateLimiterMemcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
-* [RateLimiterMongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
-* [RateLimiterMySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
-* [RateLimiterPostgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)
+* [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
+* [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
+* [Postgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
-* [RateLimiterMemory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
+* [Memcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue

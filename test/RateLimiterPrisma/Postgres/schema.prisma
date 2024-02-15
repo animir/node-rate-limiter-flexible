@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgres://root:secret@127.0.0.1:5432"
+}
+
+model RateLimiterFlexible {
+  key     String   @id
+  points  Int
+  expire  DateTime?
+}

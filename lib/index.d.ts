@@ -349,6 +349,10 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterPostgresOptions, cb?: ICallbackReady);
 }
 
+export class RateLimiterPrisma extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+}
+
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 
 export class RateLimiterUnion {
