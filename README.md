@@ -12,13 +12,11 @@
 
 **rate-limiter-flexible** counts and limits number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, process _Memory_, _DynamoDB_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL_ and allows to control requests rate in single process or distributed environment.
+It works with _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL.
 
 Memory limiter also works in browser.
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
-
-Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter).
 
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).
 
@@ -29,6 +27,8 @@ Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node
 **Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 **In memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
+
+Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter).
 
 **Deno compatible** See [this example](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4) 
 
