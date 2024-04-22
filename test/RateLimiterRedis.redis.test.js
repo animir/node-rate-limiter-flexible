@@ -58,32 +58,72 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('rejected when consume more than maximum points and delayMultiplierByMaxPointsEnabled', (done) => {
-    const testKey = 'consume2';
-    const rateLimiter = new RateLimiterRedis({
-      storeClient: redisMockClient,
-      points: 1,
-      duration: 5,
-      useRedisPackage: true,
-      delayMultiplierByMaxPointsEnabled: true
-    });
-    rateLimiter
-      .consume(testKey)
-      .then(() => {
-        rateLimiter
-          .consume(testKey)
-          .then((res) => {
-            expect(res.msBeforeNext == 5000).to.equal(true);
-            done();
-          })
-          .catch((rejRes) => {
-            expect(rejRes.msBeforeNext >= 5000).to.equal(true);    
-            done();
-          });
-      })
-      .catch((err) => {
-        done(err);
+  describe('when delayMultiplierByMaxPointsEnabled', () => {
+    it('rejected when consume more than maximum points and multiply delay', (done) => {
+      const testKey = 'consume2';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 1,
+        duration: 5,
+        delayMultiplierByMaxPointsEnabled: true,
+        useRedisPackage: true,
       });
+      rateLimiter
+        .consume(testKey)
+        .then(() => {
+          rateLimiter
+            .consume(testKey)
+            .then(() => {})
+            .catch((rejRes) => {
+              expect(rejRes.msBeforeNext >= 5000).to.equal(true);    
+              rateLimiter
+                .consume(testKey)
+                .then(() => {})
+                .catch((rejRes2) => {
+                  expect(rejRes2.msBeforeNext >= 10000).to.equal(true);    
+                  done();
+                });
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+
+    describe('when max points is greater than 1', () => {
+      it('rejected when consume more than maximum points and multiply delay', (done) => {
+        const testKey = 'consume2';
+        const rateLimiter = new RateLimiterRedis({
+          storeClient: redisMockClient,
+          points: 2,
+          duration: 5,
+          delayMultiplierByMaxPointsEnabled: true,
+          useRedisPackage: true,
+        });
+        rateLimiter
+          .consume(testKey, 2)
+          .then(() => {
+            rateLimiter
+              .consume(testKey)
+              .then(() => {})
+              .catch((rejRes) => {
+                expect(rejRes.msBeforeNext >= 5000).to.equal(true);    
+                rateLimiter
+                  .consume(testKey)
+                  .then(() => {})
+                  .catch((rejRes2) => {
+                    console.log(rejRes2)
+                    expect(rejRes2.msBeforeNext >= 5000).to.equal(true);    
+                    expect(rejRes2.msBeforeNext < 10000).to.equal(true);
+                    done();
+                  });
+              });
+          })
+          .catch((err) => {
+            done(err);
+          });
+      });
+    });  
   });
 
   it('execute evenly over duration', (done) => {
