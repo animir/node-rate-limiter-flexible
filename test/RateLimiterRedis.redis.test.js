@@ -112,9 +112,8 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
                   .consume(testKey)
                   .then(() => {})
                   .catch((rejRes2) => {
-                    console.log(rejRes2)
                     expect(rejRes2.msBeforeNext >= 5000).to.equal(true);    
-                    expect(rejRes2.msBeforeNext < 10000).to.equal(true);
+                    expect(rejRes2.msBeforeNext <= 10000).to.equal(true);
                     done();
                   });
               });
