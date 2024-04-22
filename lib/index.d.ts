@@ -255,7 +255,7 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
     rejectIfRedisNotReady?: boolean;
     useRedisPackage?: boolean;
     useRedis3AndLowerPackage?: boolean;
-    delayMultiplierByGroupEnabled?: boolean;
+    delayMultiplierByMaxPointsEnabled?: boolean;
 }
 
 interface ICallbackReady {

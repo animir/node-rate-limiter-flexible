@@ -59,13 +59,13 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
-  it('rejected when consume more than maximum points and delayMultiplierByGroupEnabled', (done) => {
+  it('rejected when consume more than maximum points and delayMultiplierByMaxPointsEnabled', (done) => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
       points: 1,
       duration: 5,
-      delayMultiplierByGroupEnabled: true
+      delayMultiplierByMaxPointsEnabled: true
     });
     rateLimiter
       .consume(testKey)
