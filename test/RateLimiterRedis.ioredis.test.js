@@ -6,7 +6,7 @@ const sinon = require('sinon');
 const RateLimiterRedis = require('../lib/RateLimiterRedis');
 const Redis = require("ioredis");
 
-describe.only('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
+describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   this.timeout(5500);
   let redisMockClient;
 
@@ -59,7 +59,7 @@ describe.only('RateLimiterRedis with fixed window', function RateLimiterRedisTes
       });
   });
 
-  it.only('rejected when consume more than maximum points and delayMultiplierByGroupEnabled', (done) => {
+  it('rejected when consume more than maximum points and delayMultiplierByGroupEnabled', (done) => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
