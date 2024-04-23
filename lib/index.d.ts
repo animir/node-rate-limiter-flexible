@@ -255,7 +255,7 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
     rejectIfRedisNotReady?: boolean;
     useRedisPackage?: boolean;
     useRedis3AndLowerPackage?: boolean;
-    delayMultiplierByMaxPointsEnabled?: boolean;
+    customIncrTtlLuaScript?: string;
 }
 
 interface ICallbackReady {
