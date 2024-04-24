@@ -199,6 +199,7 @@ Specific:
 * [rejectIfRedisNotReady](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#rejectifredisnotready)
 * [useRedisPackage](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#useredispackage)
 * [useRedis3AndLowerPackage](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#useredis3andlowerpackage)
+* [customIncrTtlLuaScript](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#customincrttlluascript)
 
 ## API
 
