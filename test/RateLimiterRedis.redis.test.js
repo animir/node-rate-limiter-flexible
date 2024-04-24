@@ -58,6 +58,54 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  describe('when customIncrTtlLuaScript is provided', () => {
+    it('rejected when consume more than maximum points and multiply delay', (done) => {
+      const testKey = 'consume2';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 1,
+        duration: 5,
+        customIncrTtlLuaScript: `local ok = redis.call('set', KEYS[1], 0, 'EX', ARGV[2], 'NX') \
+        local consumed = redis.call('incrby', KEYS[1], ARGV[1]) \
+        local ttl = redis.call('pttl', KEYS[1]) \
+        if ttl == -1 then \
+          redis.call('expire', KEYS[1], ARGV[2]) \
+          ttl = 1000 * ARGV[2] \
+        else \
+          local maxPoints = tonumber(ARGV[3]) \
+          if maxPoints > 0 and (consumed-1) % maxPoints == 0 and not ok then \
+            local expireTime = ttl + tonumber(ARGV[2]) * 1000 \
+            redis.call('pexpire', KEYS[1], expireTime) \
+            return {consumed, expireTime} \
+          end \
+        end \
+        return {consumed, ttl} \
+        `,
+        useRedisPackage: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .then(() => {
+          rateLimiter
+            .consume(testKey)
+            .then(() => {})
+            .catch((rejRes) => {
+              expect(rejRes.msBeforeNext >= 5000).to.equal(true);    
+              rateLimiter
+                .consume(testKey)
+                .then(() => {})
+                .catch((rejRes2) => {
+                  expect(rejRes2.msBeforeNext >= 10000).to.equal(true);    
+                  done();
+                });
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
   it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterRedis({
