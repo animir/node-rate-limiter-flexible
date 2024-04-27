@@ -10,11 +10,11 @@
 
 ## node-rate-limiter-flexible
 
-**rate-limiter-flexible** counts and limits number of actions by key and protects from DDoS and brute force attacks at any scale.
+**rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _PostgreSQL.
+It works with _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
 
-Memory limiter also works in browser.
+Memory limiter also works in the browser.
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
@@ -22,17 +22,17 @@ Memory limiter also works in browser.
 
 **Flexible.** Combine limiters, block key for some duration, delay actions, manage failover with insurance options, configure smart key blocking in memory and many others.
 
-**Ready for growth.** It provides unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
+**Ready for growth.** It provides a unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
 **Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
-**In memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
+**In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
 Allow **traffic bursts** with [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter).
 
 **Deno compatible** See [this example](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4) 
 
-It uses **fixed window** as it is much faster than rolling window. 
+It uses a **fixed window**, as it is much faster than a rolling window. 
 [See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
 
 ## Installation
@@ -78,7 +78,7 @@ rateLimiter.consume(remoteAddress, 2) // consume 2 points
 
 #### RateLimiterRes object
 
-Both Promise resolve and reject return object of `RateLimiterRes` class if there is no any error.
+The Promise's `resolve` and `reject` callbacks both return an instance of the `RateLimiterRes` class if there is no error.
 Object attributes:
 ```javascript
 RateLimiterRes = {
@@ -89,7 +89,7 @@ RateLimiterRes = {
 }
 ```
 
-You may want to set next HTTP headers to response:
+You may want to set HTTP headers for the response:
 ```javascript
 const headers = {
   "Retry-After": rateLimiterRes.msBeforeNext / 1000,
@@ -104,7 +104,7 @@ const headers = {
 * no production dependencies
 * TypeScript declaration bundled
 * Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
-* Insurance Strategy as emergency solution if database / store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
+* Insurance Strategy as emergency solution if database/store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
 
@@ -161,7 +161,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
     
     `Default: 4` 
     
-    Maximum number of points can be consumed over duration
+    Maximum number of points that can be consumed over duration
 
 * **duration** 
 
@@ -169,13 +169,13 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
     
     Number of seconds before consumed points are reset.
     
-    Never reset points, if `duration` is set to 0.
+    Points are never reset if `duration` is set to 0.
 
 * **storeClient** 
 
     `Required for store limiters` 
 
-    Have to be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+    Must be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
 
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
@@ -189,7 +189,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 * [tableCreated](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablecreated) Is table already created in MySQL or PostgreSQL.
 * [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL and PostgreSQL.
 
-Smooth out traffic picks:
+Smooth out traffic peaks:
 * [execEvenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenly)
 * [execEvenlyMinDelayMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenlymindelayms)
 
@@ -217,7 +217,7 @@ Read detailed description on Wiki.
 
 ## Benchmark
 
-Average latency during test pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
+Average latency during test of pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
 
 1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
 
@@ -237,7 +237,7 @@ Average latency during test pure NodeJS endpoint in cluster of 4 workers with ev
 
 Note, you can speed up limiters with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) option.
 
-## Contribution
+## Contributions
 
 Appreciated, feel free!
 
@@ -245,16 +245,16 @@ Make sure you've launched `npm run eslint` before creating PR, all errors have t
 
 You can try to run `npm run eslint-fix` to fix some issues.
 
-Any new limiter with storage have to be extended from `RateLimiterStoreAbstract`.
+Any new limiter with storage must be extended from `RateLimiterStoreAbstract`.
 It has to implement 4 methods:
 * `_getRateLimiterRes` parses raw data from store to `RateLimiterRes` object.
-* `_upsert` may be atomic or non-atomic upsert (increment). It inserts or updates value by key and returns raw data. 
-    If it doesn't make atomic upsert (increment), the class should be suffixed with `NonAtomic`, e.g. `RateLimiterRedisNonAtomic`. 
+* `_upsert` may be atomic or non-atomic upsert (increment). It inserts or updates the value by key and returns raw data. 
+    If it doesn't make an atomic upsert (increment), the class should be suffixed with `NonAtomic`, e.g. `RateLimiterRedisNonAtomic`. 
     
     It must support `forceExpire` mode to overwrite key expiration time.
 * `_get` returns raw data by key or `null` if there is no key.
-* `_delete` deletes all key related data and returns `true` on deleted, `false` if key is not found.
+* `_delete` deletes all key-related data and returns `true` on deleted, `false` if key is not found.
 
-All other methods depends on store. See `RateLimiterRedis` or `RateLimiterPostgres` for example.
+All other methods depends on the store. See `RateLimiterRedis` or `RateLimiterPostgres` for examples.
 
 Note: all changes should be covered by tests.
