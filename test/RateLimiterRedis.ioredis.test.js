@@ -153,6 +153,24 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     });
   });
 
+  describe('when points are passed as decimal numbers', () => {
+    it('thows error', (done) => {
+      const testKey = 'consume2';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 1,
+        duration: 5
+      });
+      try {
+        rateLimiter
+        .consume(testKey, 1.1)
+      } catch (error) {
+        expect(error.message).to.equal('Consuming decimal number of points is not supported by this package');
+        done();            
+      }
+    });
+  });
+
   it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterRedis({
