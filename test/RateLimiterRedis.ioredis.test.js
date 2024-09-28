@@ -171,63 +171,68 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     });
   });
 
-  it('consume 2 point passed as float', (done) => {
-    const testKey = 'consume1';
-    const rateLimiter = new RateLimiterRedis({
-      storeClient: redisMockClient,
-      points: 3,
-      duration: 5,
-    });
-    rateLimiter
-      .consume(testKey, 2.0)
-      .then(() => {
-        redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
-          expect(consumedPoints).to.equal('2');
-          done();
-        });
-      })
-      .catch((err) => {
-        done(err);
+  describe('when passing points as float without decimal values', () => {
+    it('does not throw an error', (done) => {
+      const testKey = 'consume1';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 3,
+        duration: 5,
       });
+      rateLimiter
+        .consume(testKey, 2.0)
+        .then(() => {
+          redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+            expect(consumedPoints).to.equal('2');
+            done();
+          });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
   });
 
-  it('consume 2.0 point passed as string', (done) => {
-    const testKey = 'consume1';
-    const rateLimiter = new RateLimiterRedis({
-      storeClient: redisMockClient,
-      points: 3,
-      duration: 5,
-    });
-    rateLimiter
-      .consume(testKey, "2.0")
-      .then(() => {
-        done(new Error('must not'));
-      })
-      .catch((err) => {
-        console.log(err.message)
-        expect(err.message).to.equal('Consuming string different than integer values is not supported by this package')
-        done();
+  describe('when passing points as string with decimal values', () => {
+    it('throws error', (done) => {
+      const testKey = 'consume1';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 3,
+        duration: 5,
       });
-  });
-
-  it('consume 2 point passed as string', (done) => {
-    const testKey = 'consume1';
-    const rateLimiter = new RateLimiterRedis({
-      storeClient: redisMockClient,
-      points: 3,
-      duration: 5,
-    });
-    rateLimiter
-      .consume(testKey, "2")
-      .then(() => {
-        redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
-          expect(consumedPoints).to.equal('2');
+      rateLimiter
+        .consume(testKey, "2.0")
+        .then(() => {
+          done(new Error('must not'));
+        })
+        .catch((err) => {
+          expect(err.message).to.equal('Consuming string different than integer values is not supported by this package')
           done();
         });
-      })
-      .catch((err) => {
-        done(err);
+    });
+  });
+
+  describe('when passing points as string without decimal values', () => {
+    it('does not throw an error', (done) => {
+      const testKey = 'consume1';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 3,
+        duration: 5,
       });
+      rateLimiter
+        .consume(testKey, "2")
+        .then(() => {
+          redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+            expect(consumedPoints).to.equal('2');
+            done();
+          });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
   });
 
   it('execute evenly over duration', (done) => {
