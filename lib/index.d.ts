@@ -398,7 +398,8 @@ interface IRateLimiterDynamoOptions extends IRateLimiterStoreOptions {
     dynamoTableOpts?: {
         readCapacityUnits: number;
         writeCapacityUnits: number;
-    }
+    };
+    ttlSet?: boolean;
 }
 
 export class RateLimiterDynamo extends RateLimiterStoreAbstract {
