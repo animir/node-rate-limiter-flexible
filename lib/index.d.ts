@@ -399,7 +399,7 @@ interface IRateLimiterDynamoOptions extends IRateLimiterStoreOptions {
         readCapacityUnits: number;
         writeCapacityUnits: number;
     };
-    ttlManuallySet?: boolean;
+    ttlSet?: boolean;
 }
 
 export class RateLimiterDynamo extends RateLimiterStoreAbstract {
