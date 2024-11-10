@@ -161,13 +161,16 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         points: 1,
         duration: 5
       });
-      try {
-        rateLimiter
+
+      rateLimiter
         .consume(testKey, 1.1)
-      } catch (error) {
-        expect(error.message).to.equal('Consuming decimal number of points is not supported by this package');
-        done();            
-      }
+        .then(() => {
+          done(new Error('must not'));
+        })
+        .catch((err) => {
+          expect(err.message).to.equal('Consuming decimal number of points is not supported by this package')
+          done();
+        });
     });
   });
 
