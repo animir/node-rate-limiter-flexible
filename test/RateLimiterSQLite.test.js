@@ -132,21 +132,22 @@ describe('RateLimiterSQLite', () => {
       }
     });
 
-    it('should reject operations when table is not created', async () => {
-      const invalidLimiter = new RateLimiterSQLite({
-        storeClient: db,
-        tableName: 'invalid table name with spaces',
-        points: 5,
-        duration: 5,
-      });
+    it('should reject table when not valid', async () => {
 
       try {
-        await invalidLimiter.consume('test');
+        const invalidLimiter = new RateLimiterSQLite({
+          storeClient: db,
+          tableName: 'invalid table name with spaces',
+          points: 5,
+          duration: 5,
+        });
+
         expect.fail('should have thrown');
       } catch (err) {
-        expect(err.message).to.equal('Table is not created yet');
+        expect(err.message).to.equal('Table name must contain only letters and numbers');
       }
     });
+
   });
 
   describe('concurrent operations', () => {
@@ -177,14 +178,10 @@ describe('RateLimiterSQLite', () => {
 
 
       await cleanupLimiter.consume('test');
-      // Wait for expiration and cleanup
       await new Promise(resolve => setTimeout(resolve, 1100));
-
-      // Force cleanup
       await cleanupLimiter.clearExpired(Date.now());
 
       const res = await cleanupLimiter.get('test');
-      console.log(res);
       expect(res).to.be.null;
     });
   });
