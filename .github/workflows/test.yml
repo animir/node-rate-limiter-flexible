@@ -41,8 +41,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [18.x, 20.x]
         redis-version: [6, 7]
+        valkey-version: [7, 8]
 
     services:
       postgres:
@@ -74,6 +75,12 @@ jobs:
         uses: supercharge/redis-github-action@1.7.0
         with:
           redis-version: ${{ matrix.redis-version }}
+
+      - uses: shogo82148/actions-setup-redis@v1
+        with:
+          distribution: "valkey"
+          redis-version: ${{ matrix.valkey-version }}
+          redis-port: 8080
 
       - name: Start DynamoDB local
         uses: rrainn/dynamodb-action@v3.0.0

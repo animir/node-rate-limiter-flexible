@@ -5,6 +5,12 @@ services:
     container_name: cache
     ports:
       - 6379:6379
+  valkey:
+    image: valkey/valkey:8-alpine
+    container_name: valkey-cache
+    command: valkey-server --port 8080
+    ports:
+      - 8080:8080
   dynamodb:
     image: amazon/dynamodb-local
     container_name: dynamo
