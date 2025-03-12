@@ -41,8 +41,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
-        redis-version: [6, 7]
+        node-version: [18.x, 20.x, 22.x]
+        redis-version: [7]
 
     services:
       postgres:
