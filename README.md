@@ -12,7 +12,7 @@
 
 **rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
+It works with _Redis_, _Valkey_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
 
 Memory limiter also works in the browser.
 
