@@ -37,7 +37,7 @@ jobs:
   compatibility:
     runs-on: ubuntu-latest
 
-    name: testing node@${{ matrix.node-version }}, redis@7
+    name: testing node@${{ matrix.node-version }}, valkey@${{ matrix.valkey-version }}
 
     strategy:
       matrix:
