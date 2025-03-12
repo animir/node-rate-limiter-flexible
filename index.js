@@ -12,6 +12,7 @@ const BurstyRateLimiter = require('./lib/BurstyRateLimiter');
 const RateLimiterRes = require('./lib/RateLimiterRes');
 const RateLimiterDynamo = require('./lib/RateLimiterDynamo');
 const RateLimiterPrisma = require('./lib/RateLimiterPrisma');
+const RateLimiterValkey = require('./lib/RateLimiterValkey');
 
 module.exports = {
   RateLimiterRedis,
@@ -30,4 +31,5 @@ module.exports = {
   RateLimiterRes,
   RateLimiterDynamo,
   RateLimiterPrisma,
+  RateLimiterValkey,
 };
