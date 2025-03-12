@@ -24,7 +24,7 @@ Memory limiter also works in the browser.
 
 **Ready for growth.** It provides a unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `iovalkey`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
