@@ -37,12 +37,11 @@ jobs:
   compatibility:
     runs-on: ubuntu-latest
 
-    name: testing node@${{ matrix.node-version }}, redis@${{ matrix.redis-version }}
+    name: testing node@${{ matrix.node-version }}, redis@7
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        redis-version: [7]
         valkey-version: [7, 8]
 
     services:
@@ -74,7 +73,7 @@ jobs:
       - name: Start Redis
         uses: supercharge/redis-github-action@1.7.0
         with:
-          redis-version: ${{ matrix.redis-version }}
+          redis-version: 7
 
       - uses: shogo82148/actions-setup-redis@v1
         with:
