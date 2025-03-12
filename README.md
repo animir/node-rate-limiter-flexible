@@ -141,6 +141,7 @@ Some copy/paste examples on Wiki:
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
+* [Valkey](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
