@@ -12,7 +12,7 @@
 
 **rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, _Valkey_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
+It works with _Redis_, _Valkey_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
 
 Memory limiter also works in the browser.
 
@@ -146,6 +146,7 @@ Some copy/paste examples on Wiki:
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [Postgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)
+* [SQLite](https://github.com/animir/node-rate-limiter-flexible/wiki/SQLite)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
 * [Memcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
@@ -187,8 +188,8 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 * [storeType](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#storetype) Have to be set to `knex`, if you use it.
 * [dbName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#dbname) Where to store points.
 * [tableName](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablename) Table/collection.
-* [tableCreated](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablecreated) Is table already created in MySQL or PostgreSQL.
-* [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL and PostgreSQL.
+* [tableCreated](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablecreated) Is table already created in MySQL, SQLite or PostgreSQL.
+* [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL, SQLite and PostgreSQL.
 
 Smooth out traffic peaks:
 * [execEvenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenly)
