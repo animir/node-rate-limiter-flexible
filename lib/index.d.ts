@@ -258,6 +258,10 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
     customIncrTtlLuaScript?: string;
 }
 
+interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
+  customIncrTtlLuaScript?: string;
+}
+
 interface ICallbackReady {
     (error?: Error): void;
 }
@@ -289,6 +293,10 @@ export class RateLimiterClusterMasterPM2 {
 
 export class RateLimiterRedis extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterRedisOptions);
+}
+
+export class RateLimiterValkey extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterValkeyOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {

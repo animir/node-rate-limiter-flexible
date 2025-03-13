@@ -3,7 +3,7 @@
 [![node version][node-image]][node-url]
 [![deno version](https://img.shields.io/badge/deno-^1.5.3-lightgrey?logo=deno)](https://github.com/denoland/deno)
 
-[node-image]: https://img.shields.io/badge/node.js-%3E=_16.0-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_18.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 
 <img src="img/rlflx-logo-small.png" width="50" alt="Logo"/>
@@ -12,7 +12,7 @@
 
 **rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
+It works with _Redis_, _Valkey_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, and _PostgreSQL_.
 
 Memory limiter also works in the browser.
 
@@ -24,7 +24,7 @@ Memory limiter also works in the browser.
 
 **Ready for growth.** It provides a unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `iovalkey`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
@@ -141,6 +141,7 @@ Some copy/paste examples on Wiki:
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
+* [Valkey](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
