@@ -152,6 +152,25 @@ function testRateLimiterSQLite(library, createDb) {
           );
         }
       });
+
+      it("should reject storeType when it's not supported", async () => {
+        const validStoreTypes = ["sqlite3", "better-sqlite3", "knex"];
+
+        try {
+          const unsupportedStoreType = new RateLimiterSQLite({
+            storeClient: db,
+            storeType: "not_supported",
+            tableName: "invalid table name with spaces",
+            points: 5,
+            duration: 5,
+          });
+          expect.fail("should have thrown");
+        } catch (err) {
+          expect(err.message).to.equal(
+            `storeType must be one of: ${validStoreTypes.join(", ")}`
+          );
+        }
+      });
     });
 
     describe("concurrent operations", () => {
