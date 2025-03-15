@@ -67,5 +67,8 @@
   "browser": {
     "cluster": false,
     "crypto": false
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.9.0"
   }
 }
