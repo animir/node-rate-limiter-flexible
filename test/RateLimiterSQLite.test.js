@@ -5,8 +5,8 @@ const betterSQLite3 = require("better-sqlite3");
 const { RateLimiterSQLite } = require("../index");
 const knex = require("knex");
 
-function testRateLimiterSQLite(library, createDb) {
-  describe(`RateLimiterSQLite with ${library}`, () => {
+function testRateLimiterSQLite(library, createDb, clientName = null) {
+  describe(`RateLimiterSQLite with ${clientName || library}`, () => {
     let db;
     let rateLimiter;
 
@@ -26,10 +26,15 @@ function testRateLimiterSQLite(library, createDb) {
     afterEach((done) => {
       if (library === "sqlite3") {
         db.close(() => done());
-      } else {
-        db.close();
-        done();
+        return;
       }
+
+      if (library === "knex") {
+        db.destroy().then(() => done());
+        return;
+      }
+      db.close();
+      done();
     });
 
     describe("basic functionality", () => {
@@ -125,6 +130,8 @@ function testRateLimiterSQLite(library, createDb) {
         // Close the database to simulate errors
         if (library === "sqlite3") {
           await new Promise((resolve) => db.close(resolve));
+        } else if (library === "knex") {
+          await db.destroy();
         } else {
           db.close();
         }
@@ -221,17 +228,25 @@ testRateLimiterSQLite("sqlite3", () => new sqlite3.Database(":memory:"));
 testRateLimiterSQLite("better-sqlite3", () => new betterSQLite3(":memory:"));
 
 // Run test with knex using better-sqlite3 in-memory database
-testRateLimiterSQLite("knex", () =>
-  knex({
-    client: "better-sqlite3",
-    connection: { filename: ":memory:" },
-  })
+testRateLimiterSQLite(
+  "knex",
+  () =>
+    knex({
+      client: "better-sqlite3",
+      connection: { filename: ":memory:" },
+      useNullAsDefault: true,
+    }),
+  "knex(better-sqlite3)"
 );
 
 // Run test with knex using sqlite3 in-memory database
-testRateLimiterSQLite("knex", () =>
-  knex({
-    client: "sqlite3",
-    connection: { filename: ":memory:" },
-  })
+testRateLimiterSQLite(
+  "knex",
+  () =>
+    knex({
+      client: "sqlite3",
+      connection: { filename: ":memory:" },
+      useNullAsDefault: true,
+    }),
+  "knex(sqlite3)"
 );
