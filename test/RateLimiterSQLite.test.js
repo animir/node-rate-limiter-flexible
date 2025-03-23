@@ -3,6 +3,7 @@ const { expect } = require("chai");
 const sqlite3 = require("sqlite3");
 const betterSQLite3 = require("better-sqlite3");
 const { RateLimiterSQLite } = require("../index");
+const knex = require("knex");
 
 function testRateLimiterSQLite(library, createDb) {
   describe(`RateLimiterSQLite with ${library}`, () => {
@@ -218,3 +219,19 @@ testRateLimiterSQLite("sqlite3", () => new sqlite3.Database(":memory:"));
 
 // Run tests with better-sqlite3 in-memory-database
 testRateLimiterSQLite("better-sqlite3", () => new betterSQLite3(":memory:"));
+
+// Run test with knex using better-sqlite3 in-memory database
+testRateLimiterSQLite("knex", () =>
+  knex({
+    client: "better-sqlite3",
+    connection: { filename: ":memory:" },
+  })
+);
+
+// Run test with knex using sqlite3 in-memory database
+testRateLimiterSQLite("knex", () =>
+  knex({
+    client: "sqlite3",
+    connection: { filename: ":memory:" },
+  })
+);
