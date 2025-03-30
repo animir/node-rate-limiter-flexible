@@ -24,7 +24,7 @@ Memory limiter also works in the browser.
 
 **Ready for growth.** It provides a unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, `iovalkey`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
+**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, [`iovalkey`](https://www.npmjs.com/package/iovalkey) or [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide), `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
@@ -177,7 +177,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 
     `Required for store limiters` 
 
-    Must be `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+    Must be `@valkey/valkey-glide`, `iovalkey`, `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
 
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.

@@ -1,21 +1,40 @@
-version: '3.2'
 services:
   redis:
     image: redis:7-alpine
     container_name: cache
     ports:
       - 6379:6379
+
   valkey:
     image: valkey/valkey:8-alpine
     container_name: valkey-cache
     command: valkey-server --port 8080
     ports:
       - 8080:8080
+    networks:
+      - valkey-network
+
+  valkey-cluster:
+    image: valkey/valkey:8-alpine
+    container_name: valkey-cluster
+    command: >
+      sh -c "
+        valkey-server --port 8081 --cluster-enabled yes &
+        sleep 5;
+        valkey-cli -p 8081 cluster addslotsrange 0 16383;
+        tail -f /dev/null
+      "
+    ports:
+      - 8081:8081
+    networks:
+      - valkey-network
+
   dynamodb:
     image: amazon/dynamodb-local
     container_name: dynamo
     ports:
       - 8000:8000
+
   postgres:
     image: postgres:latest
     restart: always
@@ -24,3 +43,7 @@ services:
       POSTGRES_PASSWORD: secret
     ports:
       - "5432:5432"
+
+networks:
+  valkey-network:
+    driver: bridge

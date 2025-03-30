@@ -9,4 +9,5 @@ coverage
 img
 .github
 docker-compose.yml
+docker-compose.valkey-cluster.yml
 .nyc_output
