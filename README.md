@@ -12,7 +12,7 @@
 
 **rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
 
-It works with _Redis_, _Valkey_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
+It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
 
 Memory limiter also works in the browser.
 
@@ -24,7 +24,7 @@ Memory limiter also works in the browser.
 
 **Ready for growth.** It provides a unified API for all limiters. Whenever your application grows, it is ready. Prepare your limiters in minutes.
 
-**Friendly.** No matter which node package you prefer: `redis` or `ioredis`, [`iovalkey`](https://www.npmjs.com/package/iovalkey) or [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide), `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
+**Friendly.** No matter which node package you prefer: [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) or [`iovalkey`](https://www.npmjs.com/package/iovalkey), `redis` or `ioredis`,  `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
@@ -137,18 +137,18 @@ Some copy/paste examples on Wiki:
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
+* [Valkey](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey)
 * [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
-* [Valkey](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [Postgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)
 * [SQLite](https://github.com/animir/node-rate-limiter-flexible/wiki/SQLite)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
-* [Memcache](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
+* [Memcached](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue

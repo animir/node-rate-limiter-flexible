@@ -5,7 +5,7 @@ services:
     ports:
       - "7001-7003:7001-7003"
     volumes:
-      - ./cluster-setup.sh:/usr/local/bin/cluster-setup.sh:ro
+      - ./test/scripts/cluster-setup.sh:/usr/local/bin/cluster-setup.sh:ro
     command: ["bash", "/usr/local/bin/cluster-setup.sh"]
     environment:
       - SKIP_SYSCTL=1
