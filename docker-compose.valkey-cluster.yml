@@ -1,0 +1,20 @@
+services:
+  valkey-cluster:
+    image: valkey/valkey:latest
+    ipc: host
+    ports:
+      - "7001-7003:7001-7003"
+    volumes:
+      - ./test/scripts/cluster-setup.sh:/usr/local/bin/cluster-setup.sh:ro
+    command: ["bash", "/usr/local/bin/cluster-setup.sh"]
+    environment:
+      - SKIP_SYSCTL=1
+    network_mode: "host"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-p", "7001", "cluster", "info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    privileged: true
+    restart: unless-stopped
+    stop_grace_period: 30s
