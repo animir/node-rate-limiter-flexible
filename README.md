@@ -95,7 +95,7 @@ const headers = {
   "Retry-After": rateLimiterRes.msBeforeNext / 1000,
   "X-RateLimit-Limit": opts.points,
   "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
-  "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
+  "X-RateLimit-Reset": Math.ceil((Date.now() + rateLimiterRes.msBeforeNext) / 1000)
 }
 ```
 
