@@ -26,7 +26,7 @@ Memory limiter also works in the browser.
 
 **Friendly.** No matter which node package you prefer: [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) or [`iovalkey`](https://www.npmjs.com/package/iovalkey), `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
-**Safe for using with valkey cluster.** [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) implementation, [RateLimiterValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide)), is being tested against `valkey` cluster to ensure the rate limiter is agnostic to the server type, it able to avoid race conditions in high traffic along with sharded cluster, and to ensure compatibility and high performance.
+**Safe for using with valkey cluster.** [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) implementation, [RateLimiterValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide), is being tested against `valkey` cluster to ensure the rate limiter is agnostic to the server type, it able to avoid race conditions in high traffic along with sharded cluster, and to ensure compatibility and high performance.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
