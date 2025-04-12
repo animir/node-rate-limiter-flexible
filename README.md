@@ -139,7 +139,7 @@ Some copy/paste examples on Wiki:
 
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
-* [Valkey](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey)
+* Valkey: [ValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide) or [iovalkey](https://github.com/animir/node-rate-limiter-flexible/wiki/IoValkey)
 * [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
