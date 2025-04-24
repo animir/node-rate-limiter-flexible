@@ -518,7 +518,7 @@ export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
  * Options for the Etcd Rate Limiter. Adds host and port for the etcd instance.
  *
  * Default for the Etcd host is 'localhost'.
- * Default for the Etcd port is 8082.
+ * Default for the Etcd port is 2379.
  */
 interface RateLimiterEtcdOptions extends IRateLimiterStoreOptions {
     etcdHost?: string;
@@ -529,7 +529,7 @@ interface RateLimiterEtcdOptions extends IRateLimiterStoreOptions {
  * Etcd Rate Limiter class.
  *
  * If not passed explicitly with the "storeClient" option, the limiter creates an instance
- * of the EtcdClient with the host (default 'localhost') and port (default 8082) passed into
+ * of the EtcdClient with the host (default 'localhost') and port (default 2379) passed into
  * the options object.
  */
 export class RateLimiterEtcd extends RateLimiterStoreAbstract {

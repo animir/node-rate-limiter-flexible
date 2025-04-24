@@ -50,8 +50,7 @@ services:
     environment:
       ALLOW_NONE_AUTHENTICATION: yes
     ports:
-      - 8082:2379
-      - 8083:2380
+      - 2379:2379
 
 networks:
   valkey-network:

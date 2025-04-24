@@ -11,8 +11,8 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
 
   const testKey = 'key';
 
-  const etcdClient = new EtcdClient('localhost', 8082);
-  const etcdInsurance = new EtcdClient('localhost', 8082);
+  const etcdClient = new EtcdClient('localhost', 2379);
+  const etcdInsurance = new EtcdClient('localhost', 2379);
 
   beforeEach(async () => {
     const rateLimiter = new RateLimiterEtcd({});
