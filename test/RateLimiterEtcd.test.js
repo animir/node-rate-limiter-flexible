@@ -2,25 +2,67 @@
 const { describe, it, beforeEach, afterEach } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
+const { Etcd3 } = require('etcd3');
 
 const RateLimiterEtcd = require('../lib/RateLimiterEtcd');
-const EtcdClient = require('../lib/component/EtcdClient/EtcdClient');
 
 describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
   this.timeout(5500);
 
   const testKey = 'key';
 
-  const etcdClient = new EtcdClient('localhost', 2379);
-  const etcdInsurance = new EtcdClient('localhost', 2379);
+  const etcdClient = new Etcd3({
+    hosts: 'http://localhost:2379',
+  });
+  const etcdInsurance = new Etcd3({
+    hosts: 'http://localhost:2379',
+  });
 
   beforeEach(async () => {
-    const rateLimiter = new RateLimiterEtcd({});
+    const rateLimiter = new RateLimiterEtcd({
+      storeClient: etcdClient,
+    });
     await rateLimiter.delete(testKey);
   });
 
   afterEach(async () => {
     sinon.restore();
+  });
+
+  it('should throw an error if no client is provided', () => {
+    try {
+      // eslint-disable-next-line no-unused-vars
+      const rateLimiter = new RateLimiterEtcd({});
+      throw new Error('constructor should have thrown an error');
+    } catch (err) {
+      expect(err.message).to.equal('You need to set the option "storeClient" to an instance of class "Etcd3".');
+    }
+  });
+
+  it('should throw an error if the transaction fails often enough', async () => {
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.resolves({
+      succeeded: false,
+      kvs: [
+        {
+          value: '{"points":0}',
+        },
+      ],
+      count: '1',
+    });
+
+    const rateLimiter = new RateLimiterEtcd({
+      storeClient: etcdClient,
+      points: 2,
+      duration: 5,
+    });
+
+    rateLimiter
+      .consume(testKey)
+      .catch((err) => {
+        expect(err.message).to.equal('Could not set new value in a transaction.');
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('consume 1 point', (done) => {
@@ -267,7 +309,8 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
   });
 
   it('throws error on RedisClient error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -278,11 +321,13 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
       .then(() => {})
       .catch((rejRes) => {
         expect(rejRes instanceof Error).to.equal(true);
-      });
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('consume using insuranceLimiter when RedisClient error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -300,11 +345,13 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
       .consume(testKey)
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext > 1000).to.equal(true);
-      });
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('penalty using insuranceLimiter when RedisClient error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -320,13 +367,17 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
     await rateLimiter
       .penalty(testKey);
 
-    await rateLimiter.get(testKey).then((result) => {
-      expect(result.consumedPoints).to.equal(1);
-    });
+    await rateLimiter
+      .get(testKey)
+      .then((result) => {
+        expect(result.consumedPoints).to.equal(1);
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('reward using insuranceLimiter when RedisClient error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -347,13 +398,17 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
       });
     await rateLimiter
       .reward(testKey);
-    await rateLimiter.get(testKey).then((result) => {
-      expect(result.consumedPoints).to.equal(1);
-    });
+    await rateLimiter
+      .get(testKey)
+      .then((result) => {
+        expect(result.consumedPoints).to.equal(1);
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('block using insuranceLimiter when RedisClient error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -370,7 +425,8 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
       .block(testKey, 3)
       .then((res) => {
         expect(res.msBeforeNext > 2000 && res.msBeforeNext <= 3000).to.equal(true);
-      });
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('use keyPrefix from options', () => {
@@ -496,15 +552,18 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
   });
 
   it('delete rejects on error', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
       points: 2,
       duration: 1,
     });
-    await rateLimiter.delete(testKey)
-      .catch(() => {});
+    await rateLimiter
+      .delete(testKey)
+      .catch(() => {})
+      .finally(() => etcdClient.unmock());
   });
 
   it('consume applies options.customDuration to set expire', (done) => {
@@ -544,7 +603,8 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
   });
 
   it('insurance limiter on error consume applies options.customDuration to set expire', async () => {
-    sinon.stub(etcdClient, '_httpPost').rejects();
+    const mock = etcdClient.mock({ exec: sinon.stub() });
+    mock.exec.rejects();
 
     const rateLimiter = new RateLimiterEtcd({
       storeClient: etcdClient,
@@ -562,7 +622,8 @@ describe('RateLimiterEtcd', function RateLimiterEtcdTest() {
       .consume(testKey, 1, { customDuration: 1 })
       .then((res) => {
         expect(res.remainingPoints === 1 && res.msBeforeNext <= 1000).to.equal(true);
-      });
+      })
+      .finally(() => etcdClient.unmock());
   });
 
   it('block key in memory works with blockDuration on store', (done) => {
