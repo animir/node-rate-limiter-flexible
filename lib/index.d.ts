@@ -519,7 +519,7 @@ export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
  *
  * The option "storeClient" needs to be set to an instance of class "EtcdClient".
  */
-export class RateLimiterEtcd extends RateLimiterStoreAbstract {
+export class RateLimiterEtcd extends RateLimiterEtcdNonAtomic {
     constructor(opts: IRateLimiterStoreOptions);
 }
 
