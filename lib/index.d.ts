@@ -513,3 +513,21 @@ export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
      */
     close(): Promise<void>;
 }
+
+/**
+ * Etcd Rate Limiter class.
+ *
+ * The option "storeClient" needs to be set to an instance of class "EtcdClient".
+ */
+export class RateLimiterEtcd extends RateLimiterEtcdNonAtomic {
+    constructor(opts: IRateLimiterStoreOptions);
+}
+
+/**
+ * Non-Atomic Etcd Rate Limiter class.
+ *
+ * The option "storeClient" needs to be set to an instance of class "EtcdClient".
+ */
+export class RateLimiterEtcdNonAtomic extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterStoreOptions);
+}

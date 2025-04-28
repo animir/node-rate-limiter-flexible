@@ -44,6 +44,14 @@ services:
     ports:
       - "5432:5432"
 
+  etcd:
+    image: bitnami/etcd:3.5
+    container_name: etcd
+    environment:
+      ALLOW_NONE_AUTHENTICATION: yes
+    ports:
+      - 2379:2379
+
 networks:
   valkey-network:
     driver: bridge
