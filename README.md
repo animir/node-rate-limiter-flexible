@@ -26,7 +26,7 @@ Memory limiter also works in the browser.
 
 **Friendly.** No matter which node package you prefer: [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) or [`iovalkey`](https://www.npmjs.com/package/iovalkey), `redis` or `ioredis`, `sequelize`/`typeorm` or `knex`, `memcached`, native driver or `mongoose`. It works with all of them.
 
-**Safe for using with valkey cluster.** [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) implementation, [RateLimiterValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide), is being tested against `valkey` cluster to ensure the rate limiter is agnostic to the server type, it able to avoid race conditions in high traffic along with sharded cluster, and to ensure compatibility and high performance.
+**Safe for using with valkey cluster.** [`valkey-glide`](https://www.npmjs.com/package/@valkey/valkey-glide) implementation, [RateLimiterValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide), is being tested to ensure compatibility and high performance.
 
 **In-memory blocks.** Avoid extra requests to store with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed).
 
@@ -143,6 +143,7 @@ Some copy/paste examples on Wiki:
 * [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
+* [Etcd](https://github.com/animir/node-rate-limiter-flexible/wiki/Etcd)
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
@@ -218,28 +219,6 @@ Read detailed description on Wiki.
 * [penalty(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterpenaltykey-points--1) Increase number of consumed points in current duration.
 * [reward(key, points = 1)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimiterrewardkey-points--1) Decrease number of consumed points in current duration.
 * [getKey(key)](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods#ratelimitergetkeykey) Get internal prefixed key.
-
-## Benchmark
-
-Average latency during test of pure NodeJS endpoint in cluster of 4 workers with everything set up on one server.
-
-1000 concurrent clients with maximum 2000 requests per sec during 30 seconds. 
-
-```text
-1. Memory     0.34 ms
-2. Cluster    0.69 ms
-3. Redis      2.45 ms
-4. Memcached  3.89 ms
-5. Mongo      4.75 ms
-```
-
-500 concurrent clients with maximum 1000 req per sec during 30 seconds
-```text
-6. PostgreSQL 7.48 ms (with connection pool max 100)
-7. MySQL     14.59 ms (with connection pool 100)
-```
-
-Note, you can speed up limiters with [inMemoryBlockOnConsumed](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#inmemoryblockonconsumed) option.
 
 ## Contributions
 
