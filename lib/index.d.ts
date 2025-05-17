@@ -258,6 +258,10 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
     customIncrTtlLuaScript?: string;
 }
 
+interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
+  customIncrTtlLuaScript?: string;
+}
+
 interface ICallbackReady {
     (error?: Error): void;
 }
@@ -289,6 +293,10 @@ export class RateLimiterClusterMasterPM2 {
 
 export class RateLimiterRedis extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterRedisOptions);
+}
+
+export class RateLimiterValkey extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterValkeyOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {
@@ -350,6 +358,10 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterPostgresOptions, cb?: ICallbackReady);
 }
 
+export class RateLimiterSQLite extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+}
+
 export class RateLimiterPrisma extends RateLimiterStoreAbstract {
   constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
@@ -398,9 +410,124 @@ interface IRateLimiterDynamoOptions extends IRateLimiterStoreOptions {
     dynamoTableOpts?: {
         readCapacityUnits: number;
         writeCapacityUnits: number;
-    }
+    };
+    ttlSet?: boolean;
 }
 
 export class RateLimiterDynamo extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterDynamoOptions, cb?: ICallbackReady);
+}
+
+/**
+ * Options for RateLimiterValkeyGlide
+ */
+interface IRateLimiterValkeyGlideOptions extends IRateLimiterStoreOptions {
+    /**
+     * Valkey Glide client instance (GlideClient or GlideClusterClient)
+     */
+    storeClient: any; // GlideClient | GlideClusterClient;
+
+    /**
+     * Whether to reject requests if Valkey is not ready
+     * @default false
+     */
+    rejectIfValkeyNotReady?: boolean;
+
+    /**
+     * Custom Lua script for rate limiting logic.
+     * Must accept parameters:
+     * - KEYS[1]: The key being rate limited
+     * - ARGV[1]: Points to consume (as string, use tonumber() to convert)
+     * - ARGV[2]: Duration in seconds (as string, use tonumber() to convert)
+     * 
+     * Must return an array with exactly two elements:
+     * - [0]: Consumed points (number)
+     * - [1]: TTL in milliseconds (number)
+     */
+    customFunction?: string;
+
+    /**
+     * Custom name for the function library, defaults to 'ratelimiter'.
+     * The name is used to identify the library of the Lua function.
+     * A custom name should be used only if you want to use different 
+     * libraries for different rate limiters.
+     * @default 'ratelimiter'
+     */
+    customFunctionLibName?: string;
+}
+
+/**
+ * Rate limiter that uses Valkey Glide client for storage
+ */
+export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
+    /**
+     * Creates a new instance of RateLimiterValkeyGlide
+     * 
+     * @param opts Configuration options
+     * 
+     * @example
+     * ```typescript
+     * // Basic usage
+     * const rateLimiter = new RateLimiterValkeyGlide({
+     *   storeClient: glideClient,
+     *   points: 5,
+     *   duration: 1
+     * });
+     * 
+     * // With custom Lua function
+     * const customScript = `local key = KEYS[1]
+     * local pointsToConsume = tonumber(ARGV[1]) or 0
+     * local secDuration = tonumber(ARGV[2]) or 0
+     * 
+     * -- Custom implementation
+     * -- ...
+     * 
+     * -- Must return exactly two values: [consumed_points, ttl_in_ms]
+     * return {consumed, ttl}`;
+     * 
+     * const rateLimiter = new RateLimiterValkeyGlide({
+     *   storeClient: glideClient,
+     *   points: 5,
+     *   customFunction: customScript
+     * });
+     * 
+     * // With insurance limiter
+     * const rateLimiter = new RateLimiterValkeyGlide({
+     *   storeClient: primaryGlideClient,
+     *   points: 5,
+     *   duration: 2,
+     *   insuranceLimiter: new RateLimiterMemory({
+     *     points: 5,
+     *     duration: 2
+     *   })
+     * });
+     * ```
+     */
+    constructor(opts: IRateLimiterValkeyGlideOptions);
+
+    /**
+     * Close the rate limiter and release resources
+     * Note: The method won't close the Valkey client, as it may be shared with other instances.
+     * 
+     * @returns Promise that resolves when the rate limiter is closed
+     */
+    close(): Promise<void>;
+}
+
+/**
+ * Etcd Rate Limiter class.
+ *
+ * The option "storeClient" needs to be set to an instance of class "EtcdClient".
+ */
+export class RateLimiterEtcd extends RateLimiterEtcdNonAtomic {
+    constructor(opts: IRateLimiterStoreOptions);
+}
+
+/**
+ * Non-Atomic Etcd Rate Limiter class.
+ *
+ * The option "storeClient" needs to be set to an instance of class "EtcdClient".
+ */
+export class RateLimiterEtcdNonAtomic extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterStoreOptions);
 }

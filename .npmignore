@@ -2,11 +2,12 @@
 .gitignore
 .github
 .npmignore
-.travis.yml
-.eslintrc.json
+*.json
+.editorconfig
 test
 coverage
 img
 .github
-docker-compose.yml
+*.yml
+*.yaml
 .nyc_output
