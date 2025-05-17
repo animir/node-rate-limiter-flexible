@@ -58,6 +58,47 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  describe('when resetting maximum points', () => {
+    it('consume 2 points', (done) => {
+      const testKey = 'consume1';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 2,
+        duration: 5,
+      });
+      rateLimiter.points = 3
+      rateLimiter
+        .consume(testKey, 2)
+        .then(() => {
+          redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+            expect(consumedPoints).to.equal('2');
+            done();
+          });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  
+    it('rejected when consume more than maximum points', (done) => {
+      const testKey = 'consume2';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 1,
+        duration: 5,
+        useRedisPackage: true,
+      });
+      rateLimiter.points = 3
+      rateLimiter
+        .consume(testKey, 4)
+        .then(() => {})
+        .catch((rejRes) => {
+          expect(rejRes.msBeforeNext >= 0).to.equal(true);
+          done();
+        });
+    });
+  });
+
   describe('when customIncrTtlLuaScript is provided', () => {
     it('rejected when consume more than maximum points and multiply delay', (done) => {
       const testKey = 'consume2';
