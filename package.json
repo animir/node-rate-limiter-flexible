@@ -1,6 +1,6 @@
 {
   "name": "rate-limiter-flexible",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "Node.js rate limiter by key and protection from DDoS and Brute-Force attacks in process Memory, Redis, MongoDb, Memcached, MySQL, PostgreSQL, Cluster or PM",
   "main": "index.js",
   "scripts": {
