@@ -531,3 +531,13 @@ export class RateLimiterEtcd extends RateLimiterEtcdNonAtomic {
 export class RateLimiterEtcdNonAtomic extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterStoreOptions);
 }
+
+export class RateLimiterQueueError extends Error {
+
+  constructor(message?: string, extra?: string);
+
+  readonly name: string;
+  readonly message: string;
+  readonly extra: string;
+
+}
