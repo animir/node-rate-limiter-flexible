@@ -7,3 +7,4 @@ dump.rdb
 nodes.conf
 data/
 drizzle
+bun.lock
