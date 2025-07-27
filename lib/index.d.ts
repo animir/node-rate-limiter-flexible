@@ -241,6 +241,10 @@ interface IRateLimiterStoreNoAutoExpiryOptions extends IRateLimiterStoreOptions 
     clearExpiredByTimeout?: boolean;
 }
 
+interface IRateLimiterStoreNoAutoExpiryOptionsAndSchema extends IRateLimiterStoreNoAutoExpiryOptions {
+    schema: any;
+}
+
 interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
     indexKeyPrefix?: {
         [key: string]: any;
@@ -366,6 +370,10 @@ export class RateLimiterPrisma extends RateLimiterStoreAbstract {
   constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
+export class RateLimiterDrizzle extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+}
+
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 
 export class RateLimiterUnion {
@@ -439,7 +447,7 @@ interface IRateLimiterValkeyGlideOptions extends IRateLimiterStoreOptions {
      * - KEYS[1]: The key being rate limited
      * - ARGV[1]: Points to consume (as string, use tonumber() to convert)
      * - ARGV[2]: Duration in seconds (as string, use tonumber() to convert)
-     * 
+     *
      * Must return an array with exactly two elements:
      * - [0]: Consumed points (number)
      * - [1]: TTL in milliseconds (number)
@@ -449,7 +457,7 @@ interface IRateLimiterValkeyGlideOptions extends IRateLimiterStoreOptions {
     /**
      * Custom name for the function library, defaults to 'ratelimiter'.
      * The name is used to identify the library of the Lua function.
-     * A custom name should be used only if you want to use different 
+     * A custom name should be used only if you want to use different
      * libraries for different rate limiters.
      * @default 'ratelimiter'
      */
@@ -462,9 +470,9 @@ interface IRateLimiterValkeyGlideOptions extends IRateLimiterStoreOptions {
 export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
     /**
      * Creates a new instance of RateLimiterValkeyGlide
-     * 
+     *
      * @param opts Configuration options
-     * 
+     *
      * @example
      * ```typescript
      * // Basic usage
@@ -473,24 +481,24 @@ export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
      *   points: 5,
      *   duration: 1
      * });
-     * 
+     *
      * // With custom Lua function
      * const customScript = `local key = KEYS[1]
      * local pointsToConsume = tonumber(ARGV[1]) or 0
      * local secDuration = tonumber(ARGV[2]) or 0
-     * 
+     *
      * -- Custom implementation
      * -- ...
-     * 
+     *
      * -- Must return exactly two values: [consumed_points, ttl_in_ms]
      * return {consumed, ttl}`;
-     * 
+     *
      * const rateLimiter = new RateLimiterValkeyGlide({
      *   storeClient: glideClient,
      *   points: 5,
      *   customFunction: customScript
      * });
-     * 
+     *
      * // With insurance limiter
      * const rateLimiter = new RateLimiterValkeyGlide({
      *   storeClient: primaryGlideClient,
@@ -508,7 +516,7 @@ export class RateLimiterValkeyGlide extends RateLimiterStoreAbstract {
     /**
      * Close the rate limiter and release resources
      * Note: The method won't close the Valkey client, as it may be shared with other instances.
-     * 
+     *
      * @returns Promise that resolves when the rate limiter is closed
      */
     close(): Promise<void>;
