@@ -18,6 +18,7 @@ const RateLimiterValkeyGlide = require('./lib/RateLimiterValkeyGlide');
 const RateLimiterSQLite = require('./lib/RateLimiterSQLite');
 const RateLimiterEtcd = require('./lib/RateLimiterEtcd');
 const RateLimiterEtcdNonAtomic = require('./lib/RateLimiterEtcdNonAtomic');
+const RateLimiterQueueError = require('./lib/component/RateLimiterQueueError')
 
 module.exports = {
   RateLimiterRedis,
@@ -42,4 +43,5 @@ module.exports = {
   RateLimiterEtcd,
   RateLimiterDrizzle,
   RateLimiterEtcdNonAtomic,
+  RateLimiterQueueError
 };
