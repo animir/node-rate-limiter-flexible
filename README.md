@@ -153,6 +153,7 @@ Some copy/paste examples on Wiki:
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
 * [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue
+* [AWS SDK v3 Client Rate Limiter](https://github.com/animir/node-rate-limiter-flexible/wiki/AWS-SDK-v3-Client-Rate-Limiter) Prevent punishing rate limit.
 
 ### Changelog
 
