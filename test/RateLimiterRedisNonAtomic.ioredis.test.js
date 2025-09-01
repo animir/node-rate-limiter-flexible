@@ -31,17 +31,13 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       duration: 5,
     });
 
-    console.log('consume1 setup done - starting consume');
-
     rateLimiter
       .consume(testKey)
       .then((RateLimiterRes) => {
-        console.log(RateLimiterRes);
         expect(RateLimiterRes.remainingPoints).to.equal(1);
         done();
       })
       .catch((err) => {
-        console.error('Error in consume1:', err);
         done(err);
       })
   });
@@ -88,7 +84,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       })
     }
       catch(err) {
-        console.log("Error caught as expected:", err.message);
         expect(err.message).to.equal("customIncrTtlLuaScript is not allowed in RateLimiterRedisNonAtomic as it is a non atomic operation.");
         done();
       };      
@@ -203,7 +198,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
                3) consume after 2500ms by timeout
             */
             const diff = Date.now() - timeFirstConsume;
-            console.log('diff', diff);
             expect(diff > 2400 && diff < 5100).to.equal(true);
             done();
           })
@@ -254,13 +248,10 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     rateLimiter
       .consume(testKey)
       .then(() => {
-        console.log('consume done');
         rateLimiter
           .penalty(testKey)
           .then(() => {
-            console.log('penalty done');
             redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
-              console.log('consumedPoints after penalty', consumedPoints);
               expect(consumedPoints).to.equal('2');
               done();
             });
@@ -599,7 +590,6 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     rateLimiter
       .consume(testKey, 2)
       .then(() => {
-        console.log('=============test come here 1==============');
         done(Error('must not resolve'));
       })
       .catch(() => {
@@ -607,12 +597,10 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
           rateLimiter
             .consume(testKey)
             .then((res) => {
-              console.log('=============test come here 2==============');
               expect(res.consumedPoints).to.equal(1);
               done();
             })
             .catch(() => {
-              console.log('=============test come here 3==============');
               done(Error('must resolve'));
             });
         }, 2000);
@@ -630,11 +618,9 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       rateLimiter
         .consume(testKey)
         .then((res) => {
-          console.log("==============success", res);
           done(Error('must not resolve'));
         })
         .catch((rej) => {
-          console.log("==============blocked", rej);
           expect(rej.msBeforeNext > 1000).to.equal(true);
           done();
         });
