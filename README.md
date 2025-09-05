@@ -108,12 +108,12 @@ const headers = {
 
 Full documentation is on [Wiki](https://github.com/animir/node-rate-limiter-flexible/wiki)
 
-### Middlewares,  plugins and other packages
+### Middlewares, plugins and other packages
 * [Express middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
 * [Koa middleware](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
 * [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
 * GraphQL [graphql-rate-limit-directive](https://www.npmjs.com/package/graphql-rate-limit-directive)
-* NestJS try [nestjs-rate-limiter](https://www.npmjs.com/package/nestjs-rate-limiter)
+* NestJS [nestjs-rate-limiter](https://www.npmjs.com/package/nestjs-rate-limiter)
 * Fastify based NestJS app try [nestjs-fastify-rate-limiter](https://www.npmjs.com/package/nestjs-fastify-rate-limiter)
 
 Some copy/paste examples on Wiki:
@@ -193,17 +193,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 * [tableCreated](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#tablecreated) Is table already created in MySQL, SQLite or PostgreSQL.
 * [clearExpiredByTimeout](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#clearexpiredbytimeout) For MySQL, SQLite and PostgreSQL.
 
-Smooth out traffic peaks:
-* [execEvenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenly)
-* [execEvenlyMinDelayMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#execevenlymindelayms)
-
-Specific:
-* [indexKeyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#indexkeyprefix) Combined indexes of MongoDB.
-* [timeoutMs](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#timeoutms) For Cluster.
-* [rejectIfRedisNotReady](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#rejectifredisnotready)
-* [useRedisPackage](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#useredispackage)
-* [useRedis3AndLowerPackage](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#useredis3andlowerpackage)
-* [customIncrTtlLuaScript](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#customincrttlluascript)
+See [full list of options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options).
 
 ## API
 
