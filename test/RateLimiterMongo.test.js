@@ -672,4 +672,10 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
         done(err);
       });
   });
+
+  it("shouldn't create indexes if disableIndexesCreation is true", (done) => {
+    new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5, disableIndexesCreation: true });
+    expect(mongoCollection.createIndex.notCalled).to.equal(true);
+    done();
+  });
 });

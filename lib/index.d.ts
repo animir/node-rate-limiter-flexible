@@ -249,6 +249,7 @@ interface IRateLimiterMongoOptions extends IRateLimiterStoreOptions {
     indexKeyPrefix?: {
         [key: string]: any;
     };
+    disableIndexesCreation?: boolean;
 }
 
 interface IRateLimiterPostgresOptions extends IRateLimiterStoreNoAutoExpiryOptions {
@@ -311,6 +312,8 @@ export class RateLimiterMongo extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterMongoOptions);
     indexKeyPrefix(): Object;
     indexKeyPrefix(obj?: Object): void;
+
+    createIndexes(): Promise<void>;
 
     consume(
         key: string | number,
