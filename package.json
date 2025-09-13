@@ -11,7 +11,7 @@
     "test:valkey-cluster": "VALKEY_CLUSTER_PORT=7001 mocha test/RateLimiterValkeyGlide.test.js --  -g 'RateLimiterValkeyGlide with cluster client'",
     "prisma:postgres": "prisma generate --schema=./test/RateLimiterPrisma/Postgres/schema.prisma && prisma db push --schema=./test/RateLimiterPrisma/Postgres/schema.prisma",
     "drizzle:postgres": "cd ./test/RateLimiterDrizzle/Postgres && drizzle-kit push",
-    "test": "npm run prisma:postgres && npm run drizzle:postgres && nyc --reporter=html --reporter=text mocha",
+    "test": "npm run prisma:postgres && npm run drizzle:postgres && nyc --reporter=html --reporter=text mocha \"test/**/*.test.js\"",
     "debug-test": "mocha --inspect-brk lib/**/**.test.js",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "eslint": "eslint --quiet lib/**/**.js test/**/**.js",
