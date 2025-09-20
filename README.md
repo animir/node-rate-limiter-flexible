@@ -42,14 +42,9 @@ It uses a **fixed window**, as it is much faster than a rolling window.
 ## Import
   
   ```javascript
-  // CommonJS
-  const { RateLimiterMemory } = require("rate-limiter-flexible");
-
-  // or
-
-  // ECMAScript 
   import { RateLimiterMemory } from "rate-limiter-flexible";
-  // or
+  
+  // or import directly
   import RateLimiterMemory from "rate-limiter-flexible/lib/RateLimiterMemory.js";
   ```
 
