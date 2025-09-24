@@ -377,6 +377,10 @@ export class RateLimiterDrizzle extends RateLimiterStoreAbstract {
   constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
 }
 
+export class RateLimiterDrizzleNonAtomic extends RateLimiterStoreAbstract {
+  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+}
+
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 
 export class RateLimiterUnion {

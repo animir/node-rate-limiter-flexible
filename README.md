@@ -131,9 +131,9 @@ Some copy/paste examples on Wiki:
 * [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options)
 * [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods)
 
-* [Drizzle](https://github.com/animir/node-rate-limiter-flexible/wiki/Drizzle)
+* [Drizzle](https://github.com/animir/node-rate-limiter-flexible/wiki/Drizzle) Atomic and non-atomic counters.
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
-* [Etcd](https://github.com/animir/node-rate-limiter-flexible/wiki/Etcd)
+* [Etcd](https://github.com/animir/node-rate-limiter-flexible/wiki/Etcd) Atomic and non-atomic counters.
 * [Memcached](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
 * [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
