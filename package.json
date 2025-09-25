@@ -51,7 +51,7 @@
     "url": "https://github.com/animir/node-rate-limiter-flexible/issues"
   },
   "homepage": "https://github.com/animir/node-rate-limiter-flexible#readme",
-  "types": "./lib/index.d.ts",
+  "types": "./types.d.ts",
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.431.0",
     "@prisma/client": "^5.8.0",
