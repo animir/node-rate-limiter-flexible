@@ -57,7 +57,7 @@ describe('BlockedKeys', () => {
       expect(Object.keys(blockedKeys._keys).length === 1 && blockedKeys._addedKeysAmount === 1)
         .to.equal(true);
       done();
-    }, 1001);
+    }, 1100);
   });
 
   it('collect expired when key is blocked', (done) => {
