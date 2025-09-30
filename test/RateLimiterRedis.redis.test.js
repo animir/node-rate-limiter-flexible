@@ -723,12 +723,12 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     it('get throws error with disconnected node-redis', (done) => {
       const testKey = 'get';
 
-      const disconnectedIoRedis = {
+      const disconnectedRedis = {
         isReady: false,
       };
 
       const rateLimiter = new RateLimiterRedis({
-        storeClient: disconnectedIoRedis,
+        storeClient: disconnectedRedis,
         points: 2,
         duration: 1,
         useRedisPackage: true,
@@ -745,7 +745,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
      it('get throws error with disconnected node-redis cluster (socket)', (done) => {
       const testKey = 'get';
 
-      const disconnectedIoRedis = {
+      const disconnectedRedis = {
         isOpen: false,
         _slots: {
           // function only needs to exists, is never called because isOpen is false
@@ -754,7 +754,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       };
 
       const rateLimiter = new RateLimiterRedis({
-        storeClient: disconnectedIoRedis,
+        storeClient: disconnectedRedis,
         points: 2,
         duration: 1,
         useRedisPackage: true,
@@ -771,7 +771,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     it('get throws error with disconnected node-redis cluster (connection)', (done) => {
       const testKey = 'get';
 
-      const disconnectedIoRedis = {
+      const disconnectedRedis = {
         isOpen: true,
         _slots: {
           getClient: () => { return { isReady: false }; }
@@ -779,7 +779,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       };
 
       const rateLimiter = new RateLimiterRedis({
-        storeClient: disconnectedIoRedis,
+        storeClient: disconnectedRedis,
         points: 2,
         duration: 1,
         useRedisPackage: true,
