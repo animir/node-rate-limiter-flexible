@@ -724,7 +724,58 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       const testKey = 'get';
 
       const disconnectedIoRedis = {
-        isReady: () => false,
+        isReady: false,
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedIoRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+     it('get throws error with disconnected node-redis cluster (socket)', (done) => {
+      const testKey = 'get';
+
+      const disconnectedIoRedis = {
+        isOpen: false,
+        _slots: {
+          // function only needs to exists, is never called because isOpen is false
+          getClient: () => undefined,
+        },
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedIoRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+    it('get throws error with disconnected node-redis cluster (connection)', (done) => {
+      const testKey = 'get';
+
+      const disconnectedIoRedis = {
+        isOpen: true,
+        _slots: {
+          getClient: () => { return { isReady: false }; }
+        },
       };
 
       const rateLimiter = new RateLimiterRedis({
