@@ -720,7 +720,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       await redisMockClient.connect();
     });
 
-    it('get throws error with disconnected node-redis', (done) => {
+    it('get throws error with disconnected node-redis v3 client', (done) => {
       const testKey = 'get';
 
       const disconnectedRedis = {
@@ -742,7 +742,29 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         });
     });
 
-     it('get throws error with disconnected node-redis cluster (socket)', (done) => {
+    it('get throws error with disconnected node-redis v4 (and above) client', (done) => {
+      const testKey = 'get';
+
+      const disconnectedRedis = {
+        isReady: () => false,
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+     it('get throws error with disconnected node-redis cluster v4 (and above) client (socket)', (done) => {
       const testKey = 'get';
 
       const disconnectedRedis = {
@@ -768,7 +790,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
         });
     });
 
-    it('get throws error with disconnected node-redis cluster (connection)', (done) => {
+    it('get throws error with disconnected node-redis cluster v4 (and above) client (connection)', (done) => {
       const testKey = 'get';
 
       const disconnectedRedis = {
