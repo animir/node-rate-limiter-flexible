@@ -316,6 +316,68 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  describe('when calling penalty multiple times', () => {
+    it('does not fail', (done) => {
+      const testKey = 'penalty1';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 3,
+        duration: 5,
+        useRedisPackage: true,
+      });
+      rateLimiter
+        .penalty(testKey, 3)
+        .then(() => {
+          rateLimiter
+            .penalty(testKey)
+            .then((res) => {
+              rateLimiter.points = res.consumedPoints;
+              expect(rateLimiter.points).to.equal(4);
+              redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+                expect(consumedPoints).to.equal('4');
+                done();
+              });
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
+  describe('when calling reward multiple times', () => {
+    it('does not fail', (done) => {
+      const testKey = 'reward';
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: redisMockClient,
+        points: 1,
+        duration: 5,
+        useRedisPackage: true,
+      });
+      rateLimiter
+        .reward(testKey)
+        .then(() => {
+          rateLimiter
+            .reward(testKey)
+            .then(() => {
+              redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
+                expect(consumedPoints).to.equal('-2');
+                done();
+              });
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
   it('block key in memory when inMemory block options set up', (done) => {
     const testKey = 'blockmem';
     const rateLimiter = new RateLimiterRedis({
