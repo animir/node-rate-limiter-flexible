@@ -45,7 +45,7 @@ services:
       - "5432:5432"
 
   etcd:
-    image: bitnami/etcd:3.5
+    image: bitnamilegacy/etcd:3.5
     container_name: etcd
     environment:
       ALLOW_NONE_AUTHENTICATION: yes

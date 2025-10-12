@@ -10,7 +10,7 @@
 
 ## node-rate-limiter-flexible
 
-**rate-limiter-flexible** counts and limits the number of actions by key and protects from DDoS and brute force attacks at any scale.
+**rate-limiter-flexible** counts and limits the number of actions by key and protects from DoS and brute force attacks at any scale.
 
 It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
 
