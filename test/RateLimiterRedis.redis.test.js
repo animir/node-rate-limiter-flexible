@@ -782,15 +782,88 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       await redisMockClient.connect();
     });
 
-    it('get throws error with disconnected node-redis', (done) => {
+    it('get throws error with disconnected node-redis v3 client', (done) => {
       const testKey = 'get';
 
-      const disconnectedIoRedis = {
+      const disconnectedRedis = {
+        isReady: false,
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+    it('get throws error with disconnected node-redis v4 (and above) client', (done) => {
+      const testKey = 'get';
+
+      const disconnectedRedis = {
         isReady: () => false,
       };
 
       const rateLimiter = new RateLimiterRedis({
-        storeClient: disconnectedIoRedis,
+        storeClient: disconnectedRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+     it('get throws error with disconnected node-redis cluster v4 (and above) client (socket)', (done) => {
+      const testKey = 'get';
+
+      const disconnectedRedis = {
+        isOpen: false,
+        _slots: {
+          // function only needs to exists, is never called because isOpen is false
+          getClient: () => undefined,
+        },
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedRedis,
+        points: 2,
+        duration: 1,
+        useRedisPackage: true,
+        rejectIfRedisNotReady: true,
+      });
+      rateLimiter
+        .consume(testKey)
+        .catch((error) => {
+          expect(error.message).to.equal('Redis connection is not ready');
+          done();
+        });
+    });
+
+    it('get throws error with disconnected node-redis cluster v4 (and above) client (connection)', (done) => {
+      const testKey = 'get';
+
+      const disconnectedRedis = {
+        isOpen: true,
+        _slots: {
+          getClient: () => { return { isReady: false }; }
+        },
+      };
+
+      const rateLimiter = new RateLimiterRedis({
+        storeClient: disconnectedRedis,
         points: 2,
         duration: 1,
         useRedisPackage: true,
