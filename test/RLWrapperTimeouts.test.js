@@ -1,10 +1,10 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const RLWrapperTimeout = require('../lib/RLWrapperTimeout');
+const RLWrapperTimeouts = require('../lib/RLWrapperTimeouts');
 const RateLimiterAbstract = require('../lib/RateLimiterAbstract');
 
-describe('RLWrapperTimeout', () => {
+describe('RLWrapperTimeouts', () => {
   describe('should use wrapped limiter', () => {
     it('consume 1 point from wrapped limiter', async () => {
       const expectedResult = {
@@ -16,7 +16,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.consume = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -38,7 +38,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.penalty = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -59,7 +59,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.reward = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -80,7 +80,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.get = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -101,7 +101,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.set = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -122,7 +122,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.block = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -138,7 +138,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.delete = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -157,7 +157,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -176,7 +176,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -199,7 +199,7 @@ describe('RLWrapperTimeout', () => {
       const limiter = new RateLimiterAbstract();
       limiter.consume = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -216,7 +216,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -235,7 +235,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -254,7 +254,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -273,7 +273,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -292,7 +292,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve(true), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -322,7 +322,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.consume = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
@@ -349,7 +349,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.get = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
@@ -367,7 +367,7 @@ describe('RLWrapperTimeout', () => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
       });
@@ -395,7 +395,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.penalty = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
@@ -422,7 +422,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.reward = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
@@ -449,7 +449,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.block = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
@@ -471,7 +471,7 @@ describe('RLWrapperTimeout', () => {
       const insuranceLimiter = new RateLimiterAbstract();
       insuranceLimiter.delete = sinon.stub().resolves(expectedResult);
 
-      const wrapper = new RLWrapperTimeout({
+      const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
