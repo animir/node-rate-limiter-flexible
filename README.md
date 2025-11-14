@@ -96,7 +96,7 @@ const headers = {
 * no race conditions
 * no production dependencies
 * TypeScript declaration bundled
-* Block Strategy against really powerful DoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
+* Block Strategy against really powerful DDoS attacks (like 100k requests per sec) [Read about it and benchmarking here](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy)
 * Insurance Strategy as emergency solution if database/store is down [Read about Insurance Strategy here](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy)
 * works in Cluster or PM2 without additional software [See RateLimiterCluster benchmark and detailed description here](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster)
 * useful `get`, `set`, `block`, `delete`, `penalty` and `reward` methods
@@ -147,7 +147,6 @@ Some copy/paste examples on Wiki:
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
 * [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion) Combine 2 or more limiters to act as single
 * [RLWrapperBlackAndWhite](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists) Black and White lists
-* [RLWrapperTimeouts](https://github.com/animir/node-rate-limiter-flexible/wiki/RLWrapperTimeouts) Timeouts
 * [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue) Rate limiter with FIFO queue
 * [AWS SDK v3 Client Rate Limiter](https://github.com/animir/node-rate-limiter-flexible/wiki/AWS-SDK-v3-Client-Rate-Limiter) Prevent punishing rate limit.
 
