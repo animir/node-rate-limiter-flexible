@@ -204,11 +204,7 @@ export class RateLimiterAbstract {
     ): Promise<boolean>;
 }
 
-export class RateLimiterInsuredAbstract extends RateLimiterAbstract {
-    constructor(opts: IRateLimiterOptions);
-}
-
-export class RateLimiterStoreAbstract extends RateLimiterInsuredAbstract {
+export class RateLimiterStoreAbstract extends RateLimiterAbstract {
     constructor(opts: IRateLimiterStoreOptions);
 
     /**
@@ -224,7 +220,6 @@ interface IRateLimiterOptions {
     execEvenly?: boolean;
     execEvenlyMinDelayMs?: number;
     blockDuration?: number;
-    insuranceLimiter?: RateLimiterAbstract;
 }
 
 interface IRateLimiterClusterOptions extends IRateLimiterOptions {
@@ -396,15 +391,6 @@ export class RateLimiterUnion {
 
 export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
-}
-
-interface IRLWrapperTimeoutsOptions extends IRateLimiterOptions {
-    limiter: RateLimiterAbstract;
-    timeoutMs?: number;
-}
-
-export class RLWrapperTimeouts extends RateLimiterInsuredAbstract {
-    constructor(opts: IRLWrapperTimeoutsOptions);
 }
 
 interface IRateLimiterQueueOpts {

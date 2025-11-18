@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prefer-promise-reject-errors */
-const { describe, it, before, beforeEach, after} = require('mocha');
+const { describe, it, beforeEach, after} = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const Memcached = require('memcached-mock');
@@ -20,71 +20,59 @@ const makeRequest = (middleware, req, res, next) => new Promise((resolve) => {
   });
 });
 
-describe('ExpressBruteFlexible', function ExpressBruteFlexibleTest() {
+describe('ExpressBruteFlexible', async function ExpressBruteFlexibleTest() {
   this.timeout(10000);
 
-  let resObj;
-  let memcacheMockClient;
-  let redisMockClient;
-  let mongoCollection;
-  let mongoClientMock;
-  let mongoDb;
-  let mysqlClientMock;
-  let pgClientMock;
-  let pgClientErrored;
+  const resObj = {
+    header: () => {
+    },
+    status: () => {
+    },
+    send: () => {
+    },
+  };
 
-  before(async function() {
-    resObj = {
-      header: () => {
-      },
-      status: () => {
-      },
-      send: () => {
-      },
-    };
+  const memcacheMockClient = new Memcached('localhost:11211');
+  const redisMockClient = redis.createClient(redisOptions);
+  await redisMockClient.connect();
+  await redisMockClient.flushAll();
 
-    memcacheMockClient = new Memcached('localhost:11211');
-    redisMockClient = redis.createClient(redisOptions);
-    await redisMockClient.connect();
-    await redisMockClient.flushAll();
+  const mongoCollection = {
+    createIndex: () => {
+    },
+    findOneAndUpdate: () => {
+    },
+    findOne: () => {
+    },
+    deleteOne: () => {
+    },
+  };
 
-    mongoCollection = {
-      createIndex: () => {
-      },
-      findOneAndUpdate: () => {
-      },
-      findOne: () => {
-      },
-      deleteOne: () => {
-      },
-    };
+  const mongoClientMock = {
+    db: () => {
+    },
+  };
 
-    mongoClientMock = {
-      db: () => {
-      },
-    };
+  const mongoDb = {
+    collection: () => {
+    },
+  };
 
-    mongoDb = {
-      collection: () => {
-      },
-    };
+  sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
+  sinon.stub(mongoClientMock, 'db').callsFake(() => mongoDb);
 
-    sinon.stub(mongoDb, 'collection').callsFake(() => mongoCollection);
-    sinon.stub(mongoClientMock, 'db').callsFake(() => mongoDb);
+  const mysqlClientMock = {
+    query: () => {
+    },
+  };
 
-    mysqlClientMock = {
-      query: () => {
-      },
-    };
+  const pgClientMock = {
+    query: () => Promise.resolve(),
+  };
 
-    pgClientMock = {
-      query: () => Promise.resolve(),
-    };
-
-    pgClientErrored = {
-      query: () => Promise.reject({ code: 0 }),
-    };
-  });
+  const pgClientErrored = {
+    query: () => Promise.reject({ code: 0 }),
+  };
 
   beforeEach((done) => {
     memcacheMockClient.flush(async () => {
