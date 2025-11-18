@@ -2,6 +2,7 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterStoreAbstract = require('../lib/RateLimiterStoreAbstract');
+const RateLimiterAbstract = require('../lib/RateLimiterAbstract');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 const RateLimiterRes = require('../lib/RateLimiterRes');
 
@@ -226,6 +227,28 @@ describe('RateLimiterInsuredAbstract - Backward Compatibility Tests', () => {
         .catch((err) => {
           done(err);
         });
+    });
+
+    it('should not use insuranceLimiter when rate limit is reached', (done) => {
+      const insuranceLimiter = new RateLimiterAbstract();
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 2,
+        duration: 1,
+        insuranceLimiter,
+      });
+
+      const rateLimiterRes = new RateLimiterRes(6, 0, 5000, false);
+
+      rateLimiter._upsert = () => Promise.reject(rateLimiterRes);
+
+      rateLimiter.consume('test-key').then(() => {
+        done(new Error('Should have rejected'));
+      }).catch((err) => {
+        expect(err).to.equal(rateLimiterRes);
+        done();
+      });
+
     });
 
     it('penalty should fallback to insuranceLimiter when store fails', (done) => {
