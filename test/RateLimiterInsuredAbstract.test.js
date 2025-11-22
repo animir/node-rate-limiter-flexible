@@ -428,6 +428,45 @@ describe('RateLimiterInsuredAbstract - Backward Compatibility Tests', () => {
       expect(insuranceLimiter.blockDuration).to.equal(10);
       expect(insuranceLimiter.execEvenly).to.equal(true);
     });
+
+    it('consume should NOT use insuranceLimiter when rate limit is exceeded (not enough points)', (done) => {
+      const insuranceLimiter = new RateLimiterMemory({
+        points: 10,
+        duration: 2,
+      });
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 2,
+        duration: 1,
+        insuranceLimiter,
+      });
+
+      // Track if insuranceLimiter.consume is called
+      let insuranceConsumeCalled = false;
+      const originalConsume = insuranceLimiter.consume;
+      insuranceLimiter.consume = function(...args) {
+        insuranceConsumeCalled = true;
+        return originalConsume.apply(this, args);
+      };
+
+      // First consume to use up all points (points: 2, so consume 2 points)
+      rateLimiter.consume('test-key', 2)
+        .then(() => {
+          // Second consume should exceed rate limit (now at 2 points, trying to consume 1 more = 3 > 2)
+          return rateLimiter.consume('test-key');
+        })
+        .then(() => {
+          done(new Error('Should have rejected when rate limit exceeded'));
+        })
+        .catch((err) => {
+          // Should reject with RateLimiterRes (rate limit exceeded)
+          expect(err).to.be.instanceOf(RateLimiterRes);
+          expect(err.consumedPoints).to.be.greaterThan(rateLimiter.points);
+          // Insurance limiter should NOT be called for rate limit exceeded
+          expect(insuranceConsumeCalled).to.equal(false);
+          done();
+        });
+    });
   });
 });
 
