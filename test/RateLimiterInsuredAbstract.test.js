@@ -228,6 +228,28 @@ describe('RateLimiterInsuredAbstract - Backward Compatibility Tests', () => {
         });
     });
 
+    it('should not use insuranceLimiter when rate limit is reached', (done) => {
+      const insuranceLimiter = new RateLimiterAbstract();
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 2,
+        duration: 1,
+        insuranceLimiter,
+      });
+
+      const rateLimiterRes = new RateLimiterRes(6, 0, 5000, false);
+
+      rateLimiter._upsert = () => Promise.reject(rateLimiterRes);
+
+      rateLimiter.consume('test-key').then(() => {
+        done(new Error('Should have rejected'));
+      }).catch((err) => {
+        expect(err).to.equal(rateLimiterRes);
+        done();
+      });
+
+    });
+
     it('penalty should fallback to insuranceLimiter when store fails', (done) => {
       const insuranceLimiter = new RateLimiterMemory({
         points: 5,

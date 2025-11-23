@@ -455,10 +455,10 @@ describe('RLWrapperTimeouts', () => {
         timeoutMs: 500,
       });
 
-      const res = await wrapper.block('testKey');
+      const res = await wrapper.block('testKey', 3);
 
       expect(res).to.deep.equal(expectedResult);
-      expect(insuranceLimiter.block.calledOnceWith('testKey', {})).to.be.true;
+      expect(insuranceLimiter.block.calledOnceWith('testKey', 3, {})).to.be.true;
     });
 
     it('should use insurance limiter on delete timeout', async () => {
