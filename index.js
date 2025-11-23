@@ -6,6 +6,7 @@ const { RateLimiterClusterMaster, RateLimiterClusterMasterPM2, RateLimiterCluste
 const RateLimiterMemory = require('./lib/RateLimiterMemory');
 const RateLimiterMemcache = require('./lib/RateLimiterMemcache');
 const RLWrapperBlackAndWhite = require('./lib/RLWrapperBlackAndWhite');
+const RLWrapperTimeouts = require('./lib/RLWrapperTimeouts');
 const RateLimiterUnion = require('./lib/RateLimiterUnion');
 const RateLimiterQueue = require('./lib/RateLimiterQueue');
 const BurstyRateLimiter = require('./lib/BurstyRateLimiter');
@@ -33,6 +34,7 @@ module.exports = {
   RateLimiterClusterMasterPM2,
   RateLimiterCluster,
   RLWrapperBlackAndWhite,
+  RLWrapperTimeouts,
   RateLimiterUnion,
   RateLimiterQueue,
   BurstyRateLimiter,
