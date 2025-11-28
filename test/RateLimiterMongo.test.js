@@ -595,11 +595,11 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       });
   });
 
-  it('consume 1 point (driver v3)', (done) => {
+  it('consume 1 point (driver v3.6.7+)', (done) => {
     const testKey = 'consume1v3';
-    sinon.stub(mongoClient, 'topology').value({ s: { options: { metadata: { driver: { version: '3.6' } } } } });
+    sinon.stub(mongoClient, 'topology').value({ s: { options: { metadata: { driver: { version: '3.6.7' } } } } });
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
-      expect(upsertOptions.returnOriginal).to.equal(false);
+      expect(upsertOptions.returnDocument).to.equal('after');
 
       const res = {
         value: {
@@ -677,5 +677,73 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: 5, disableIndexesCreation: true });
     expect(mongoCollection.createIndex.notCalled).to.equal(true);
     done();
+  });
+
+  it('consume 1 point (driver v7 - Mongoose 9)', (done) => {
+    const testKey = 'consume1v7';
+    // Driver v7+ doesn't expose metadata, so topology is undefined or metadata is missing
+    const mongoClientV7 = {
+      db: () => mongoDb,
+      topology: {
+        s: {
+          options: {
+            // metadata property removed in driver v7
+          },
+        },
+      },
+    };
+    sinon.stub(mongoClientV7, 'db').callsFake(() => mongoDb);
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
+      expect(upsertOptions.returnDocument).to.equal('after');
+
+      const res = {
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClientV7, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('consume 1 point (Mongoose 9 connection object)', (done) => {
+    const testKey = 'consume1mongoose9';
+    // Mongoose 9 connection object structure
+    const mongooseConnection = {
+      collection: () => mongoCollection,
+      // No metadata exposed in driver v7+
+    };
+
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake((where, upsertData, upsertOptions) => {
+      expect(upsertOptions.returnDocument).to.equal('after');
+
+      const res = {
+        value: {
+          points: 1,
+          expire: 5000,
+        },
+      };
+      return Promise.resolve(res);
+    });
+
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongooseConnection, points: 2, duration: 5 });
+    rateLimiter.consume(testKey)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
   });
 });
