@@ -1,6 +1,6 @@
 {
   "name": "rate-limiter-flexible",
-  "version": "8.3.0",
+  "version": "9.0.0",
   "description": "Node.js atomic and non-atomic counters, rate limiting tools, protection from DoS and brute-force attacks at scale",
   "main": "index.js",
   "scripts": {
