@@ -408,7 +408,7 @@ export class RLWrapperTimeouts extends RateLimiterInsuredAbstract {
 }
 
 interface IRateLimiterQueueOpts {
-    maxQueueSize?: number;
+    maxQueueSize: number;
 }
 
 export class RateLimiterQueue {
