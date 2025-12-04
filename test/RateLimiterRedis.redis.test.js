@@ -21,24 +21,18 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     await redisMockClient.quit();
   })
 
-  it('consume 1 point', (done) => {
+  it('consumes 1 point', async () => {
     const testKey = 'consume1';
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
       points: 2,
       duration: 5,
     });
-    rateLimiter
-      .consume(testKey)
-      .then(() => {
-        redisMockClient.get(rateLimiter.getKey(testKey)).then((consumedPoints)=>{
-          expect(consumedPoints).to.equal('1');
-          done();
-        });
-      })
-      .catch((err) => {
-        done(err);
-      });
+    await rateLimiter.consume(testKey);
+
+    const consumedPoints = await redisMockClient.get(rateLimiter.getKey(testKey));
+
+    expect(consumedPoints).to.equal('1');
   });
 
   it('rejected when consume more than maximum points', (done) => {
