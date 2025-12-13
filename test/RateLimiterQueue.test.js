@@ -180,4 +180,56 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
         }, 1001)
       })
   });
+
+  it('works with no opts (uses default maxQueueSize)', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.removeTokens(1)
+      .then((remainingTokens) => {
+        expect(remainingTokens).to.equal(0);
+        rlQueue.removeTokens(1)
+          .then((remainingTokens2) => {
+            expect(remainingTokens2).to.equal(0);
+            done();
+          });
+      });
+  });
+
+  it('works with explicit maxQueueSize option', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory, { maxQueueSize: 5 });
+    rlQueue.removeTokens(1)
+      .then(() => {
+        const promises = [];
+        for (let i = 0; i < 5; i++) {
+          promises.push(rlQueue.removeTokens(1));
+        }
+        rlQueue.removeTokens(1)
+          .then(() => {
+            done(new Error('should have rejected - queue full'));
+          })
+          .catch((err) => {
+            expect(err instanceof RateLimiterQueueError).to.equal(true);
+            expect(err.message).to.include('maximum 5');
+            done();
+          });
+      });
+  });
+
+  it('works with empty opts object (runtime fallback to default maxQueueSize)', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory, {});
+    rlQueue.removeTokens(1)
+      .then((remainingTokens) => {
+        expect(remainingTokens).to.equal(0);
+        rlQueue.removeTokens(1)
+          .then((remainingTokens2) => {
+            expect(remainingTokens2).to.equal(0);
+            done();
+          })
+          .catch((err) => {
+            done(new Error('should not reject: ' + err.message));
+          });
+      });
+  });
 });
