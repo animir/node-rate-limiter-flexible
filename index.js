@@ -1,4 +1,5 @@
 const RateLimiterRedis = require('./lib/RateLimiterRedis');
+const RateLimiterRedisNonAtomic = require('./lib/RateLimiterRedisNonAtomic');
 const RateLimiterMongo = require('./lib/RateLimiterMongo');
 const RateLimiterMySQL = require('./lib/RateLimiterMySQL');
 const RateLimiterPostgres = require('./lib/RateLimiterPostgres');
@@ -25,6 +26,7 @@ const RateLimiterEtcdTransactionFailedError = require('./lib/component/RateLimit
 
 module.exports = {
   RateLimiterRedis,
+  RateLimiterRedisNonAtomic,
   RateLimiterMongo,
   RateLimiterMySQL,
   RateLimiterPostgres,
