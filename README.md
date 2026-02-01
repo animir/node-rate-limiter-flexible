@@ -140,7 +140,7 @@ Some copy/paste examples on Wiki:
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [Postgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
-* [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis)
+* [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis) Atomic and non-atomic counters.
 * [SQLite](https://github.com/animir/node-rate-limiter-flexible/wiki/SQLite)
 * Valkey: [iovalkey](https://github.com/animir/node-rate-limiter-flexible/wiki/IoValkey) or [ValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))

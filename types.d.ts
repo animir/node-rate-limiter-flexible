@@ -305,6 +305,10 @@ export class RateLimiterRedis extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterRedisOptions);
 }
 
+export class RateLimiterRedisNonAtomic extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterRedisOptions);
+}
+
 export class RateLimiterValkey extends RateLimiterStoreAbstract {
   constructor(opts: IRateLimiterValkeyOptions);
 }
