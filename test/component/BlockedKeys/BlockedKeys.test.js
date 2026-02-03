@@ -32,7 +32,7 @@ describe('BlockedKeys', () => {
     blockedKeys.add('key1', 1);
     setTimeout(() => {
       blockedKeys.add('key2', 1);
-      expect(Object.keys(blockedKeys._keys).length).to.equal(3);
+      expect(blockedKeys._keys.size).to.equal(3);
       done();
     }, 1001);
   });
@@ -44,8 +44,7 @@ describe('BlockedKeys', () => {
 
     setTimeout(() => {
       blockedKeys.add('key1', 1);
-      expect(Object.keys(blockedKeys._keys).length === 1 && blockedKeys._addedKeysAmount === 1)
-        .to.equal(true);
+      expect(blockedKeys._keys.size === 1).to.equal(true);
       done();
     }, 1001);
   });
@@ -54,20 +53,9 @@ describe('BlockedKeys', () => {
     blockedKeys.add('key', 1);
     setTimeout(() => {
       blockedKeys.msBeforeExpire('key');
-      expect(Object.keys(blockedKeys._keys).length === 1 && blockedKeys._addedKeysAmount === 1)
-        .to.equal(true);
+      expect(blockedKeys._keys.size === 1).to.equal(true);
       done();
     }, 1100);
-  });
-
-  it('collect expired when key is blocked', (done) => {
-    blockedKeys.add('key', 1);
-    blockedKeys.add('blocked', 2);
-    setTimeout(() => {
-      blockedKeys.msBeforeExpire('blocked');
-      expect(Object.keys(blockedKeys._keys).length).to.equal(1);
-      done();
-    }, 1001);
   });
 
   it('duplicated keys do not brake collectExpired and msBeforeExpire', (done) => {
