@@ -315,6 +315,67 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     });
   });
 
+  it('fallbacks to dialect connection manager when sequelize connectionManager throws', (done) => {
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(456),
+      releaseConnection: sinon.stub().returns(789),
+    };
+    const sequelizeClient = {
+      dialect: { connectionManager },
+    };
+    Object.defineProperty(sequelizeClient, 'connectionManager', {
+      get() {
+        throw new Error('Accessing connection manager is not allowed');
+      },
+    });
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(456);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(789);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('uses sequelize connectionManager directly for v6 interface', (done) => {
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(111),
+      releaseConnection: sinon.stub().returns(222),
+    };
+    const sequelizeClient = {
+      connectionManager,
+    };
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(111);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(222);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
   it('does not expire key if duration set to 0', (done) => {
     const testKey = 'neverexpire';
     const rateLimiter = new RateLimiterMySQL({

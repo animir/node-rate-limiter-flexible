@@ -430,6 +430,73 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('fallbacks to dialect connection manager when sequelize connectionManager throws', (done) => {
+    class Sequelize {
+      Sequelize() {}
+      query() {}
+    }
+
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(456),
+      releaseConnection: sinon.stub().returns(789),
+    };
+    const client = new Sequelize();
+    client.dialect = { connectionManager };
+    Object.defineProperty(client, 'connectionManager', {
+      get() {
+        throw new Error('Accessing connection manager is not allowed');
+      },
+    });
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client,
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(456);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(789);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('uses sequelize connectionManager directly for v6 interface', (done) => {
+    class Sequelize {
+      Sequelize() {}
+      query() {}
+    }
+
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(111),
+      releaseConnection: sinon.stub().returns(222),
+    };
+    const client = new Sequelize();
+    client.connectionManager = connectionManager;
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: client,
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(111);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(222);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
   it('private _getConnection returns acquire connection from Knex', (done) => {
     class Knex {
       Knex() {}
