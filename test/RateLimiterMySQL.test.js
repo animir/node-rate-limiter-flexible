@@ -376,6 +376,34 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       .catch(done);
   });
 
+  it('throws error with original error as cause when no connection manager is available', (done) => {
+    const originalError = new Error('Accessing connection manager is not allowed');
+    const sequelizeClient = {
+      // No dialect.connectionManager available
+    };
+    Object.defineProperty(sequelizeClient, 'connectionManager', {
+      get() {
+        throw originalError;
+      },
+    });
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    try {
+      rateLimiter._getSequelizeConnectionManager();
+      done(new Error('Expected _getSequelizeConnectionManager to throw'));
+    } catch (err) {
+      expect(err.message).to.equal('Sequelize connection manager is not available');
+      expect(err.cause).to.equal(originalError);
+      done();
+    }
+  });
+
   it('does not expire key if duration set to 0', (done) => {
     const testKey = 'neverexpire';
     const rateLimiter = new RateLimiterMySQL({
