@@ -376,7 +376,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       .catch(done);
   });
 
-  it('throws error with original error as cause when no connection manager is available', (done) => {
+  it('rethrows original error when no connection manager is available', (done) => {
     const originalError = new Error('Accessing connection manager is not allowed');
     const sequelizeClient = {
       // No dialect.connectionManager available
@@ -398,8 +398,8 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       rateLimiter._getSequelizeConnectionManager();
       done(new Error('Expected _getSequelizeConnectionManager to throw'));
     } catch (err) {
-      expect(err.message).to.equal('Sequelize connection manager is not available');
-      expect(err.cause).to.equal(originalError);
+      expect(err).to.equal(originalError);
+      expect(err.message).to.equal('Accessing connection manager is not allowed');
       done();
     }
   });
