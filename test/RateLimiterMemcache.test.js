@@ -57,6 +57,17 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient,
+      points: 2,
+      duration: -1,
+    });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterMemcache({

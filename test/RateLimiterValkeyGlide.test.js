@@ -60,6 +60,21 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
     }
   });
 
+  it('does not allow to consume when duration is negative', async () => {
+    const rateLimiter = new RateLimiterValkeyGlide({
+      storeClient: glideClient,
+      points: 2,
+      duration: -1,
+    });
+    try {
+      await rateLimiter.consume('consumewhennegative', 1);
+      throw new Error('should reject');
+    } catch (err) {
+      if (err.message === 'should reject') throw err;
+      // expected: consume not allowed when duration is negative
+    }
+  });
+
   it('execute evenly over duration', async () => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterValkeyGlide({
@@ -226,7 +241,7 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
       local pointsToAdd = tonumber(ARGV[1]) or 0
       local msDuration = tonumber(ARGV[2]) or 0
       local forceExpire = ARGV[3] == 1
-      
+
       -- Start counting from 1 (instead of 0) when key doesn't exist
       local exists = server.call('exists', key)
       if exists == 0 then
@@ -237,7 +252,7 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
         end
         return {1, msDuration}
       end
-      
+
       local newPoints = 0
       if forceExpire and msDuration > 0 then
         -- Force expire with duration - set with new expiry
@@ -247,7 +262,7 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
         -- Regular increment
         newPoints = server.call('incrby', key, pointsToAdd)
       end
-      
+
       local ttl = server.call('pttl', key)
       return {newPoints, ttl}`;
 

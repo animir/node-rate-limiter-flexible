@@ -414,4 +414,11 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         done(err);
       });
   });
+
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: -1 });
+    rateLimiterMemory.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
 });

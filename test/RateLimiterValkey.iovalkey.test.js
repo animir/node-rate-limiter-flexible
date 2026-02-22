@@ -63,6 +63,17 @@ describe('RateLimiterValkey with fixed window', function RateLimiterValkeyTest()
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterValkey({
+      storeClient: valkeyMockClient,
+      points: 2,
+      duration: -1,
+    });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   describe('when customIncrTtlLuaScript is provided', () => {
     it('rejected when consume more than maximum points and multiply delay', (done) => {
       const testKey = 'consume2';

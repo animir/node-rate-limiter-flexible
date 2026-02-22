@@ -75,6 +75,17 @@ describe('RateLimiterEtcdNonAtomic', function RateLimiterEtcdNonAtomicTest() {
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterEtcdNonAtomic({
+      storeClient: etcdClient,
+      points: 2,
+      duration: -1,
+    });
+    rateLimiter.consume(testKey, 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('execute evenly over duration', (done) => {
     const rateLimiter = new RateLimiterEtcdNonAtomic({
       storeClient: etcdClient,

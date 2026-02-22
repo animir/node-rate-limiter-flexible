@@ -61,6 +61,23 @@ function testRateLimiterSQLite(library, createDb, clientName = null) {
         expect(res2.consumedPoints).to.equal(2);
         expect(res2.remainingPoints).to.equal(3);
       });
+
+      it("does not allow to consume when duration is negative", async () => {
+        const zeroDurationLimiter = new RateLimiterSQLite({
+          storeClient: db,
+          storeType: library,
+          tableName: "rate_limiter_test",
+          points: 2,
+          duration: -1,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        try {
+          await zeroDurationLimiter.consume("consumezero", 1);
+          expect.fail("should reject");
+        } catch (err) {
+          // expected: consume not allowed when duration is negative
+        }
+      });
     });
 
     describe("block functionality", () => {

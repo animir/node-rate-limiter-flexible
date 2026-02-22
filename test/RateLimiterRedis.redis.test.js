@@ -58,6 +58,18 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: -1,
+      useRedisPackage: true,
+    });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   describe('when resetting maximum points', () => {
     it('consume 2 points', (done) => {
       const testKey = 'consume1';

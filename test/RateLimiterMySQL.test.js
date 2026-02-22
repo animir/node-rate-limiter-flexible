@@ -156,6 +156,28 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient,
+      storeType: 'connection',
+      points: 2,
+      duration: -1,
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+    mysqlClientStub.restore();
+    sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+      if (Array.isArray(data)) {
+        cb(null, [{ points: 1, expire: 5000 }]);
+      } else {
+        data(null);
+      }
+    });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('blocks key for block duration when consumed more than points', (done) => {
     const testKey = 'block';
 

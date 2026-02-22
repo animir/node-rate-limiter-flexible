@@ -50,6 +50,21 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
     }
   });
 
+  it('does not allow to consume when duration is negative', async () => {
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 2,
+      duration: -1,
+    });
+    try {
+      await rateLimiter.consume('consumewhennegative', 1);
+      expect.fail('should reject');
+    } catch (err) {
+      // expected: consume not allowed when duration is negative
+    }
+  });
+
   it('execute evenly over duration', async () => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterDrizzleNonAtomic({
@@ -103,7 +118,7 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
 
     await rateLimiter.consume(testKey);
     await rateLimiter.penalty(testKey);
-    
+
     const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key , rateLimiter.getKey(testKey)))
     expect(record.points).to.equal(2);
   });
@@ -389,7 +404,7 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
     const res = await rateLimiter.get(testKey);
     expect(res.remainingPoints).to.equal(0);
     expect(res.consumedPoints).to.equal(totalPoints);
-    expect(res.msBeforeNext).to.equal(-1); 
+    expect(res.msBeforeNext).to.equal(-1);
     await new Promise(resolve => setTimeout(resolve, 1100));
 
     const resAfterWait = await rateLimiter.get(testKey);

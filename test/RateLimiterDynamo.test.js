@@ -10,12 +10,12 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     const dynamoClient = new DynamoDB({
         region: 'eu-central-1',
         credentials: {
-            accessKeyId: 'fake', 
+            accessKeyId: 'fake',
             secretAccessKey: 'fake'
         },
         endpoint: 'http://127.0.0.1:8000'
     });
-    
+
     it('DynamoDb client connection', (done) => {
         expect(dynamoClient).to.not.equal(null);
         dynamoClient.listTables()
@@ -28,7 +28,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
     it('get item from DynamoDB', (done) => {
-        
+
         const testKey = 'test';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
@@ -53,7 +53,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
     it('get NOT existing item from DynamoDB', (done) => {
-        
+
         const testKey = 'not_existing';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
@@ -72,7 +72,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
     it('delete item from DynamoDB', (done) => {
-        
+
         const testKey = 'delete_test';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
@@ -97,7 +97,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
     it('delete NOT existing item from DynamoDB return false', (done) => {
-        
+
         const testKey = 'delete_test_2';
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient
@@ -114,7 +114,7 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         }
         );
     });
-    
+
     it('consume 1 point', (done) => {
         const testKey = 'consume1';
 
@@ -135,12 +135,12 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
                 });
 
         });
-        
+
     });
 
     it('rejected when consume more than maximum points', (done) => {
         const testKey = 'consumerej';
-    
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 1,
@@ -160,9 +160,22 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         });
     });
 
+    it('does not allow to consume when duration is negative', (done) => {
+        let rateLimiter;
+        rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient,
+            points: 2,
+            duration: -1,
+        }, () => {
+            rateLimiter.consume('consumewhennegative', 1)
+                .then(() => done(new Error('should reject')))
+                .catch(() => done());
+        });
+    });
+
     it('blocks key for block duration when consumed more than points', (done) => {
         const testKey = 'block';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 1,
@@ -181,27 +194,27 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
                 });
 
         });
-        
+
     });
 
     it('return correct data with _getRateLimiterRes', () => {
         const testKey = 'test';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-            
+
             const res = rateLimiter._getRateLimiterRes(
                 'test',
                 1,
                 { key: 'test', points: 3, expire: (Date.now() + 1000) / 1000}
                 );
 
-            expect(res.msBeforeNext <= 1000 && 
-                        res.consumedPoints === 3 && 
-                        res.isFirstInDuration === false && 
+            expect(res.msBeforeNext <= 1000 &&
+                        res.consumedPoints === 3 &&
+                        res.isFirstInDuration === false &&
                         res.remainingPoints === 2
                     ).to.equal(true);
 
@@ -210,13 +223,13 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
     it('get points', (done) => {
         const testKey = 'get';
-    
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-            
+
             rateLimiter.set(testKey, 999, 10000)
                 .then((data) => {
                     rateLimiter.get(testKey)
@@ -239,13 +252,13 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
     it('get points return NULL if key is not set', (done) => {
         const testKey = 'getnull';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-            
+
             rateLimiter.get(testKey)
                 .then((response) => {
                     expect(response).to.equal(null);
@@ -255,18 +268,18 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
                     done(err);
                 });
         });
-        
+
     });
 
     it('delete returns false, if there is no key', (done) => {
         const testKey = 'getnull3';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-            
+
             rateLimiter.delete(testKey)
                 .then((response) => {
                     expect(response).to.equal(false);
@@ -276,18 +289,18 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
                     done(err);
                 });
         });
-        
+
     });
 
     it('delete rejects on error', (done) => {
         const testKey = 'deleteerr';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 5,
         },
         () => {
-           
+
             sinon.stub(dynamoClient, 'deleteItem').callsFake(() => {
                 throw new Error('stub error');
             });
@@ -299,20 +312,20 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
 
             dynamoClient.deleteItem.restore();
         });
-        
+
     });
-    
+
 
     it('does not expire key if duration set to 0', (done) => {
         const testKey = 'neverexpire';
-        
+
         const rateLimiter = new RateLimiterDynamo({
             storeClient: dynamoClient,
             points: 2,
             duration: 0
         },
         () => {
-            
+
             rateLimiter.set(testKey, 2, 0)
             .then(() => {
                 rateLimiter.consume(testKey, 1)
@@ -334,9 +347,9 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
             .catch((err) => {
                 done(err);
             });
-            
+
         });
-        
+
     });
-    
+
 });

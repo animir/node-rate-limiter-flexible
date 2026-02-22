@@ -100,6 +100,16 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => Promise.resolve({
+      value: { points: 1, expire: 5000 },
+    }));
+    const rateLimiter = new RateLimiterMongo({ storeClient: mongoClient, points: 2, duration: -1 });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('makes penalty', (done) => {
     const testKey = 'penalty1';
     sinon.stub(mongoCollection, 'findOneAndUpdate').callsFake(() => {

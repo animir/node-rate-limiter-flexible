@@ -103,6 +103,22 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient,
+      storeType: 'client',
+      points: 2,
+      duration: -1,
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+    pgClientStub.restore();
+    pgClientStub = sinon.stub(pgClient, 'query').resolves({ rows: [{ points: 1, expire: 5000 }] });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('blocks key for block duration when consumed more than points', (done) => {
     const testKey = 'block';
 

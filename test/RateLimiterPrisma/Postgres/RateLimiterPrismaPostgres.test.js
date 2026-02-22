@@ -54,6 +54,20 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     }
   });
 
+  it('does not allow to consume when duration is negative', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      points: 2,
+      duration: -1,
+    });
+    try {
+      await rateLimiter.consume('consumewhennegative', 1);
+      expect.fail('should reject');
+    } catch (err) {
+      // expected: consume not allowed when duration is negative
+    }
+  });
+
   it('execute evenly over duration', async () => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterPrisma({

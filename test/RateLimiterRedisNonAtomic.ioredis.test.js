@@ -57,6 +57,17 @@ describe('RateLimiterRedisNonAtomic with fixed window', function RateLimiterRedi
       });
   });
 
+  it('does not allow to consume when duration is negative', (done) => {
+    const rateLimiter = new RateLimiterRedisNonAtomic({
+      storeClient: redisMockClient,
+      points: 2,
+      duration: -1,
+    });
+    rateLimiter.consume('consumewhennegative', 1)
+      .then(() => done(new Error('should reject')))
+      .catch(() => done());
+  });
+
   it('sets expire when existing key has no ttl', (done) => {
     const testKey = 'no-ttl';
     const rateLimiter = new RateLimiterRedisNonAtomic({
