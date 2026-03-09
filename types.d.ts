@@ -219,8 +219,8 @@ export class RateLimiterStoreAbstract extends RateLimiterInsuredAbstract {
 
 interface IRateLimiterOptions {
     keyPrefix?: string;
-    points?: number;
-    duration?: number;
+    points: number;
+    duration: number;
     execEvenly?: boolean;
     execEvenlyMinDelayMs?: number;
     blockDuration?: number;

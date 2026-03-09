@@ -2,6 +2,7 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterStoreAbstract = require('../lib/RateLimiterStoreAbstract');
+const RateLimiterAbstract = require('../lib/RateLimiterAbstract');
 const RateLimiterMemory = require('../lib/RateLimiterMemory');
 const RateLimiterRes = require('../lib/RateLimiterRes');
 
@@ -229,7 +230,7 @@ describe('RateLimiterInsuredAbstract - Backward Compatibility Tests', () => {
     });
 
     it('should not use insuranceLimiter when rate limit is reached', (done) => {
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
 
       const rateLimiter = new TestRateLimiterStoreMemory({
         points: 2,

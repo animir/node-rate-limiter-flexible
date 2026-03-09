@@ -320,7 +320,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
   });
 
   it('return correct data with _getRateLimiterRes', async () => {
-    const rateLimiter = new RateLimiterDrizzle({ points: 5, storeClient: db , schema:rateLimiterFlexible });
+    const rateLimiter = new RateLimiterDrizzle({ points: 5, duration: 1, storeClient: db , schema:rateLimiterFlexible });
     const now = new Date();
     const rateLimiterResponse = {
       points: 3,

@@ -510,6 +510,8 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
     const rateLimiter = new RateLimiterRedis({
       storeClient: redisMockClient,
       useRedisPackage: true,
+      points: 4,
+      duration: 1,
     });
 
     await redisMockClient.quit();
@@ -640,7 +642,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisMockClient, useRedisPackage: true });
+    const rateLimiter = new RateLimiterRedis({ keyPrefix, storeClient: redisMockClient, useRedisPackage: true, points: 4, duration: 1 });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });

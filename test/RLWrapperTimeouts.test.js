@@ -13,12 +13,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1000,
         isFirstInDuration: true,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.consume = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -35,12 +37,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 2000,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.penalty = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.penalty('testKey', 2);
@@ -56,12 +60,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1500,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.reward = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.reward('testKey', 1);
@@ -77,12 +83,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1500,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.get = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.get('testKey');
@@ -98,12 +106,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 0,
         isFirstInDuration: true,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.set = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.set('testKey', 5, 3);
@@ -119,12 +129,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 5000,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.block = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.block('testKey', 3);
@@ -135,12 +147,14 @@ describe('RLWrapperTimeouts', () => {
 
     it('delete key in wrapped limiter', async () => {
       const expectedResult = true;
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.delete = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.delete('testKey');
@@ -152,7 +166,7 @@ describe('RLWrapperTimeouts', () => {
 
   describe('should timeout operations', () => {
     it('should timeout consume operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.consume = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -160,6 +174,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -171,7 +187,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout get operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.get = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -179,6 +195,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -196,12 +214,14 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1000,
         isFirstInDuration: true,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.consume = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -211,7 +231,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout penalty operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.penalty = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -219,6 +239,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -230,7 +252,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout reward operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.reward = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -238,6 +260,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -249,7 +273,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout set operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.set = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -257,6 +281,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -268,7 +294,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout block operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.block = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -276,6 +302,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -287,7 +315,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should timeout delete operation', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.delete = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve(true), 1000);
       }));
@@ -295,6 +323,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -314,18 +344,20 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1000,
         isFirstInDuration: true,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.consume = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.consume = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -341,18 +373,20 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1500,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.get = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.get = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.get('testKey');
@@ -362,7 +396,7 @@ describe('RLWrapperTimeouts', () => {
     });
 
     it('should reject if no insurance limiter on timeout', async () => {
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.consume = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
@@ -370,6 +404,8 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       try {
@@ -387,18 +423,20 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 2000,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.penalty = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.penalty = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.penalty('testKey', 2);
@@ -414,18 +452,20 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 1500,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.reward = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.reward = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.reward('testKey', 1);
@@ -441,18 +481,20 @@ describe('RLWrapperTimeouts', () => {
         msBeforeNext: 5000,
         isFirstInDuration: false,
       };
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.block = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve({}), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.block = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.block('testKey', 3);
@@ -463,18 +505,20 @@ describe('RLWrapperTimeouts', () => {
 
     it('should use insurance limiter on delete timeout', async () => {
       const expectedResult = true;
-      const limiter = new RateLimiterAbstract();
+      const limiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       limiter.delete = sinon.stub().returns(new Promise((resolve) => {
         setTimeout(() => resolve(true), 1000);
       }));
 
-      const insuranceLimiter = new RateLimiterAbstract();
+      const insuranceLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
       insuranceLimiter.delete = sinon.stub().resolves(expectedResult);
 
       const wrapper = new RLWrapperTimeouts({
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
+        points: 4,
+        duration: 1,
       });
 
       const res = await wrapper.delete('testKey');

@@ -265,7 +265,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
-    const rateLimiter = new RateLimiterMemcache({ keyPrefix, storeClient: memcacheMockClient });
+    const rateLimiter = new RateLimiterMemcache({ keyPrefix, storeClient: memcacheMockClient, points: 4, duration: 1 });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');
   });
