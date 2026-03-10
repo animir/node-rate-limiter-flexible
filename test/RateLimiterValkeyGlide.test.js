@@ -60,6 +60,22 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
     }
   });
 
+  it('does not allow to consume if points is zero', async () => {
+    const testKey = 'consumezero';
+    const rateLimiter = new RateLimiterValkeyGlide({
+      storeClient: glideClient,
+      points: 0,
+      duration: 5,
+    });
+
+    try {
+      await rateLimiter.consume(testKey, 1);
+      throw new Error('Should have been rejected');
+    } catch (rejRes) {
+      expect(rejRes.msBeforeNext >= 0).to.equal(true);
+    }
+  });
+
   it('execute evenly over duration', async () => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterValkeyGlide({

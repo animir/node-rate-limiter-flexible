@@ -54,6 +54,22 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     }
   });
 
+  it('does not allow to consume if points is zero', async () => {
+    const testKey = 'consumezero';
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      points: 0,
+      duration: 5,
+    });
+
+    try {
+      await rateLimiter.consume(testKey, 1);
+      expect.fail('should have thrown');
+    } catch (rejRes) {
+      expect(rejRes.msBeforeNext >= 0).to.equal(true);
+    }
+  });
+
   it('execute evenly over duration', async () => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterPrisma({

@@ -414,4 +414,18 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
         done(err);
       });
   });
+
+  it('does not allow to consume if points is zero', (done) => {
+    const testKey = 'consumezero';
+    const rateLimiterMemory = new RateLimiterMemory({ points: 0, duration: 5 });
+    rateLimiterMemory.consume(testKey, 1)
+      .then(() => {})
+      .catch((rejRes) => {
+        expect(rejRes.msBeforeNext >= 0).to.equal(true);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });
