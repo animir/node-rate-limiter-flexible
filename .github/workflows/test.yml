@@ -41,7 +41,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x, 24.x, 26.x]
+        node-version: [22.x, 24.x]
         valkey-version: [8]
 
     services:
