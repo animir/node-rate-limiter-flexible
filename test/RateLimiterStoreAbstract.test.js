@@ -82,12 +82,12 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
       rateLimiter.consume('key2', 2),
     ])
       .then(() => {
-        expect(rateLimiter._inMemoryBlockedKeys._keys.key1).not.eq(undefined);
-        expect(rateLimiter._inMemoryBlockedKeys._keys.key2).not.eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.has('key1')).eq(true);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.has('key2')).eq(true);
 
         rateLimiter.deleteInMemoryBlockedAll();
-        expect(rateLimiter._inMemoryBlockedKeys._keys.key1).eq(undefined);
-        expect(rateLimiter._inMemoryBlockedKeys._keys.key2).eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.has('key1')).eq(false);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.has('key2')).eq(false);
 
         done();
       })
@@ -109,10 +109,10 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
 
     // should start blocking
     rateLimiter.consume('key', 2).catch(() => {
-      expect(rateLimiter._inMemoryBlockedKeys._keys.key).not.eq(undefined);
+      expect(rateLimiter._inMemoryBlockedKeys._keys.has('key')).eq(true);
 
       rateLimiter.delete('key').then((isExist) => {
-        expect(rateLimiter._inMemoryBlockedKeys._keys.key).eq(undefined);
+        expect(rateLimiter._inMemoryBlockedKeys._keys.has('key')).eq(false);
         expect(isExist).eq(true);
 
         done();
