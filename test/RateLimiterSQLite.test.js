@@ -208,7 +208,8 @@ function testRateLimiterSQLite(library, createDb, clientName = null) {
         const results = await Promise.all(promises);
 
         expect(results).to.have.lengthOf(3);
-        expect(results[0].consumedPoints + results[1].consumedPoints + results[2].consumedPoints).to.equal(6);
+        const consumedPoints = results.map((r) => r.consumedPoints).sort();
+        expect(consumedPoints).to.deep.equal([1, 2, 3]);
       });
     });
 
