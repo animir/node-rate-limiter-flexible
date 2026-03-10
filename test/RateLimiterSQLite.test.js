@@ -61,6 +61,23 @@ function testRateLimiterSQLite(library, createDb, clientName = null) {
         expect(res2.consumedPoints).to.equal(2);
         expect(res2.remainingPoints).to.equal(3);
       });
+
+      it("does not allow to consume if points is zero", async () => {
+        const zeroLimiter = new RateLimiterSQLite({
+          storeClient: db,
+          storeType: library,
+          tableName: "rate_limiter_test",
+          points: 0,
+          duration: 5,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        try {
+          await zeroLimiter.consume("consumezero", 1);
+          expect.fail("should have thrown");
+        } catch (rejRes) {
+          expect(rejRes.msBeforeNext >= 0).to.equal(true);
+        }
+      });
     });
 
     describe("block functionality", () => {

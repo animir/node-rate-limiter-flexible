@@ -57,6 +57,25 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
+  it('does not allow to consume if points is zero', (done) => {
+    const testKey = 'consumezero';
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient,
+      points: 0,
+      duration: 5,
+    });
+    rateLimiter
+      .consume(testKey, 1)
+      .then(() => {})
+      .catch((rejRes) => {
+        expect(rejRes.msBeforeNext >= 0).to.equal(true);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('execute evenly over duration', (done) => {
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterMemcache({

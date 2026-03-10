@@ -156,6 +156,35 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     });
   });
 
+  it('does not allow to consume if points is zero', (done) => {
+    const testKey = 'consumezero';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'connection', points: 0, duration: 5,
+    }, () => {
+      mysqlClientStub.restore();
+      sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        const res = [
+          { points: 1, expire: 5000 },
+        ];
+        if (Array.isArray(data)) {
+          cb(null, res);
+        } else {
+          data(null);
+        }
+      });
+      rateLimiter.consume(testKey, 1)
+        .then(() => {})
+        .catch((rejRes) => {
+          expect(rejRes.msBeforeNext >= 0).to.equal(true);
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
   it('blocks key for block duration when consumed more than points', (done) => {
     const testKey = 'block';
 

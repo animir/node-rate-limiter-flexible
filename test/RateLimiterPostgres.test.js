@@ -103,6 +103,28 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('does not allow to consume if points is zero', (done) => {
+    const testKey = 'consumezero';
+
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 0, duration: 5,
+    }, () => {
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').resolves({
+        rows: [{ points: 1, expire: 5000 }],
+      });
+      rateLimiter.consume(testKey, 1)
+        .then(() => {})
+        .catch((rejRes) => {
+          expect(rejRes.msBeforeNext >= 0).to.equal(true);
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
   it('blocks key for block duration when consumed more than points', (done) => {
     const testKey = 'block';
 

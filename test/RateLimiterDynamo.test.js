@@ -168,6 +168,27 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
         });
     });
 
+    it('does not allow to consume if points is zero', (done) => {
+        const testKey = 'consumezero';
+
+        const rateLimiter = new RateLimiterDynamo({
+            storeClient: dynamoClient,
+            points: 0,
+            duration: 5
+        },
+        () => {
+            rateLimiter.consume(testKey, 1)
+                .then(() => {})
+                .catch((rejRes) => {
+                    expect(rejRes.msBeforeNext >= 0).to.equal(true);
+                    done();
+                })
+                .catch((err) => {
+                    done(err);
+                });
+        });
+    });
+
     it('blocks key for block duration when consumed more than points', (done) => {
         const testKey = 'block';
 
