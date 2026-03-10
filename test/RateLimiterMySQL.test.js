@@ -156,6 +156,35 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     });
   });
 
+  it('does not allow to consume if points is zero', (done) => {
+    const testKey = 'consumezero';
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: mysqlClient, storeType: 'connection', points: 0, duration: 5,
+    }, () => {
+      mysqlClientStub.restore();
+      sinon.stub(mysqlClient, 'query').callsFake((q, data, cb) => {
+        const res = [
+          { points: 1, expire: 5000 },
+        ];
+        if (Array.isArray(data)) {
+          cb(null, res);
+        } else {
+          data(null);
+        }
+      });
+      rateLimiter.consume(testKey, 1)
+        .then(() => {})
+        .catch((rejRes) => {
+          expect(rejRes.msBeforeNext >= 0).to.equal(true);
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
   it('blocks key for block duration when consumed more than points', (done) => {
     const testKey = 'block';
 
@@ -313,6 +342,95 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       rateLimiter.clearExpired(1);
       rlStub.restore();
     });
+  });
+
+  it('fallbacks to dialect connection manager when sequelize connectionManager throws', (done) => {
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(456),
+      releaseConnection: sinon.stub().returns(789),
+    };
+    const sequelizeClient = {
+      dialect: { connectionManager },
+    };
+    Object.defineProperty(sequelizeClient, 'connectionManager', {
+      get() {
+        throw new Error('Accessing connection manager is not allowed');
+      },
+    });
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(456);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(789);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('uses sequelize connectionManager directly for v6 interface', (done) => {
+    const connectionManager = {
+      getConnection: sinon.stub().resolves(111),
+      releaseConnection: sinon.stub().returns(222),
+    };
+    const sequelizeClient = {
+      connectionManager,
+    };
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    rateLimiter._getConnection()
+      .then((conn) => {
+        expect(conn).to.equal(111);
+        const released = rateLimiter._releaseConnection(conn);
+        expect(released).to.equal(222);
+        expect(connectionManager.getConnection.calledOnce).to.equal(true);
+        expect(connectionManager.releaseConnection.calledWith(conn)).to.equal(true);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('rethrows original error when no connection manager is available', (done) => {
+    const originalError = new Error('Accessing connection manager is not allowed');
+    const sequelizeClient = {
+      // No dialect.connectionManager available
+    };
+    Object.defineProperty(sequelizeClient, 'connectionManager', {
+      get() {
+        throw originalError;
+      },
+    });
+
+    const rateLimiter = new RateLimiterMySQL({
+      storeClient: sequelizeClient,
+      storeType: 'sequelize',
+      tableCreated: true,
+      clearExpiredByTimeout: false,
+    });
+
+    try {
+      rateLimiter._getSequelizeConnectionManager();
+      done(new Error('Expected _getSequelizeConnectionManager to throw'));
+    } catch (err) {
+      expect(err).to.equal(originalError);
+      expect(err.message).to.equal('Accessing connection manager is not allowed');
+      done();
+    }
   });
 
   it('does not expire key if duration set to 0', (done) => {
