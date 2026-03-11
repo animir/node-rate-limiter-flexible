@@ -232,4 +232,32 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
           });
       });
   });
+
+  it.only('works correctly with underlying execEvenly limiter (no extra wait from stale msBeforeNext)', (done) => {
+    const rlMemory = new RateLimiterMemory({
+      points: 2,
+      duration: 1,
+      execEvenly: true,
+      execEvenlyMinDelayMs: 100,
+    });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    const startTime = Date.now();
+
+    rlQueue.removeTokens(1)
+      .then(() => {
+
+        rlQueue.removeTokens(1)
+          .then(() => {
+            const diff = Date.now() - startTime;
+            expect(diff).to.be.closeTo(500, 100);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
 });
