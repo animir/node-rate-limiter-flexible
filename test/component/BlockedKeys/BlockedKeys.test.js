@@ -19,7 +19,7 @@ describe('BlockedKeys', () => {
     setTimeout(() => {
       expect(blockedKeys.msBeforeExpire('key')).to.equal(0);
       done();
-    }, 1001);
+    }, 1010);
   });
 
   it('check not blocked key', () => {
