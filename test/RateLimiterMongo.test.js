@@ -177,6 +177,8 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
 
     const rateLimiter = new RateLimiterMongo({
       storeClient: mongoClient,
+      points: 4,
+      duration: 1,
       insuranceLimiter: new RateLimiterMemory({
         points: 2,
         duration: 2,
@@ -271,7 +273,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
   });
 
   it('return correct data with _getRateLimiterRes', () => {
-    const rateLimiter = new RateLimiterMongo({ points: 5, storeClient: mongoClient });
+    const rateLimiter = new RateLimiterMongo({ points: 5, duration: 1, storeClient: mongoClient });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       value: {
@@ -364,7 +366,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     });
 
     new RateLimiterMongo({
-      storeClient: mongoClient, dbName: 'test',
+      storeClient: mongoClient, dbName: 'test', points: 4, duration: 1,
     });
 
     mongoClientStub.restore();
@@ -380,7 +382,7 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     };
 
     new RateLimiterMongo({
-      storeClient: mongooseConnection,
+      storeClient: mongooseConnection, points: 4, duration: 1,
     });
     expect(createIndex.called);
   });
@@ -440,6 +442,8 @@ describe('RateLimiterMongo with fixed window', function RateLimiterMongoTest() {
     new RateLimiterMongo({
       storeClient: client,
       tableName,
+      points: 4,
+      duration: 1,
     });
   });
 

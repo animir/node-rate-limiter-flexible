@@ -86,6 +86,8 @@ describe('BurstyRateLimiter', () => {
     await redisClientClosed.disconnect();
     const rlRedisClosed = new RateLimiterRedis({
       storeClient: redisClientClosed,
+      points: 4,
+      duration: 1,
     });
     const blRedis = new RateLimiterRedis({
       storeClient: redisMockClient,
@@ -127,6 +129,8 @@ describe('BurstyRateLimiter', () => {
     const blRedisClosed = new RateLimiterRedis({
       storeClient: redisClientClosed,
       keyPrefix: 'bursty',
+      points: 4,
+      duration: 1,
     });
     const bursty = new BurstyRateLimiter(rlRedis, blRedisClosed);
     await bursty.consume(testKey);

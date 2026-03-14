@@ -21,6 +21,8 @@ describe('RateLimiterEtcdNonAtomic', function RateLimiterEtcdNonAtomicTest() {
   beforeEach(async () => {
     const rateLimiter = new RateLimiterEtcdNonAtomic({
       storeClient: etcdClient,
+      points: 4,
+      duration: 1,
     });
     await rateLimiter.delete(testKey);
   });
@@ -32,7 +34,7 @@ describe('RateLimiterEtcdNonAtomic', function RateLimiterEtcdNonAtomicTest() {
   it('should throw an error if no client is provided', () => {
     try {
       // eslint-disable-next-line no-unused-vars
-      const rateLimiter = new RateLimiterEtcdNonAtomic({});
+      const rateLimiter = new RateLimiterEtcdNonAtomic({ points: 4, duration: 1 });
       throw new Error('constructor should have thrown an error');
     } catch (err) {
       expect(err.message).to.equal('You need to set the option "storeClient" to an instance of class "Etcd3".');
@@ -307,6 +309,8 @@ describe('RateLimiterEtcdNonAtomic', function RateLimiterEtcdNonAtomicTest() {
 
     const rateLimiter = new RateLimiterEtcdNonAtomic({
       storeClient: etcdClient,
+      points: 4,
+      duration: 1,
     });
 
     await rateLimiter
@@ -427,6 +431,8 @@ describe('RateLimiterEtcdNonAtomic', function RateLimiterEtcdNonAtomicTest() {
     const rateLimiter = new RateLimiterEtcdNonAtomic({
       storeClient: etcdClient,
       keyPrefix,
+      points: 4,
+      duration: 1,
     });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');

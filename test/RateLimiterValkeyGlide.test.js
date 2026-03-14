@@ -291,6 +291,8 @@ describe('RateLimiterValkeyGlide with fixed window', function RateLimiterValkeyG
 
     const rateLimiter = new RateLimiterValkeyGlide({
       storeClient: glideClientClosed,
+      points: 4,
+      duration: 1,
     });
 
     // Close the client to simulate connection error

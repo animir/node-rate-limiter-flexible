@@ -422,6 +422,8 @@ describe('RateLimiterValkey with fixed window', function RateLimiterValkeyTest()
 
     const rateLimiter = new RateLimiterValkey({
       storeClient: valkeyMockClient,
+      points: 4,
+      duration: 1,
     });
 
     await valkeyMockClient.disconnect();
@@ -539,6 +541,8 @@ describe('RateLimiterValkey with fixed window', function RateLimiterValkeyTest()
     const rateLimiter = new RateLimiterValkey({
       keyPrefix,
       storeClient: valkeyMockClient,
+      points: 4,
+      duration: 1,
     });
 
     expect(rateLimiter.getKey(testKey)).to.equal('test:key');

@@ -337,7 +337,7 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
   });
 
   it('return correct data with _getRateLimiterRes', async () => {
-    const rateLimiter = new RateLimiterDrizzleNonAtomic({ points: 5, storeClient: db , schema:rateLimiterFlexible });
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({ points: 5, duration: 1, storeClient: db , schema:rateLimiterFlexible });
     const now = new Date();
     const rateLimiterResponse = {
       points: 3,

@@ -123,8 +123,16 @@ describe('RateLimiterCluster', function RateLimiterClusterTest() {
 
   it('create 2 rate limiters depending on keyPrefix', (done) => {
     const keyPrefixes = ['create1', 'create2'];
-    const rateLimiterClusterprocess1 = new RateLimiterCluster({ keyPrefix: keyPrefixes[0] });
-    const rateLimiterClusterprocess2 = new RateLimiterCluster({ keyPrefix: keyPrefixes[1] });
+    const rateLimiterClusterprocess1 = new RateLimiterCluster({
+      keyPrefix: keyPrefixes[0],
+      points: 4,
+      duration: 1,
+    });
+    const rateLimiterClusterprocess2 = new RateLimiterCluster({
+      keyPrefix: keyPrefixes[1],
+      points: 4,
+      duration: 1,
+    });
     rateLimiterClusterprocess1.consume('key1')
       .then(() => {
         rateLimiterClusterprocess2.consume('key2')

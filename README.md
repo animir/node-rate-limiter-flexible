@@ -159,13 +159,13 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 
 * **points** 
     
-    `Default: 4` 
+    `Required` 
     
     Maximum number of points that can be consumed over duration
 
 * **duration** 
 
-    `Default: 1` 
+    `Required` 
     
     Number of seconds before consumed points are reset.
     

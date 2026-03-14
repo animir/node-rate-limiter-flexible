@@ -41,7 +41,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     };
     sinon.spy(pgClientTableCreated, 'query');
     const rateLimiter = new RateLimiterPostgres({ // eslint-disable-line
-      storeClient: pgClientTableCreated, storeType: 'client', tableCreated: true,
+      storeClient: pgClientTableCreated, storeType: 'client', tableCreated: true, points: 4, duration: 1,
     });
     setTimeout(() => {
       expect(pgClientTableCreated.query.callCount).to.equal(0);
@@ -54,7 +54,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     pgClientStub = sinon.stub(pgClient, 'query').callsFake(() => Promise.resolve());
 
     new RateLimiterPostgres({
-      storeClient: pgClient, storeType: 'client', tableCreated: true,
+      storeClient: pgClient, storeType: 'client', tableCreated: true, points: 4, duration: 1,
     }, () => {
       done();
     });
@@ -148,7 +148,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
   });
 
   it('return correct data with _getRateLimiterRes', () => {
-    const rateLimiter = new RateLimiterPostgres({ points: 5, storeClient: pgClient, storeType: 'client' });
+    const rateLimiter = new RateLimiterPostgres({ points: 5, duration: 1, storeClient: pgClient, storeType: 'client' });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, {
       rows: [{ points: 3, expire: Date.now() + 1000 }],
@@ -321,14 +321,14 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     Promise.all([
       new Promise((resolve) => {
         rateLimiter1 = new RateLimiterPostgres({
-          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname1',
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname1', points: 4, duration: 1,
         }, () => {
           resolve();
         });
       }),
       new Promise((resolve) => {
         rateLimiter2 = new RateLimiterPostgres({
-          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname2',
+          storeClient: pgClient, storeType: 'client', tableName: 'upsertqueryname2', points: 4, duration: 1,
         }, () => {
           resolve();
         });
@@ -365,7 +365,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Client(),
+      storeClient: new Client(), points: 4, duration: 1,
     }, () => {
       expect(rateLimiter.clientType).to.equal('client');
       done();
@@ -379,7 +379,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Pool(),
+      storeClient: new Pool(), points: 4, duration: 1,
     }, () => {
       expect(rateLimiter.clientType).to.equal('pool');
       done();
@@ -393,7 +393,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     }
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: new Sequelize(),
+      storeClient: new Sequelize(), points: 4, duration: 1,
     }, () => {
       expect(rateLimiter.clientType).to.equal('sequelize');
       done();
@@ -403,7 +403,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
   it('throw error if it is not possible to define client type', (done) => {
     try {
       new RateLimiterPostgres({
-        storeClient: {},
+        storeClient: {}, points: 4, duration: 1,
       });
     } catch (err) {
       expect(err instanceof Error).to.equal(true);
@@ -420,7 +420,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const client = new Pool();
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client,
+      storeClient: client, points: 4, duration: 1,
     }, () => {
       rateLimiter._getConnection()
         .then((conn) => {
@@ -442,7 +442,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     };
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client,
+      storeClient: client, points: 4, duration: 1,
     }, () => {
       rateLimiter._getConnection()
         .then((res) => {
@@ -474,6 +474,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
       storeClient: client,
       tableCreated: true,
       clearExpiredByTimeout: false,
+      points: 4,
+      duration: 1,
     });
 
     rateLimiter._getConnection()
@@ -505,6 +507,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
       storeClient: client,
       tableCreated: true,
       clearExpiredByTimeout: false,
+      points: 4,
+      duration: 1,
     });
 
     rateLimiter._getConnection()
@@ -533,6 +537,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const rateLimiter = new RateLimiterPostgres({
       storeClient: client,
       storeType: 'knex',
+      points: 4,
+      duration: 1,
     }, () => {
       rateLimiter._getConnection()
         .then((res) => {
@@ -555,6 +561,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const rateLimiter = new RateLimiterPostgres({
       storeClient: typeORMConnection,
       storeType: 'typeorm',
+      points: 4,
+      duration: 1,
     }, () => {
       rateLimiter._getConnection()
         .then((conn) => {
@@ -573,7 +581,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const client = new Pool();
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client,
+      storeClient: client, points: 4, duration: 1,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(true);
       done();
@@ -592,7 +600,7 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     };
 
     const rateLimiter = new RateLimiterPostgres({
-      storeClient: client,
+      storeClient: client, points: 4, duration: 1,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(123);
       done();
@@ -613,6 +621,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const rateLimiter = new RateLimiterPostgres({
       storeClient: client,
       storeType: 'knex',
+      points: 4,
+      duration: 1,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(321);
       done();
@@ -632,6 +642,8 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     const rateLimiter = new RateLimiterPostgres({
       storeClient: typeORMConnection,
       storeType: 'typeorm',
+      points: 4,
+      duration: 1,
     }, () => {
       expect(rateLimiter._releaseConnection()).to.equal(true);
       done();

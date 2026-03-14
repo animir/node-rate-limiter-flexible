@@ -78,7 +78,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     };
     sinon.spy(mysqlClientTableCreated, 'query');
     const rateLimiter = new RateLimiterMySQL({ // eslint-disable-line
-      storeClient: mysqlClientTableCreated, storeType: 'connection', tableCreated: true,
+      storeClient: mysqlClientTableCreated, storeType: 'connection', tableCreated: true, points: 4, duration: 1,
     });
     setTimeout(() => {
       expect(mysqlClientTableCreated.query.callCount).to.equal(0);
@@ -93,7 +93,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
     });
 
     const rateLimiter = new RateLimiterMySQL({ // eslint-disable-line
-      storeClient: mysqlClient, storeType: 'connection', tableCreated: true,
+      storeClient: mysqlClient, storeType: 'connection', tableCreated: true, points: 4, duration: 1,
     }, () => {
       done();
     });
@@ -215,7 +215,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
   });
 
   it('return correct data with _getRateLimiterRes', () => {
-    const rateLimiter = new RateLimiterMySQL({ points: 5, storeClient: mysqlClient, storeType: 'connection' });
+    const rateLimiter = new RateLimiterMySQL({ points: 5, duration: 1, storeClient: mysqlClient, storeType: 'connection' });
 
     const res = rateLimiter._getRateLimiterRes('test', 1, [
       { points: 3, expire: Date.now() + 1000 },
@@ -332,7 +332,7 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
 
   it('clearExpired method uses private _getConnection to get connection', (done) => {
     const rateLimiter = new RateLimiterMySQL({
-      storeClient: mysqlClient, storeType: 'sequelize',
+      storeClient: mysqlClient, storeType: 'sequelize', points: 4, duration: 1,
     }, () => {
       const rlStub = sinon.stub(rateLimiter, '_getConnection').callsFake(() => {
         done();
@@ -363,6 +363,8 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       storeType: 'sequelize',
       tableCreated: true,
       clearExpiredByTimeout: false,
+      points: 4,
+      duration: 1,
     });
 
     rateLimiter._getConnection()
@@ -391,6 +393,8 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       storeType: 'sequelize',
       tableCreated: true,
       clearExpiredByTimeout: false,
+      points: 4,
+      duration: 1,
     });
 
     rateLimiter._getConnection()
@@ -421,6 +425,8 @@ describe('RateLimiterMySQL with fixed window', function RateLimiterMySQLTest() {
       storeType: 'sequelize',
       tableCreated: true,
       clearExpiredByTimeout: false,
+      points: 4,
+      duration: 1,
     });
 
     try {

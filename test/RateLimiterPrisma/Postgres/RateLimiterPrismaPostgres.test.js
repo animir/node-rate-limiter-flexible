@@ -341,7 +341,7 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
   });
 
   it('return correct data with _getRateLimiterRes', async () => {
-    const rateLimiter = new RateLimiterPrisma({ points: 5, storeClient: prisma });
+    const rateLimiter = new RateLimiterPrisma({ points: 5, duration: 1, storeClient: prisma });
     const now = new Date();
     const rateLimiterResponse = {
       points: 3,
