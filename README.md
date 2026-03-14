@@ -10,7 +10,7 @@
 
 ## node-rate-limiter-flexible
 
-**rate-limiter-flexible** counts and limits the number of actions by key and protects from DoS and brute force attacks at any scale.
+**rate-limiter-flexible** counts and limits the number of events and protects from DoS and brute force attacks at any scale.
 
 It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
 
@@ -109,9 +109,9 @@ Full documentation is on [Wiki](https://github.com/animir/node-rate-limiter-flex
 * [Hapi plugin](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
 * GraphQL [graphql-rate-limit-directive](https://www.npmjs.com/package/graphql-rate-limit-directive)
 * NestJS [nestjs-rate-limiter](https://www.npmjs.com/package/nestjs-rate-limiter)
-* Fastify based NestJS app try [nestjs-fastify-rate-limiter](https://www.npmjs.com/package/nestjs-fastify-rate-limiter)
+* Fastify-based NestJS app try [nestjs-fastify-rate-limiter](https://www.npmjs.com/package/nestjs-fastify-rate-limiter)
 
-Some copy/paste examples on Wiki:
+Copy/paste examples on Wiki:
 * [Minimal protection against password brute-force](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#minimal-protection-against-password-brute-force)
 * [Login endpoint protection](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#login-endpoint-protection)
 * [Apply Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#apply-in-memory-block-strategy-to-avoid-extra-requests-to-store)
@@ -175,7 +175,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 
     `Required for store limiters` 
 
-    Must be `@valkey/valkey-glide`, `iovalkey`, `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql` or any other related pool or connection.
+    Must be pool or connection created with store client packages, e.g. `@valkey/valkey-glide`, `ioredis`, `iovalkey`, `redis`,  `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, etc.
 
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
@@ -223,6 +223,6 @@ It has to implement 4 methods:
 * `_get` returns raw data by key or `null` if there is no key.
 * `_delete` deletes all key-related data and returns `true` on deleted, `false` if key is not found.
 
-All other methods depends on the store. See `RateLimiterRedis` or `RateLimiterPostgres` for examples.
+All other methods depend on the store. See `RateLimiterRedis` or `RateLimiterPostgres` for examples.
 
 Note: all changes should be covered by tests.
