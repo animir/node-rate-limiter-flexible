@@ -11,3 +11,5 @@ img
 *.yml
 *.yaml
 .nyc_output
+skills/
+llms.txt

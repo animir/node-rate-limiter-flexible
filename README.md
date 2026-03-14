@@ -16,6 +16,8 @@ It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluste
 
 Memory limiter also works in the browser.
 
+**AI tools** See [llms.txt](https://github.com/animir/node-rate-limiter-flexible/blob/master/llms.txt) and [CONTEXT.md](https://github.com/animir/node-rate-limiter-flexible/blob/master/CONTEXT.md) for LLM-friendly documentation.
+
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
 **Fast.** Average request takes `0.7ms` in Cluster and `2.5ms` in Distributed application. See [benchmarks](https://github.com/animir/node-rate-limiter-flexible#benchmark).

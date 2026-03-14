@@ -1,0 +1,77 @@
+# rate-limiter-flexible
+
+> Atomic and non-atomic counters and rate limiting tools for Node.js, Deno, and browsers. Counts and limits actions by key, protects from DoS and brute force attacks at any scale. Works with Redis, MongoDB, MySQL, PostgreSQL, Memcached, DynamoDB, Prisma, Drizzle, SQLite, Etcd, Valkey, process Memory, Cluster, and PM2. Zero production dependencies. Fixed window algorithm. ISC license.
+
+## Quick Start
+
+- Install: `npm i rate-limiter-flexible`
+- ESM: `import { RateLimiterMemory } from "rate-limiter-flexible"`
+- CommonJS: `const { RateLimiterMemory } = require("rate-limiter-flexible")`
+- Direct: `import RateLimiterMemory from "rate-limiter-flexible/lib/RateLimiterMemory.js"`
+
+## Key Concepts
+
+- All limiters share one API: `consume`, `get`, `set`, `block`, `delete`, `penalty`, `reward`
+- `points` (default 4): max consumable over `duration`
+- `duration` (default 1): seconds before reset; 0 = never expire
+- `keyPrefix`: unique per limiter to avoid key collisions
+- `blockDuration`: block key for N seconds once exhausted
+- `inMemoryBlockOnConsumed`: block in process memory for DoS protection (~7x faster)
+- `insuranceLimiter`: fallback limiter when store is down
+- Keys can be IP, user ID, auth token, API route, or any string
+- `RateLimiterRes` object: `msBeforeNext`, `remainingPoints`, `consumedPoints`, `isFirstInDuration`
+
+## Detailed Context
+
+- [CONTEXT.md](https://github.com/animir/node-rate-limiter-flexible/blob/master/CONTEXT.md): Full self-contained AI reference with all options, API, patterns, and code examples
+
+## Docs
+
+- [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options): All configuration options
+- [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods): consume, get, set, block, delete, penalty, reward, getKey, deleteInMemoryBlockedAll
+- [Usage examples](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example): Login protection, websocket flooding, dynamic blocks, auth/unauth users
+
+## Limiters
+
+- [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis): Atomic and non-atomic. ioredis or redis v4+
+- [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory): Single process, fastest, works in browser
+- [MongoDB](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo): With sharding support
+- [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL): mysql2, Sequelize, Knex
+- [PostgreSQL](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL): pg, Sequelize, TypeORM, Knex
+- [DynamoDB](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
+- [Memcached](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
+- [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
+- [Drizzle](https://github.com/animir/node-rate-limiter-flexible/wiki/Drizzle): Atomic and non-atomic
+- [SQLite](https://github.com/animir/node-rate-limiter-flexible/wiki/SQLite): sqlite3, better-sqlite3, Knex
+- [Etcd](https://github.com/animir/node-rate-limiter-flexible/wiki/Etcd): Atomic and non-atomic
+- [IoValkey](https://github.com/animir/node-rate-limiter-flexible/wiki/IoValkey)
+- [Valkey Glide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide)
+- [Cluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster): Node.js cluster via IPC
+- [PM2 Cluster](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster)
+
+## Composite & Wrappers
+
+- [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter): Traffic burst support
+- [RateLimiterUnion](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterUnion): Multiple simultaneous limits
+- [RateLimiterQueue](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue): FIFO queue execution
+- [Black and White lists](https://github.com/animir/node-rate-limiter-flexible/wiki/Black-and-White-lists)
+- [RLWrapperTimeouts](https://github.com/animir/node-rate-limiter-flexible/wiki/RLWrapperTimeouts)
+- [AWS SDK v3 Client Rate Limiter](https://github.com/animir/node-rate-limiter-flexible/wiki/AWS-SDK-v3-Client-Rate-Limiter)
+
+## Middleware
+
+- [Express](https://github.com/animir/node-rate-limiter-flexible/wiki/Express-Middleware)
+- [Koa](https://github.com/animir/node-rate-limiter-flexible/wiki/Koa-Middleware)
+- [Hapi](https://github.com/animir/node-rate-limiter-flexible/wiki/Hapi-plugin)
+
+## Strategies
+
+- [In-memory Block Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/In-memory-Block-Strategy): ~7x faster, DoS protection
+- [Insurance Strategy](https://github.com/animir/node-rate-limiter-flexible/wiki/Insurance-Strategy): Fallback when store is down
+- [Periodic sync](https://github.com/animir/node-rate-limiter-flexible/wiki/Consume-with-periodic-sync-to-reduce-number-of-requests): Reduce store requests
+- [Consume points evenly](https://github.com/animir/node-rate-limiter-flexible/wiki/Consume-points-evenly)
+
+## Migration
+
+- [From express-brute](https://github.com/animir/node-rate-limiter-flexible/wiki/ExpressBrute-migration)
+- [From limiter](https://github.com/animir/node-rate-limiter-flexible/wiki/RateLimiterQueue#migration-from-limiter)
