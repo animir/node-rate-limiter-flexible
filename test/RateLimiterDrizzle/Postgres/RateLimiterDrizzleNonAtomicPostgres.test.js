@@ -213,7 +213,7 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
     try {
       await rateLimiter.consume(testKey, 2);
     } catch (err) {
-      const blocked = rateLimiter._inMemoryBlockedKeys._keys[rateLimiter.getKey(testKey)]
+      const blocked = rateLimiter._inMemoryBlockedKeys._keys.get(rateLimiter.getKey(testKey));
       expect(!!blocked).to.be.true;
 
       await new Promise(resolve => setTimeout(resolve, 2001));

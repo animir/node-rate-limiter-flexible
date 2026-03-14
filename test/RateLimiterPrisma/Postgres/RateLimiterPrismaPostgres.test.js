@@ -214,7 +214,7 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
       await rateLimiter.consume(testKey, 2);
     } catch (err) {
       // Expect the key to be blocked at this point
-      const blocked = rateLimiter._inMemoryBlockedKeys._keys[rateLimiter.getKey(testKey)]
+      const blocked = rateLimiter._inMemoryBlockedKeys._keys.get(rateLimiter.getKey(testKey));
       expect(!!blocked).to.be.true;
 
       // Wait for the in-memory block to expire

@@ -13,9 +13,9 @@ describe('MemoryStorage Record', () => {
     expect(record.value).to.equal(123);
   });
 
-  it('expiresAt set unix time and get Date', () => {
+  it('expiresAt set unix time and get Number', () => {
     const now = Date.now();
     record.expiresAt = now;
-    expect(record.expiresAt.getTime()).to.equal(now);
+    expect(record.expiresAt).to.equal(now);
   });
 });
