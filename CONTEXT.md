@@ -45,8 +45,8 @@ Options can be changed at runtime: `rateLimiter.points = 50`, `rateLimiter.durat
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `points` | `4` | Max points consumable over `duration`. |
-| `duration` | `1` | Seconds before points reset (from first consume). `0` = never expire. |
+| `points` | **Required** | Max points consumable over `duration`. Must be a number. |
+| `duration` | **Required** | Seconds before points reset (from first consume). Must be >= 0. `0` = never expire. |
 | `keyPrefix` | `'rlflx'` | Unique prefix per limiter to avoid key collisions. For some stores, used as table/collection name. |
 | `blockDuration` | `0` | If >0, block key for this many seconds once points exhausted. |
 | `storeClient` | — | Required for store limiters. Accepts `@valkey/valkey-glide`, `iovalkey`, `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, Sequelize, TypeORM, Knex, or any related pool/connection. |

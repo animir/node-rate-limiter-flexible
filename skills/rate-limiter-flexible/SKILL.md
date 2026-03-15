@@ -67,8 +67,8 @@ const headers = {
 
 | Option | Default | Notes |
 |--------|---------|-------|
-| `points` | `4` | Max consumable over `duration` |
-| `duration` | `1` | Seconds before reset; `0` = never expire |
+| `points` | **Required** | Max consumable over `duration` |
+| `duration` | **Required** | Seconds before reset; `0` = never expire |
 | `keyPrefix` | `'rlflx'` | Must be unique per limiter |
 | `blockDuration` | `0` | Seconds to block after points exhausted |
 

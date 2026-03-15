@@ -12,8 +12,8 @@
 ## Key Concepts
 
 - All limiters share one API: `consume`, `get`, `set`, `block`, `delete`, `penalty`, `reward`
-- `points` (default 4): max consumable over `duration`
-- `duration` (default 1): seconds before reset; 0 = never expire
+- `points` (required): max consumable over `duration`
+- `duration` (required): seconds before reset; 0 = never expire
 - `keyPrefix`: unique per limiter to avoid key collisions
 - `blockDuration`: block key for N seconds once exhausted
 - `inMemoryBlockOnConsumed`: block in process memory for DoS protection (~7x faster)
