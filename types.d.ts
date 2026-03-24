@@ -398,11 +398,42 @@ export class RateLimiterUnion {
     consume(key: string | number, points?: number): Promise<Record<string, RateLimiterRes>>;
 }
 
-export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
+export class RLWrapperBlackAndWhite {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
+
+    limiter: RateLimiterAbstract;
+    blackList: string[] | number[];
+    whiteList: string[] | number[];
+    isBlackListed: (key: any) => boolean;
+    isWhiteListed: (key: any) => boolean;
+    runActionAnyway: boolean;
+
+    consume(
+        key: string | number,
+        pointsToConsume?: number
+    ): Promise<RateLimiterRes>;
+
+    block(
+        key: string | number,
+        secDuration: number
+    ): Promise<RateLimiterRes>;
+
+    penalty(
+        key: string | number,
+        points?: number
+    ): Promise<RateLimiterRes>;
+
+    reward(
+        key: string | number,
+        points?: number
+    ): Promise<RateLimiterRes>;
+
+    get(key: string | number): Promise<RateLimiterRes>;
+
+    delete(key: string | number): Promise<boolean>;
 }
 
-interface IRLWrapperTimeoutsOptions extends IRateLimiterOptions {
+interface IRLWrapperTimeoutsOptions extends Omit<IRateLimiterOptions, 'points' | 'duration'> {
     limiter: RateLimiterAbstract;
     timeoutMs?: number;
 }
