@@ -19,8 +19,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -43,8 +41,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.penalty('testKey', 2);
@@ -66,8 +62,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.reward('testKey', 1);
@@ -89,8 +83,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.get('testKey');
@@ -112,8 +104,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.set('testKey', 5, 3);
@@ -135,8 +125,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.block('testKey', 3);
@@ -153,8 +141,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.delete('testKey');
@@ -174,8 +160,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -195,8 +179,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -220,8 +202,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -239,8 +219,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -260,8 +238,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -281,8 +257,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -302,8 +276,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -323,8 +295,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -356,8 +326,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.consume('testKey');
@@ -385,8 +353,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.get('testKey');
@@ -404,8 +370,6 @@ describe('RLWrapperTimeouts', () => {
       const wrapper = new RLWrapperTimeouts({
         limiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       try {
@@ -435,8 +399,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.penalty('testKey', 2);
@@ -464,8 +426,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.reward('testKey', 1);
@@ -493,8 +453,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.block('testKey', 3);
@@ -517,8 +475,6 @@ describe('RLWrapperTimeouts', () => {
         limiter,
         insuranceLimiter,
         timeoutMs: 500,
-        points: 4,
-        duration: 1,
       });
 
       const res = await wrapper.delete('testKey');
