@@ -597,4 +597,221 @@ describe('RLWrapperBlackAndWhite ', () => {
           });
       });
   });
+
+  describe('options forwarding', () => {
+    it('consume forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalConsume = limiter.consume.bind(limiter);
+      limiter.consume = (key, points, options) => {
+        receivedOptions = options;
+        return originalConsume(key, points, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customDuration: 2 };
+
+      limiterWrapped.consume('test', 1, options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('penalty forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalPenalty = limiter.penalty.bind(limiter);
+      limiter.penalty = (key, points, options) => {
+        receivedOptions = options;
+        return originalPenalty(key, points, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customDuration: 2 };
+
+      limiterWrapped.penalty('test', 1, options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('reward forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalReward = limiter.reward.bind(limiter);
+      limiter.reward = (key, points, options) => {
+        receivedOptions = options;
+        return originalReward(key, points, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customDuration: 2 };
+
+      limiterWrapped.reward('test', 1, options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('get forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalGet = limiter.get.bind(limiter);
+      limiter.get = (key, options) => {
+        receivedOptions = options;
+        return originalGet(key, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customOption: 'test' };
+
+      limiterWrapped.get('test', options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('set forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalSet = limiter.set.bind(limiter);
+      limiter.set = (key, points, secDuration, options) => {
+        receivedOptions = options;
+        return originalSet(key, points, secDuration, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customOption: 'test' };
+
+      limiterWrapped.set('test', 1, 30, options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('block forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalBlock = limiter.block.bind(limiter);
+      limiter.block = (key, secDuration, options) => {
+        receivedOptions = options;
+        return originalBlock(key, secDuration, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customOption: 'test' };
+
+      limiterWrapped.block('test', 30, options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('delete forwards options to inner limiter', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalDelete = limiter.delete.bind(limiter);
+      limiter.delete = (key, options) => {
+        receivedOptions = options;
+        return originalDelete(key, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({ limiter });
+      const options = { customOption: 'test' };
+
+      limiterWrapped.delete('test', options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+
+    it('consume forwards options with runActionAnyway', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalConsume = limiter.consume.bind(limiter);
+      limiter.consume = (key, points, options) => {
+        receivedOptions = options;
+        return originalConsume(key, points, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({
+        limiter,
+        blackList: ['blacked'],
+        runActionAnyway: true,
+      });
+      const options = { customDuration: 2 };
+
+      limiterWrapped.consume('blacked', 1, options)
+        .catch(() => {
+          setTimeout(() => {
+            expect(receivedOptions).to.deep.equal(options);
+            done();
+          }, 10);
+        });
+    });
+
+    it('get forwards options with runActionAnyway', (done) => {
+      let receivedOptions = null;
+      const limiter = new RateLimiterMemory({
+        points: 5,
+        duration: 10,
+      });
+      const originalGet = limiter.get.bind(limiter);
+      limiter.get = (key, options) => {
+        receivedOptions = options;
+        return originalGet(key, options);
+      };
+
+      const limiterWrapped = new RLWrapperBlackAndWhite({
+        limiter,
+        runActionAnyway: true,
+      });
+      const options = { customOption: 'test' };
+
+      limiterWrapped.get('test', options)
+        .then(() => {
+          expect(receivedOptions).to.deep.equal(options);
+          done();
+        })
+        .catch((err) => done(err));
+    });
+  });
 });

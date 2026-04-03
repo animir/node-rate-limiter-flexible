@@ -451,44 +451,11 @@ export class RLWrapperBlackAndWhite extends RateLimiterCompatibleAbstract {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
 
     limiter: RateLimiterLike;
-    readonly keyPrefix: string;
-    blockDuration: number;
-    execEvenly: boolean;
     blackList: string[] | number[];
     whiteList: string[] | number[];
     isBlackListed: (key: any) => boolean;
     isWhiteListed: (key: any) => boolean;
     runActionAnyway: boolean;
-
-    consume(
-        key: string | number,
-        pointsToConsume?: number
-    ): Promise<RateLimiterRes>;
-
-    block(
-        key: string | number,
-        secDuration: number
-    ): Promise<RateLimiterRes>;
-
-    penalty(
-        key: string | number,
-        points?: number
-    ): Promise<RateLimiterRes>;
-
-    reward(
-        key: string | number,
-        points?: number
-    ): Promise<RateLimiterRes>;
-
-    get(key: string | number): Promise<RateLimiterRes>;
-
-    set(
-        key: string | number,
-        points: number,
-        secDuration: number
-    ): Promise<RateLimiterRes>;
-
-    delete(key: string | number): Promise<boolean>;
 }
 
 interface IRLWrapperTimeoutsOptions extends Omit<IRateLimiterOptions, 'points' | 'duration'> {
