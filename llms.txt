@@ -1,6 +1,6 @@
 # rate-limiter-flexible
 
-> Atomic and non-atomic counters and rate limiting tools for Node.js, Deno, and browsers. Counts and limits actions by key, protects from DoS and brute force attacks at any scale. Works with Redis, MongoDB, MySQL, PostgreSQL, Memcached, DynamoDB, Prisma, Drizzle, SQLite, Etcd, Valkey, process Memory, Cluster, and PM2. Zero production dependencies. Fixed window algorithm. ISC license.
+> Atomic and non-atomic counters and rate limiting tools for Node.js, Deno, and browsers. Counts and limits actions by key, protects from DoS and brute force attacks at any scale. Works with Redis, MongoDB, MySQL, PostgreSQL, Memcached, DynamoDB, Prisma, Drizzle, SQLite, Etcd, Valkey, process Memory, Cluster, and PM2. Zero production dependencies. Enhanced fixed window algorithm. ISC license.
 
 ## Quick Start
 

@@ -32,8 +32,7 @@ Memory limiter also works in the browser.
 
 **Deno compatible** See [this example](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4) 
 
-It uses a **fixed window**, as it is much faster than a rolling window. 
-[See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
+The enhanced fixed window algorithm starts counting from the moment a request is received, diversifying rate limit reset times across clients.
 
 ## Installation
 

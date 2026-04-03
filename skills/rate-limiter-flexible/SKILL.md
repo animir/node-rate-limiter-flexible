@@ -6,7 +6,7 @@ description: "Use this skill whenever working with rate limiting, brute-force pr
 # rate-limiter-flexible
 
 Harden application security against brute-force and DoS attacks.
-Atomic and non-atomic counters and rate limiting tools for Node.js, Deno, and browsers (Memory limiter). Zero production dependencies. Fixed window algorithm. ISC license.
+Atomic and non-atomic counters and rate limiting tools for Node.js, Deno, and browsers (Memory limiter). Zero production dependencies. Enhanced fixed window algorithm. ISC license.
 
 - **Install:** `npm i rate-limiter-flexible`
 - **ESM:** `import { RateLimiterMemory } from "rate-limiter-flexible"`

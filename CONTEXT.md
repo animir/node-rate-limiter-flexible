@@ -30,7 +30,7 @@ const { RateLimiterMemory } = require("rate-limiter-flexible");
 ## Core Concepts
 
 - **Atomic increments** — all operations use atomic increments to prevent race conditions.
-- **Fixed window** algorithm — much faster than rolling window. See [comparative benchmarks](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks).
+- **Enhanced fixed window** algorithm — starts counting from the moment a request is received, diversifying rate limit reset times across clients. Much faster than rolling window. See [comparative benchmarks](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks).
 - **Zero production dependencies.**
 - **Deno compatible** — see [example gist](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4).
 - **Browser compatible** — `RateLimiterMemory` works in the browser.
