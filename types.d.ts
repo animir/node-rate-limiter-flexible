@@ -28,6 +28,7 @@ export class RateLimiterRes {
 }
 
 export class RateLimiterCompatibleAbstract {
+    readonly keyPrefix: string;
     blockDuration: number;
     execEvenly: boolean;
 
@@ -480,6 +481,12 @@ export class RLWrapperBlackAndWhite extends RateLimiterCompatibleAbstract {
     ): Promise<RateLimiterRes>;
 
     get(key: string | number): Promise<RateLimiterRes>;
+
+    set(
+        key: string | number,
+        points: number,
+        secDuration: number
+    ): Promise<RateLimiterRes>;
 
     delete(key: string | number): Promise<boolean>;
 }

@@ -218,6 +218,48 @@ describe('RLWrapperBlackAndWhite ', () => {
       });
   });
 
+  it('set if not blacked', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 2,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      blackList: ['blacked'],
+    });
+    limiterWrapped
+      .set('test', 1, 30)
+      .then((res) => {
+        expect(res.consumedPoints === 1).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('set resolved if blacked', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 1,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      blackList: ['blacked'],
+    });
+    limiterWrapped
+      .set('blacked', 1, 30)
+      .then((res) => {
+        expect(res.consumedPoints === 0 && res.remainingPoints === 0).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
   it('resolve consume if whited', (done) => {
     const limiter = new RateLimiterMemory({
       points: 1,
@@ -321,6 +363,28 @@ describe('RLWrapperBlackAndWhite ', () => {
       .get('white')
       .then((res) => {
         expect(res.remainingPoints === Number.MAX_SAFE_INTEGER).to.equal(true);
+        done();
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('resolve set if whited', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 1,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      whiteList: ['white'],
+    });
+
+    limiterWrapped
+      .set('white', 1, 30)
+      .then((res) => {
+        expect(res.msBeforeNext === 0).to.equal(true);
         done();
       })
       .catch(() => {
@@ -480,6 +544,30 @@ describe('RLWrapperBlackAndWhite ', () => {
       .then(() => {
         limiterWrapped.get('test').then((res) => {
           expect(res.consumedPoints === -1).to.equal(true);
+          done();
+        });
+      })
+      .catch(() => {
+        done(Error('must not reject'));
+      });
+  });
+
+  it('set even if blacked when runAction set to true', (done) => {
+    const limiter = new RateLimiterMemory({
+      points: 2,
+      duration: 1,
+    });
+
+    const limiterWrapped = new RLWrapperBlackAndWhite({
+      limiter,
+      isBlackListed: key => key === 'test',
+      runActionAnyway: true,
+    });
+    limiterWrapped
+      .set('test', 1, 30)
+      .then(() => {
+        limiter.get('test').then((res) => {
+          expect(res.consumedPoints === 1).to.equal(true);
           done();
         });
       })

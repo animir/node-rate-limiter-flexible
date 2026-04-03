@@ -279,6 +279,27 @@ describe('RateLimiterCompatibleAbstract', () => {
           done(err);
         });
     });
+
+    it('should fallback to RLWrapperBlackAndWhite insuranceLimiter on set store error', (done) => {
+      const innerLimiter = new RateLimiterMemory({ points: 5, duration: 1 });
+      const wrapper = new RLWrapperBlackAndWhite({ limiter: innerLimiter });
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 2,
+        duration: 1,
+        insuranceLimiter: wrapper,
+      });
+      rateLimiter._upsert = () => Promise.reject(new Error('Store error'));
+
+      rateLimiter.set('test-key', 1, 30)
+        .then((res) => {
+          expect(res).to.be.instanceOf(RateLimiterRes);
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
   });
 
   describe('RLWrapperBlackAndWhite in RLWrapperTimeouts', () => {
