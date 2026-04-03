@@ -291,13 +291,72 @@ describe('RateLimiterCompatibleAbstract', () => {
       });
       rateLimiter._upsert = () => Promise.reject(new Error('Store error'));
 
-      rateLimiter.set('test-key', 1, 30)
+      rateLimiter.set('test-key-set', 3, 30)
         .then((res) => {
           expect(res).to.be.instanceOf(RateLimiterRes);
-          done();
+          // Verify data was stored in the wrapper's inner limiter with correct points
+          wrapper.get('test-key-set')
+            .then((wrapperRes) => {
+              expect(wrapperRes).to.not.be.null;
+              // set() correctly falls back to insuranceLimiter.set() with the passed points
+              expect(wrapperRes.consumedPoints).to.equal(3);
+              done();
+            })
+            .catch((err) => done(err));
         })
         .catch((err) => {
           done(err);
+        });
+    });
+
+    it('should resolve with insuranceLimiter result when store set() fails', (done) => {
+      const insuranceLimiter = new RateLimiterMemory({ points: 10, duration: 1 });
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 5,
+        duration: 1,
+        insuranceLimiter: insuranceLimiter,
+      });
+      rateLimiter._upsert = () => Promise.reject(new Error('Redis connection error'));
+
+      rateLimiter.set('test-key', 2, 60)
+        .then((res) => {
+          expect(res).to.be.instanceOf(RateLimiterRes);
+          expect(res.consumedPoints).to.equal(2);
+          // Verify data was stored in insurance limiter
+          insuranceLimiter.get('test-key')
+            .then((insuranceRes) => {
+              expect(insuranceRes).to.not.be.null;
+              expect(insuranceRes.consumedPoints).to.equal(2);
+              done();
+            })
+            .catch((err) => done(err));
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+
+    it('should reject when both store set() and insuranceLimiter set() fail', (done) => {
+      const insuranceLimiter = new RateLimiterMemory({ points: 10, duration: 1 });
+
+      const rateLimiter = new TestRateLimiterStoreMemory({
+        points: 5,
+        duration: 1,
+        insuranceLimiter: insuranceLimiter,
+      });
+      rateLimiter._upsert = () => Promise.reject(new Error('Redis connection error'));
+      // Make insurance limiter's set() also fail
+      insuranceLimiter.set = () => Promise.reject(new RateLimiterRes(0, 1000, 10, false));
+
+      rateLimiter.set('test-key', 2, 60)
+        .then(() => {
+          done(new Error('Should have rejected'));
+        })
+        .catch((rej) => {
+          expect(rej).to.be.instanceOf(RateLimiterRes);
+          expect(rej.consumedPoints).to.equal(10);
+          done();
         });
     });
   });
