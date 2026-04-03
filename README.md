@@ -227,4 +227,6 @@ It has to implement 4 methods:
 
 All other methods depend on the store. See `RateLimiterRedis` or `RateLimiterPostgres` for examples.
 
+For wrapper classes that don't need full `RateLimiterAbstract` functionality, extend `RateLimiterCompatibleAbstract` instead. It requires implementing `consume`, `penalty`, `reward`, `get`, `set`, `block`, `delete` methods and `blockDuration`/`execEvenly` getters/setters. If the wrapper doesn't use `blockDuration` or `execEvenly`, empty no-op implementations can be provided. See `RLWrapperBlackAndWhite` for an example.
+
 Note: all changes should be covered by tests.
