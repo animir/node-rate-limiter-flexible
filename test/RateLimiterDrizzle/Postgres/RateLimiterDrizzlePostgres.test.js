@@ -308,7 +308,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     } catch (rej) {
     }
 
-    await new Promise(resolve => setTimeout(resolve, blockDuration * 1000));
+    await new Promise(resolve => setTimeout(resolve, blockDuration * 1000 + 10));
 
     try {
       await rateLimiter.consume(testKey);

@@ -27,6 +27,55 @@ export class RateLimiterRes {
     };
 }
 
+export class RateLimiterCompatibleAbstract {
+    readonly keyPrefix: string;
+    blockDuration: number;
+    execEvenly: boolean;
+
+    consume(
+        key: string | number,
+        pointsToConsume?: number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes>;
+
+    penalty(
+        key: string | number,
+        points?: number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes>;
+
+    reward(
+        key: string | number,
+        points?: number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes>;
+
+    get(
+        key: string | number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes | null>;
+
+    set(
+        key: string | number,
+        points: number,
+        secDuration: number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes>;
+
+    block(
+        key: string | number,
+        secDuration: number,
+        options?: { [key: string]: any }
+    ): Promise<RateLimiterRes>;
+
+    delete(
+        key: string | number,
+        options?: { [key: string]: any }
+    ): Promise<boolean>;
+}
+
+export type RateLimiterLike = RateLimiterAbstract | RateLimiterCompatibleAbstract;
+
 export class RateLimiterAbstract {
     constructor(opts: IRateLimiterOptions);
 
@@ -224,7 +273,7 @@ interface IRateLimiterOptions {
     execEvenly?: boolean;
     execEvenlyMinDelayMs?: number;
     blockDuration?: number;
-    insuranceLimiter?: RateLimiterAbstract;
+    insuranceLimiter?: RateLimiterLike;
 }
 
 interface IRateLimiterClusterOptions extends IRateLimiterOptions {
@@ -236,7 +285,7 @@ interface IRateLimiterStoreOptions extends IRateLimiterOptions {
     storeType?: string;
     inMemoryBlockOnConsumed?: number;
     inMemoryBlockDuration?: number;
-    insuranceLimiter?: RateLimiterAbstract;
+    insuranceLimiter?: RateLimiterLike;
     dbName?: string;
     tableName?: string;
     tableCreated?: boolean;
@@ -277,7 +326,7 @@ interface ICallbackReady {
 }
 
 interface IRLWrapperBlackAndWhiteOptions {
-    limiter: RateLimiterAbstract;
+    limiter: RateLimiterLike;
     blackList?: string[] | number[];
     whiteList?: string[] | number[];
     isBlackListed?(key: any): boolean;
@@ -393,17 +442,24 @@ export class RateLimiterDrizzleNonAtomic extends RateLimiterStoreAbstract {
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
 
 export class RateLimiterUnion {
-    constructor(...limiters: RateLimiterAbstract[]);
+    constructor(...limiters: RateLimiterLike[]);
 
     consume(key: string | number, points?: number): Promise<Record<string, RateLimiterRes>>;
 }
 
-export class RLWrapperBlackAndWhite extends RateLimiterAbstract {
+export class RLWrapperBlackAndWhite extends RateLimiterCompatibleAbstract {
     constructor(opts: IRLWrapperBlackAndWhiteOptions);
+
+    limiter: RateLimiterLike;
+    blackList: string[] | number[];
+    whiteList: string[] | number[];
+    isBlackListed: (key: any) => boolean;
+    isWhiteListed: (key: any) => boolean;
+    runActionAnyway: boolean;
 }
 
-interface IRLWrapperTimeoutsOptions extends IRateLimiterOptions {
-    limiter: RateLimiterAbstract;
+interface IRLWrapperTimeoutsOptions extends Omit<IRateLimiterOptions, 'points' | 'duration'> {
+    limiter: RateLimiterLike;
     timeoutMs?: number;
 }
 
@@ -417,7 +473,7 @@ interface IRateLimiterQueueOpts {
 
 export class RateLimiterQueue {
     constructor(
-        limiterFlexible: RateLimiterAbstract | BurstyRateLimiter,
+        limiterFlexible: RateLimiterLike | BurstyRateLimiter,
         opts?: IRateLimiterQueueOpts
     );
 
@@ -428,8 +484,8 @@ export class RateLimiterQueue {
 
 export class BurstyRateLimiter {
     constructor(
-        rateLimiter: RateLimiterAbstract,
-        burstLimiter: RateLimiterAbstract
+        rateLimiter: RateLimiterLike,
+        burstLimiter: RateLimiterLike
     );
 
     consume(

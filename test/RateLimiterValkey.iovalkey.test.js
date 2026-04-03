@@ -613,7 +613,7 @@ describe('RateLimiterValkey with fixed window', function RateLimiterValkeyTest()
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2010);
       });
   });
 

@@ -30,7 +30,7 @@ const { RateLimiterMemory } = require("rate-limiter-flexible");
 ## Core Concepts
 
 - **Atomic increments** — all operations use atomic increments to prevent race conditions.
-- **Fixed window** algorithm — much faster than rolling window. See [comparative benchmarks](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks).
+- **Enhanced fixed window** algorithm — starts counting from the moment a request is received, diversifying rate limit reset times across clients. Much faster than rolling window. See [comparative benchmarks](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks).
 - **Zero production dependencies.**
 - **Deno compatible** — see [example gist](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4).
 - **Browser compatible** — `RateLimiterMemory` works in the browser.
@@ -156,9 +156,9 @@ const headers = {
 | Limiter | Description |
 |---------|-------------|
 | `BurstyRateLimiter` | Combines two limiters: primary + burst allowance. |
-| `RateLimiterUnion` | Consume from multiple limiters simultaneously. Only `consume` method. |
+| `RateLimiterUnion` | Consume from multiple limiters simultaneously. Only `consume` method. Accepts any `RateLimiterAbstract` or `RateLimiterCompatibleAbstract` instance. |
 | `RateLimiterQueue` | Queue actions and execute at controlled rate (FIFO). |
-| `RLWrapperBlackAndWhite` | Wrap any limiter with black/white IP lists. |
+| `RLWrapperBlackAndWhite` | Wrap any limiter with black/white IP lists. Can be used as `insuranceLimiter`, in `RLWrapperTimeouts`, or `RateLimiterUnion`. |
 | `RLWrapperTimeouts` | Wrap any limiter with custom timeout behavior. |
 
 ## Common Patterns
@@ -469,3 +469,11 @@ Any new limiter with storage must extend `RateLimiterStoreAbstract` and implemen
 - `_upsert` — atomic or non-atomic increment. Must support `forceExpire` mode. If non-atomic, suffix class with `NonAtomic` (e.g. `RateLimiterRedisNonAtomic`).
 - `_get` — return raw data by key or `null`.
 - `_delete` — delete key data, return `true`/`false`.
+
+## Creating Custom Wrappers
+
+For wrapper classes that don't need full `RateLimiterAbstract` functionality (like `points`, `duration`, etc.), extend `RateLimiterCompatibleAbstract` instead. This lightweight abstract class requires implementing:
+- `consume`, `penalty`, `reward`, `get`, `set`, `block`, `delete` methods
+- `blockDuration` and `execEvenly` getters/setters (if not used, empty no-op implementations can be provided)
+
+Classes extending `RateLimiterCompatibleAbstract` can be used anywhere `RateLimiterAbstract` is accepted: as `insuranceLimiter`, in `RLWrapperTimeouts`, `RateLimiterUnion`, etc. See `RLWrapperBlackAndWhite` for an example implementation.

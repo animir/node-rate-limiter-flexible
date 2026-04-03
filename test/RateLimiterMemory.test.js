@@ -185,7 +185,7 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2010);
       });
   });
 
@@ -395,9 +395,9 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
     const rateLimiterMemory = new RateLimiterMemory({ points: 2, duration: 5, keyPrefix });
     rateLimiterMemory.consume(testKey)
       .then(() => {
-        expect(typeof rateLimiterMemory._memoryStorage._storage[`${keyPrefix}:${testKey}`] !== 'undefined')
+        expect(rateLimiterMemory._memoryStorage._storage.has(`${keyPrefix}:${testKey}`))
           .to.equal(true)
-        rateLimiterMemory._memoryStorage._storage[`${keyPrefix}:${testKey}`].expiresAt = new Date(Date.now() - 1000)
+        rateLimiterMemory._memoryStorage._storage.get(`${keyPrefix}:${testKey}`).expiresAt = new Date(Date.now() - 1000)
 
         rateLimiterMemory.consume(testKey)
           .then((res) => {

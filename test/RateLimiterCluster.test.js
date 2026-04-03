@@ -112,8 +112,8 @@ describe('RateLimiterCluster', function RateLimiterClusterTest() {
     const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix });
     rateLimiterCluster.consume(key)
       .then(() => {
-        expect(typeof rateLimiterClusterMaster._rateLimiters[keyPrefix]._memoryStorage._storage[`${keyPrefix}:${key}`]
-          !== 'undefined').to.equal(true);
+        expect(rateLimiterClusterMaster._rateLimiters[keyPrefix]._memoryStorage._storage.has(`${keyPrefix}:${key}`))
+          .to.equal(true);
         done();
       })
       .catch((rejRes) => {

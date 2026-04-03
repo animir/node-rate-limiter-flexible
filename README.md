@@ -32,8 +32,7 @@ Memory limiter also works in the browser.
 
 **Deno compatible** See [this example](https://gist.github.com/animir/d06ca92931677f330d3f2d4c6c3108e4) 
 
-It uses a **fixed window**, as it is much faster than a rolling window. 
-[See comparative benchmarks with other libraries here](https://github.com/animir/node-rate-limiter-flexible/wiki/Comparative-benchmarks)
+The enhanced fixed window algorithm starts counting from the moment a request is received, diversifying rate limit reset times across clients.
 
 ## Installation
 
@@ -226,5 +225,7 @@ It has to implement 4 methods:
 * `_delete` deletes all key-related data and returns `true` on deleted, `false` if key is not found.
 
 All other methods depend on the store. See `RateLimiterRedis` or `RateLimiterPostgres` for examples.
+
+For wrapper classes that don't need full `RateLimiterAbstract` functionality, extend `RateLimiterCompatibleAbstract` instead. It requires implementing `consume`, `penalty`, `reward`, `get`, `set`, `block`, `delete` methods and `blockDuration`/`execEvenly` getters/setters. If the wrapper doesn't use `blockDuration` or `execEvenly`, empty no-op implementations can be provided. See `RLWrapperBlackAndWhite` for an example.
 
 Note: all changes should be covered by tests.

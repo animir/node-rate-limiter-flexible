@@ -12,6 +12,7 @@ const RateLimiterUnion = require('./lib/RateLimiterUnion');
 const RateLimiterQueue = require('./lib/RateLimiterQueue');
 const BurstyRateLimiter = require('./lib/BurstyRateLimiter');
 const RateLimiterRes = require('./lib/RateLimiterRes');
+const RateLimiterCompatibleAbstract = require('./lib/RateLimiterCompatibleAbstract');
 const RateLimiterDynamo = require('./lib/RateLimiterDynamo');
 const RateLimiterPrisma = require('./lib/RateLimiterPrisma');
 const RateLimiterDrizzle = require('./lib/RateLimiterDrizzle');
@@ -41,6 +42,7 @@ module.exports = {
   RateLimiterQueue,
   BurstyRateLimiter,
   RateLimiterRes,
+  RateLimiterCompatibleAbstract,
   RateLimiterDynamo,
   RateLimiterPrisma,
   RateLimiterValkey,

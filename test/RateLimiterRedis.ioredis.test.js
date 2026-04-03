@@ -616,6 +616,68 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
       });
   });
 
+  it('set using insuranceLimiter when RedisClient error', async () => {
+    const testKey = 'rediserrorset';
+
+    const redisClientClosed = new Redis();
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisClientClosed,
+      points: 5,
+      duration: 1,
+      insuranceLimiter: new RateLimiterRedis({
+        points: 10,
+        duration: 2,
+        storeClient: redisMockClient,
+      }),
+    });
+    await redisClientClosed.disconnect();
+
+    await rateLimiter
+      .set(testKey, 3, 30)
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(3);
+        expect(res.msBeforeNext).to.be.at.most(30000);
+      });
+
+    // Verify data was stored in insurance limiter
+    const storedPoints = await redisMockClient.get(rateLimiter.getKey(testKey));
+    expect(storedPoints).to.equal('3');
+  });
+
+  it('set rejects when both RedisClient and insuranceLimiter fail', async () => {
+    const testKey = 'rediserrorsetbothfail';
+
+    const redisClientClosed = new Redis();
+    const redisClientClosed2 = new Redis();
+
+    const insuranceLimiter = new RateLimiterRedis({
+      points: 10,
+      duration: 2,
+      storeClient: redisClientClosed2,
+    });
+
+    const rateLimiter = new RateLimiterRedis({
+      storeClient: redisClientClosed,
+      points: 5,
+      duration: 1,
+      insuranceLimiter: insuranceLimiter,
+    });
+
+    await redisClientClosed.disconnect();
+    await redisClientClosed2.disconnect();
+
+    let rejected = false;
+    await rateLimiter
+      .set(testKey, 3, 30)
+      .catch((err) => {
+        rejected = true;
+        expect(err).to.be.instanceOf(Error);
+      });
+
+    expect(rejected).to.equal(true);
+  });
+
   it('use keyPrefix from options', () => {
     const testKey = 'key';
     const keyPrefix = 'test';
@@ -687,7 +749,7 @@ describe('RateLimiterRedis with fixed window', function RateLimiterRedisTest() {
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2010);
       });
   });
 
