@@ -311,7 +311,7 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     } catch (rej) {
     }
 
-    await new Promise(resolve => setTimeout(resolve, blockDuration * 1000));
+    await new Promise(resolve => setTimeout(resolve, blockDuration * 1000 + 10));
 
     try {
       await rateLimiter.consume(testKey);

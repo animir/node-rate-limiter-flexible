@@ -185,7 +185,7 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2010);
       });
   });
 

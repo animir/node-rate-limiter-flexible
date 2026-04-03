@@ -332,7 +332,7 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
             .catch(() => {
               done(Error('must resolve'));
             });
-        }, 2000);
+        }, 2010);
       });
   });
 
