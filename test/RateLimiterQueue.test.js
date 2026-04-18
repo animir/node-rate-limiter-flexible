@@ -233,7 +233,7 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       });
   });
 
-  it.only('works correctly with underlying execEvenly limiter (no extra wait from stale msBeforeNext)', (done) => {
+  it('works correctly with underlying execEvenly limiter (no extra wait from stale msBeforeNext)', (done) => {
     const rlMemory = new RateLimiterMemory({
       points: 2,
       duration: 1,
