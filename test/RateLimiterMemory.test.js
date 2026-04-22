@@ -86,6 +86,40 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
       });
   });
 
+  it('updates msBeforeNext after execEvenly delay', (done) => {
+    const testKey = 'consumeEvenlyMsBeforeNext';
+    const rateLimiterMemory = new RateLimiterMemory({
+      points: 2, duration: 5, execEvenly: true, execEvenlyMinDelayMs: 500,
+    });
+
+    rateLimiterMemory.consume(testKey)
+      .then((resFirst) => {
+        const initialMsBeforeNext = resFirst.msBeforeNext;
+        const expectedDelay = Math.ceil(initialMsBeforeNext / 2);
+        const timeFirstConsume = Date.now();
+        rateLimiterMemory.consume(testKey)
+          .then((resSecond) => {
+            const diff = Date.now() - timeFirstConsume;
+
+            // Real delay should be close to calculated one from formula
+            expect(diff).to.be.greaterThan(expectedDelay - 100);
+            expect(diff).to.be.lessThan(expectedDelay + 100);
+
+            // msBeforeNext should be reduced approximately by that delay
+            expect(resSecond.msBeforeNext >= 0).to.equal(true);
+            expect(resSecond.msBeforeNext)
+              .to.be.closeTo(initialMsBeforeNext - expectedDelay, 100);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('makes penalty', (done) => {
     const testKey = 'penalty1';
     const rateLimiterMemory = new RateLimiterMemory({ points: 3, duration: 5 });
