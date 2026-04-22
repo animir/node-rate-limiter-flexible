@@ -318,7 +318,7 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
 }
 
 interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
-  customIncrTtlLuaScript?: string;
+    customIncrTtlLuaScript?: string;
 }
 
 interface ICallbackReady {
@@ -334,8 +334,16 @@ interface IRLWrapperBlackAndWhiteOptions {
     runActionAnyway?: boolean;
 }
 
+export interface IRateLimiterMemoryOptions extends IRateLimiterOptions {
+    onUpsert?(key: string, record: { value: number, expiresAt: number }): Promise<void> | void;
+    onDelete?(key: string): Promise<void> | void;
+}
+
 export class RateLimiterMemory extends RateLimiterAbstract {
-    constructor(opts: IRateLimiterOptions);
+    constructor(opts: IRateLimiterMemoryOptions);
+
+    dumpToString(): string;
+    restoreFromString(serialized: string): void;
 }
 
 export class RateLimiterCluster extends RateLimiterAbstract {
@@ -359,7 +367,7 @@ export class RateLimiterRedisNonAtomic extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterValkey extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterValkeyOptions);
+    constructor(opts: IRateLimiterValkeyOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {
@@ -424,19 +432,19 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterSQLite extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterPrisma extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterDrizzle extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
 }
 
 export class RateLimiterDrizzleNonAtomic extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
 }
 
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
