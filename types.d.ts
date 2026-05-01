@@ -334,11 +334,23 @@ interface IRLWrapperBlackAndWhiteOptions {
     runActionAnyway?: boolean;
 }
 
+export interface IRateLimiterMemoryRecord {
+    key: string | number;
+    value: number;
+    expiresAt: number | null;
+}
+
+export interface IRateLimiterMemoryExport {
+    version: number;
+    dumpedAt: number;
+    storage: IRateLimiterMemoryRecord[];
+}
+
 export class RateLimiterMemory extends RateLimiterAbstract {
     constructor(opts: IRateLimiterOptions);
 
-    dumpToString(): string;
-    restoreFromString(serialized: string): void;
+    dump(): IRateLimiterMemoryExport;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>): void;
 }
 
 export class RateLimiterCluster extends RateLimiterAbstract {
