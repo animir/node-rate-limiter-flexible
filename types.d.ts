@@ -346,11 +346,31 @@ export interface IRateLimiterMemoryExport {
     storage: IRateLimiterMemoryRecord[];
 }
 
+/** Common structure for restore results. */
+export interface IRateLimiterRestoreResult<T> {
+    invalid: T;
+    expired: T;
+    restored: T;
+}
+
+/** Returned by {@link RateLimiterMemory.restore} when `detailResponse` is `false` (default). */
+export type IRateLimiterRestoreResponse = IRateLimiterRestoreResult<number>;
+
+export interface IRateLimiterRestoreBucketDetail {
+    count: number;
+    keys: Array<string | number>;
+}
+
+/** Returned by {@link RateLimiterMemory.restore} when `detailResponse` is `true`. */
+export type IRateLimiterRestoreDetailResponse = IRateLimiterRestoreResult<IRateLimiterRestoreBucketDetail>;
+
 export class RateLimiterMemory extends RateLimiterAbstract {
     constructor(opts: IRateLimiterOptions);
 
     dump(): IRateLimiterMemoryExport;
-    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>): void;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse: true): IRateLimiterRestoreDetailResponse | undefined;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse?: false): IRateLimiterRestoreResponse | undefined;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse?: boolean): IRateLimiterRestoreResponse | IRateLimiterRestoreDetailResponse | undefined;
 }
 
 export class RateLimiterCluster extends RateLimiterAbstract {

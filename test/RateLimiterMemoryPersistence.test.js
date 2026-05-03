@@ -196,4 +196,45 @@ describe('RateLimiterMemory Persistence', function RateLimiterMemoryPersistenceT
       })
       .catch(done);
   });
+
+  it('returns summary of restored, invalid and expired keys', () => {
+    const rateLimiter = new RateLimiterMemory({ points: 2, duration: 5 });
+    const now = Date.now();
+    const dump = {
+      version: 1,
+      storage: [
+        { key: 'valid', value: 1, expiresAt: now + 5000 },
+        { key: 'expired', value: 1, expiresAt: now - 1000 },
+        { key: 'invalid_val', value: 'not-a-number', expiresAt: now + 5000 },
+        'not-an-object'
+      ]
+    };
+
+    const res = rateLimiter.restore(dump);
+    expect(res.restored).to.equal(1);
+    expect(res.expired).to.equal(1);
+    expect(res.invalid).to.equal(2); // 'invalid_val' and 'not-an-object'
+  });
+
+  it('returns detailed summary when detailResponse is true', () => {
+    const rateLimiter = new RateLimiterMemory({ points: 2, duration: 5 });
+    const now = Date.now();
+    const dump = {
+      version: 1,
+      storage: [
+        { key: 'valid', value: 1, expiresAt: now + 5000 },
+        { key: 'expired', value: 1, expiresAt: now - 1000 },
+        { key: 'invalid_val', value: 'not-a-number', expiresAt: now + 5000 },
+        'not-an-object'
+      ]
+    };
+
+    const res = rateLimiter.restore(dump, true);
+    expect(res.restored.count).to.equal(1);
+    expect(res.restored.keys).to.deep.equal(['valid']);
+    expect(res.expired.count).to.equal(1);
+    expect(res.expired.keys).to.deep.equal(['expired']);
+    expect(res.invalid.count).to.equal(2);
+    expect(res.invalid.keys).to.deep.equal(['invalid_val', 'N/A']);
+  });
 });
