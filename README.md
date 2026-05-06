@@ -136,7 +136,7 @@ Copy/paste examples on Wiki:
 * [DynamoDb](https://github.com/animir/node-rate-limiter-flexible/wiki/DynamoDB)
 * [Etcd](https://github.com/animir/node-rate-limiter-flexible/wiki/Etcd) Atomic and non-atomic counters.
 * [Memcached](https://github.com/animir/node-rate-limiter-flexible/wiki/Memcache)
-* [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory)
+* [Memory](https://github.com/animir/node-rate-limiter-flexible/wiki/Memory) Supports dump() and restore() for graceful restarts and green/blue deployment
 * [Mongo](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo) (with [sharding support](https://github.com/animir/node-rate-limiter-flexible/wiki/Mongo#mongodb-sharding-options))
 * [MySQL](https://github.com/animir/node-rate-limiter-flexible/wiki/MySQL) (support Sequelize and Knex)
 * [Postgres](https://github.com/animir/node-rate-limiter-flexible/wiki/PostgreSQL) (support Sequelize, TypeORM and Knex)

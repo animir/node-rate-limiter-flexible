@@ -168,6 +168,8 @@ const headers = {
 
 `RateLimiterMemory` keeps its state in the current process, so it is lost on restart. Two methods, `dump()` and `restore()`, let you snapshot the state and load it back into a fresh instance.
 
+Use this when losing up to 1% of requests won’t affect security or finances, such as in overload or DoS protection.
+
 This is a best-effort persistence mechanism for **graceful restarts** (SIGTERM/SIGINT), blue/green deploys, or writing a snapshot to disk on shutdown. It is **not** a replacement for a shared store; if you need shared state across multiple processes in real time, use a distributed limiter (Redis/Valkey/Drizzle/etc.).
 
 ### `dump()`
