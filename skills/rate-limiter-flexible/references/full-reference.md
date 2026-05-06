@@ -164,6 +164,67 @@ const headers = {
 | `RateLimiterCluster` | Node.js cluster (IPC to master). |
 | `RateLimiterClusterMasterPM2` | PM2 cluster mode. |
 
+## Dump and Restore (RateLimiterMemory)
+
+`RateLimiterMemory` keeps its state in the current process, so it is lost on restart. Two methods, `dump()` and `restore()`, let you snapshot the state and load it back into a fresh instance.
+
+This is a best-effort persistence mechanism for **graceful restarts** (SIGTERM/SIGINT), blue/green deploys, or writing a snapshot to disk on shutdown. It is **not** a replacement for a shared store; if you need shared state across multiple processes in real time, use a distributed limiter (Redis/Valkey/Drizzle/etc.).
+
+### `dump()`
+
+Returns a JSON-safe plain object describing every key currently held in memory:
+
+```js
+const snapshot = rateLimiter.dump();
+// {
+//   version: 1,
+//   dumpedAt: 1746360000000,
+//   storage: [
+//     { key: 'user-1', value: 3, expiresAt: 1746360005000 },
+//     { key: 'user-2', value: 1, expiresAt: 1746360004500 },
+//   ]
+// }
+```
+
+- `value`: consumed points
+- `expiresAt`: **absolute expiry timestamp** in milliseconds
+
+### `restore(data, detailResponse = false)`
+
+Loads a previously dumped snapshot into the limiter.
+
+```js
+const result = rateLimiter.restore(snapshot);
+// { invalid: 0, expired: 2, restored: 14 }
+```
+
+Each entry from the dump falls into exactly one bucket:
+
+- **restored** — valid record, not yet expired, loaded into storage.
+- **expired** — `expiresAt` is in the past; record is dropped (normal if TTL ran out while process was down).
+- **invalid** — entry is not an object, or `key`/`value`/`expiresAt` has the wrong type; skipped.
+
+If the snapshot itself is missing or has an unsupported `version`, `restore()` returns `undefined` and does not modify state.
+Corrupt input (`null`, string, non-array `storage`, etc.) does not throw; it is treated as empty/invalid.
+
+Pass `detailResponse = true` to get keys per bucket (useful for logging/debugging):
+
+```js
+const result = rateLimiter.restore(snapshot, true);
+// {
+//   restored: { count: 14, keys: ['user-1', 'user-2', ...] },
+//   expired:  { count: 2,  keys: ['user-old-1', 'user-old-2'] },
+//   invalid:  { count: 0,  keys: [] }
+// }
+```
+
+### Notes and Caveats
+
+- **`keyPrefix` handling**: keys are stored in the dump without prefix, and the receiving limiter applies its own `keyPrefix` on restore. A snapshot taken with `keyPrefix: "a"` can be restored into a limiter with `keyPrefix: "b"` and will land under `"b:"`.
+- **TTL behavior**: TTL is recomputed from `expiresAt`, not from the limiter’s `duration`. If the process is down, restored keys keep their original absolute expiration and may expire shortly after restart; entries already expired at restore time are dropped (counted as `expired`).
+- **No reconciliation of configuration changes**: records are restored “as-is”. If you dump from `points: 10` and restore into `points: 5`, a key with `value: 7` will reject on the next `consume()`.
+- **Crash resilience**: `dump()` is a point-in-time synchronous snapshot. Timer-based periodic dumps can help with hard kills, but you may still lose recent state.
+
 ### Composite / Wrapper Limiters
 
 | Limiter | Description |

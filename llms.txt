@@ -30,6 +30,7 @@
 - [Options](https://github.com/animir/node-rate-limiter-flexible/wiki/Options): All configuration options
 - [API methods](https://github.com/animir/node-rate-limiter-flexible/wiki/API-methods): consume, get, set, block, delete, penalty, reward, getKey, deleteInMemoryBlockedAll
 - [Usage examples](https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example): Login protection, websocket flooding, dynamic blocks, auth/unauth users
+- `RateLimiterMemory` can **snapshot and rehydrate** in-process state using `dump()` / `restore()` (best-effort persistence for graceful restarts; not shared state across processes)
 
 ## Limiters
 

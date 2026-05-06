@@ -27,6 +27,7 @@ See `references/full-reference.md` for the complete guide covering:
 
 - All options (common + store-specific) with defaults
 - All API methods (`consume`, `get`, `set`, `block`, `delete`, `penalty`, `reward`, `deleteInMemoryBlockedAll`)
+- `RateLimiterMemory` best-effort persistence via `dump()` / `restore()` (snapshot state for graceful restarts)
 - All 15+ limiter types (Redis, Memory, Mongo, MySQL, PostgreSQL, DynamoDB, Memcached, Prisma, Drizzle, SQLite, Etcd, Valkey, Cluster, PM2)
 - Composite limiters (BurstyRateLimiter, RateLimiterUnion, RateLimiterQueue)
 - Wrappers (Black/White lists, Timeouts, AWS SDK v3)
