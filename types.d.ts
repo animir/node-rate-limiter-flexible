@@ -318,7 +318,7 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
 }
 
 interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
-  customIncrTtlLuaScript?: string;
+    customIncrTtlLuaScript?: string;
 }
 
 interface ICallbackReady {
@@ -334,8 +334,43 @@ interface IRLWrapperBlackAndWhiteOptions {
     runActionAnyway?: boolean;
 }
 
+export interface IRateLimiterMemoryRecord {
+    key: string | number;
+    value: number;
+    expiresAt: number | null;
+}
+
+export interface IRateLimiterMemoryExport {
+    version: number;
+    dumpedAt: number;
+    storage: IRateLimiterMemoryRecord[];
+}
+
+/** Common structure for restore results. */
+export interface IRateLimiterRestoreResult<T> {
+    invalid: T;
+    expired: T;
+    restored: T;
+}
+
+/** Returned by {@link RateLimiterMemory.restore} when `detailResponse` is `false` (default). */
+export type IRateLimiterRestoreResponse = IRateLimiterRestoreResult<number>;
+
+export interface IRateLimiterRestoreBucketDetail {
+    count: number;
+    keys: Array<string | number>;
+}
+
+/** Returned by {@link RateLimiterMemory.restore} when `detailResponse` is `true`. */
+export type IRateLimiterRestoreDetailResponse = IRateLimiterRestoreResult<IRateLimiterRestoreBucketDetail>;
+
 export class RateLimiterMemory extends RateLimiterAbstract {
     constructor(opts: IRateLimiterOptions);
+
+    dump(): IRateLimiterMemoryExport;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse: true): IRateLimiterRestoreDetailResponse | undefined;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse?: false): IRateLimiterRestoreResponse | undefined;
+    restore(data: Omit<IRateLimiterMemoryExport, 'dumpedAt'>, detailResponse?: boolean): IRateLimiterRestoreResponse | IRateLimiterRestoreDetailResponse | undefined;
 }
 
 export class RateLimiterCluster extends RateLimiterAbstract {
@@ -359,7 +394,7 @@ export class RateLimiterRedisNonAtomic extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterValkey extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterValkeyOptions);
+    constructor(opts: IRateLimiterValkeyOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {
@@ -424,19 +459,19 @@ export class RateLimiterPostgres extends RateLimiterStoreAbstract {
 }
 
 export class RateLimiterSQLite extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterPrisma extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptions, cb?: ICallbackReady);
 }
 
 export class RateLimiterDrizzle extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
 }
 
 export class RateLimiterDrizzleNonAtomic extends RateLimiterStoreAbstract {
-  constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
+    constructor(opts: IRateLimiterStoreNoAutoExpiryOptionsAndSchema, cb?: ICallbackReady);
 }
 
 export class RateLimiterMemcache extends RateLimiterStoreAbstract { }
