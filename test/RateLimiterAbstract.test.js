@@ -96,6 +96,30 @@ describe('RateLimiterAbstract', function () {
     }).to.throw('duration must be set and must be a finite, non-negative number');
   });
 
+  describe('execEvenlyMinDelayMs', () => {
+    it('re-derives from points after points is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 1, duration: 1 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(1000);
+      rateLimiter.points = 10;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+    });
+
+    it('re-derives from duration after duration is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 10, duration: 1 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+      rateLimiter.duration = 5;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(500);
+    });
+
+    it('keeps explicit value after points is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({
+        points: 10, duration: 1, execEvenlyMinDelayMs: 42,
+      });
+      rateLimiter.points = 100;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(42);
+    });
+  });
+
   describe('parseKey', () => {
     it('removes default keyPrefix and colon from key', () => {
       const rateLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });
