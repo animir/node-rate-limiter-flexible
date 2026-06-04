@@ -129,6 +129,39 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       });
   });
 
+  it('rejects a queued request that expires before it is fulfilled (expiresUnixAt)', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 2 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    // Consume the only available token so the next request has to be queued.
+    rlQueue.removeTokens(1).then(() => {
+      // Allow the queued request to wait only until the current second, so it is
+      // still queued (and overdue) when the FIFO processor next runs.
+      const expiresUnixAt = Math.floor(Date.now() / 1000);
+      rlQueue.removeTokens(1, 'limiter', expiresUnixAt)
+        .then(() => {
+          done(new Error('queued request should have been rejected as expired'));
+        })
+        .catch((err) => {
+          expect(err instanceof RateLimiterQueueError).to.equal(true);
+          done();
+        });
+    });
+  });
+
+  it('does not reject a queued request whose expiresUnixAt is still in the future', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.removeTokens(1).then(() => {
+      const expiresUnixAt = Math.floor(Date.now() / 1000) + 10;
+      rlQueue.removeTokens(1, 'limiter', expiresUnixAt)
+        .then((remainingTokens) => {
+          expect(remainingTokens).to.equal(0);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
   it('getTokensRemaining works', (done) => {
     const rlMemory = new RateLimiterMemory({ points: 2, duration: 1 });
     const rlQueue = new RateLimiterQueue(rlMemory);
