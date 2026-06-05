@@ -96,6 +96,67 @@ describe('RateLimiterAbstract', function () {
     }).to.throw('duration must be set and must be a finite, non-negative number');
   });
 
+  describe('execEvenlyMinDelayMs', () => {
+    it('re-derives from points after points is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 1, duration: 1 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(1000);
+      rateLimiter.points = 10;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+    });
+
+    it('re-derives from duration after duration is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 10, duration: 1 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+      rateLimiter.duration = 5;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(500);
+    });
+
+    it('keeps explicit value after points is mutated', () => {
+      const rateLimiter = new RateLimiterAbstract({
+        points: 10, duration: 1, execEvenlyMinDelayMs: 42,
+      });
+      rateLimiter.points = 100;
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(42);
+    });
+
+    it('returns to derived value when explicit value is reset to undefined', () => {
+      const rateLimiter = new RateLimiterAbstract({
+        points: 10, duration: 1, execEvenlyMinDelayMs: 42,
+      });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(42);
+
+      rateLimiter.execEvenlyMinDelayMs = undefined;
+      rateLimiter.points = 20;
+      rateLimiter.duration = 2;
+
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+    });
+
+    it('returns zero when points is zero in auto mode', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 0, duration: 5 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(0);
+    });
+
+    it('returns zero when points is negative in auto mode', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: -5, duration: 5 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(0);
+    });
+
+    it('returns zero after points is mutated to zero in auto mode', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 10, duration: 1 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(100);
+
+      rateLimiter.points = 0;
+
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(0);
+    });
+
+    it('returns zero when duration is zero in auto mode', () => {
+      const rateLimiter = new RateLimiterAbstract({ points: 10, duration: 0 });
+      expect(rateLimiter.execEvenlyMinDelayMs).to.equal(0);
+    });
+  });
+
   describe('parseKey', () => {
     it('removes default keyPrefix and colon from key', () => {
       const rateLimiter = new RateLimiterAbstract({ points: 4, duration: 1 });

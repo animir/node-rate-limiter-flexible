@@ -120,6 +120,61 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
       });
   });
 
+  it('uses updated derived minimum delay after points is mutated', (done) => {
+    const testKey = 'consumeEvenlyAfterPointsMutation';
+    const rateLimiterMemory = new RateLimiterMemory({
+      points: 1, duration: 1, execEvenly: true,
+    });
+
+    rateLimiterMemory.points = 100;
+
+    rateLimiterMemory.consume(testKey)
+      .then(() => {
+        const timeFirstConsume = Date.now();
+        rateLimiterMemory.consume(testKey)
+          .then(() => {
+            const diff = Date.now() - timeFirstConsume;
+
+            expect(diff).to.be.greaterThan(5);
+            expect(diff).to.be.lessThan(250);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('keeps execEvenly immediate when points is mutated to zero', (done) => {
+    const testKey = 'consumeEvenlyAfterZeroPointsMutation';
+    const rateLimiterMemory = new RateLimiterMemory({
+      points: 10, duration: 1, execEvenly: true,
+    });
+
+    rateLimiterMemory.points = 0;
+
+    rateLimiterMemory.consume(testKey, 0)
+      .then(() => {
+        const timeFirstConsume = Date.now();
+        rateLimiterMemory.consume(testKey, 0)
+          .then(() => {
+            const diff = Date.now() - timeFirstConsume;
+
+            expect(diff).to.be.lessThan(50);
+            done();
+          })
+          .catch((err) => {
+            done(err);
+          });
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('makes penalty', (done) => {
     const testKey = 'penalty1';
     const rateLimiterMemory = new RateLimiterMemory({ points: 3, duration: 5 });
