@@ -129,6 +129,97 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       });
   });
 
+  it('rejects a queued request that expires before it is fulfilled (expiresUnixAt)', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 2 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    // Consume the only available token so the next request has to be queued.
+    rlQueue.removeTokens(1).then(() => {
+      // Allow the queued request to wait only until the current second, so it is
+      // still queued (and overdue) when the FIFO processor next runs.
+      const expiresUnixAt = Math.floor(Date.now() / 1000);
+      rlQueue.removeTokens(1, 'limiter', expiresUnixAt)
+        .then(() => {
+          done(new Error('queued request should have been rejected as expired'));
+        })
+        .catch((err) => {
+          expect(err instanceof RateLimiterQueueError).to.equal(true);
+          done();
+        });
+    });
+  });
+
+  it('does not reject a queued request whose expiresUnixAt is still in the future', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    rlQueue.removeTokens(1).then(() => {
+      const expiresUnixAt = Math.floor(Date.now() / 1000) + 10;
+      rlQueue.removeTokens(1, 'limiter', expiresUnixAt)
+        .then((remainingTokens) => {
+          expect(remainingTokens).to.equal(0);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  it('expires only the overdue request and still fulfils a later non-expiring one', (done) => {
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 1 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    // Consume the only token so the following requests are queued behind it.
+    rlQueue.removeTokens(1).then(() => {
+      let expiredRejected = false;
+      // A: carries a deadline at the current second -> overdue when FIFO runs.
+      const expiresUnixAt = Math.floor(Date.now() / 1000);
+      rlQueue.removeTokens(1, 'limiter', expiresUnixAt)
+        .then(() => done(new Error('request A should have been rejected as expired')))
+        .catch((err) => {
+          expect(err instanceof RateLimiterQueueError).to.equal(true);
+          expiredRejected = true;
+        });
+      // B: no deadline -> survives the sweep and must still be fulfilled after
+      // the overdue A is swept out of the queue.
+      rlQueue.removeTokens(1)
+        .then((remainingTokens) => {
+          expect(expiredRejected).to.equal(true);
+          expect(remainingTokens).to.equal(0);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  it('never disables the expiry sweep while a deadline request is in flight (regression)', () => {
+    // Regression for the _hasExpiringRequests fast-path optimization. The defect
+    // only surfaces with an asynchronous underlying limiter (e.g. Redis/Mongo):
+    // while a deadline-bearing request is being consumed it is momentarily
+    // shift()ed out of the internal queue, and a second _processFIFO can sweep
+    // the temporarily empty queue. That interleaving is not deterministically
+    // reproducible through the public API, so we drive the internal queue
+    // directly to lock the invariant: the sweep must never turn the flag off
+    // (which would permanently disable expiry for an item the rate-limit retry
+    // path later unshift()es back in, stranding it past its deadline forever).
+    const rlMemory = new RateLimiterMemory({ points: 1, duration: 100 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    return rlQueue.removeTokens(1).then(() => {
+      const internal = rlQueue._queueLimiters.limiter;
+      let rejection = null;
+      const overdue = Math.floor(Date.now() / 1000) - 1; // already past its deadline
+      // Arm the flag exactly as enqueueing a deadline-bearing request would.
+      internal._queueRequest(() => {}, (err) => { rejection = err; }, 1, overdue);
+      expect(internal._hasExpiringRequests).to.equal(true);
+      // In-flight window: the sole deadline-bearing item is shifted out and a
+      // sweep runs over the now-empty queue.
+      const inFlight = internal._queue.shift();
+      internal._processFIFO();
+      expect(internal._hasExpiringRequests).to.equal(true); // must stay armed
+      // The rate-limit retry path re-inserts the in-flight item without going
+      // through _queueRequest; the next sweep must still expire it.
+      internal._queue.unshift(inFlight);
+      internal._processFIFO();
+      expect(rejection instanceof RateLimiterQueueError).to.equal(true);
+    });
+  });
+
   it('getTokensRemaining works', (done) => {
     const rlMemory = new RateLimiterMemory({ points: 2, duration: 1 });
     const rlQueue = new RateLimiterQueue(rlMemory);

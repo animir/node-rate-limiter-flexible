@@ -514,7 +514,16 @@ export class RateLimiterQueue {
 
     getTokensRemaining(key?: string | number): Promise<number>;
 
-    removeTokens(tokens: number, key?: string | number): Promise<number>;
+    /**
+     * Remove tokens from the queue.
+     *
+     * @param tokens Number of tokens to remove.
+     * @param key Optional queue key for separate FIFO queues.
+     * @param expiresUnixAt Optional absolute deadline as a Unix timestamp in
+     *   seconds. If the request is still queued when this time is reached, it is
+     *   rejected with a `RateLimiterQueueError`. Defaults to `0` (never expires).
+     */
+    removeTokens(tokens: number, key?: string | number, expiresUnixAt?: number): Promise<number>;
 }
 
 export class BurstyRateLimiter {
