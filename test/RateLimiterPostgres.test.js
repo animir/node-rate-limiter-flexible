@@ -60,6 +60,37 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('runs the create-table query without a named prepared statement (#196)', (done) => {
+    // The create-table query carries no `name` and runs once, so it must not be
+    // sent as a named prepared statement (previously the name became
+    // `<prefix>:undefined`). Named queries must still keep their name.
+    const rateLimiter = new RateLimiterPostgres({
+      storeClient: pgClient, storeType: 'client', points: 2, duration: 5,
+    }, () => {
+      try {
+        const createTableQuery = pgClientStub.getCall(0).args[0];
+        expect(createTableQuery.text).to.match(/CREATE TABLE/i);
+        expect('name' in createTableQuery).to.equal(false);
+      } catch (err) {
+        done(err);
+        return;
+      }
+
+      pgClientStub.restore();
+      pgClientStub = sinon.stub(pgClient, 'query').resolves({
+        rows: [{ points: 1, expire: 5000 }],
+      });
+      rateLimiter.consume('test196')
+        .then(() => {
+          const namedQuery = pgClientStub.getCall(0).args[0];
+          expect(namedQuery.name).to.be.a('string');
+          expect(namedQuery.name).to.match(/rlflx-upsert$/);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
   it('consume 1 point', (done) => {
     const testKey = 'consume1';
 
