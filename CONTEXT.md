@@ -326,6 +326,8 @@ const limiterFlexible = new RateLimiterMemory({ points: 2, duration: 1 });
 const limiterQueue = new RateLimiterQueue(limiterFlexible, { maxQueueSize: 100 });
 // Queued actions execute at limiter's rate
 await limiterQueue.removeTokens(1);
+// Optional absolute deadline (Unix seconds) — rejects with RateLimiterQueueError if still queued past it
+await limiterQueue.removeTokens(1, 'key', Math.floor(Date.now() / 1000) + 5);
 ```
 
 ### Insurance Strategy (fallback on store failure)
