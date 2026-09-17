@@ -319,6 +319,7 @@ interface IRateLimiterRedisOptions extends IRateLimiterStoreOptions {
 
 interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
     customIncrTtlLuaScript?: string;
+    rejectIfValkeyNotReady?: boolean;
 }
 
 interface ICallbackReady {
