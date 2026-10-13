@@ -257,6 +257,36 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       });
   });
 
+  it('getTokensRemaining of default key reflects points already consumed on the limiter', () => {
+    const rlMemory = new RateLimiterMemory({ points: 5, duration: 60 });
+    return rlMemory.consume('limiter', 3)
+      .then(() => {
+        // The queue is created after the points were consumed, e.g. a shared store or a restart
+        const rlQueue = new RateLimiterQueue(rlMemory);
+        return rlQueue.getTokensRemaining();
+      })
+      .then((tokensRemaining) => {
+        expect(tokensRemaining).to.equal(2);
+      });
+  });
+
+  it('does not treat the key "KEY_DEFAULT" as the default key', () => {
+    const rlMemory = new RateLimiterMemory({ points: 5, duration: 60 });
+    const rlQueue = new RateLimiterQueue(rlMemory);
+    return rlQueue.removeTokens(1, 'KEY_DEFAULT')
+      .then((remainingTokens) => {
+        expect(remainingTokens).to.equal(4);
+        return Promise.all([
+          rlQueue.getTokensRemaining(),
+          rlMemory.get('limiter'),
+        ]);
+      })
+      .then(([defaultTokensRemaining, defaultKeyRes]) => {
+        expect(defaultTokensRemaining).to.equal(5);
+        expect(defaultKeyRes).to.equal(null);
+      });
+  });
+
   it('getTokensRemaining returns maximum if internal limiter does not have data', (done) => {
     const rlMemory = new RateLimiterMemory({ points: 23, duration: 1 });
     const rlQueue = new RateLimiterQueue(rlMemory);
