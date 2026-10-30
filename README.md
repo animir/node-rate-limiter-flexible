@@ -17,6 +17,7 @@ It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluste
 Memory limiter also works in the browser.
 
 **AI tools** See [llms.txt](https://github.com/animir/node-rate-limiter-flexible/blob/master/llms.txt) and [CONTEXT.md](https://github.com/animir/node-rate-limiter-flexible/blob/master/CONTEXT.md) for LLM-friendly documentation.
+* [BetterQueue](https://github.com/Saiop68/better-queue) - Distributed rate limiter and job queue for Node.js with Redis-backed state, cross-process priority and crash recovery.
 
 **Atomic increments.** All operations in memory or distributed environment use atomic increments against race conditions.
 
