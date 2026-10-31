@@ -285,6 +285,7 @@ interface IRateLimiterStoreOptions extends IRateLimiterOptions {
     storeType?: string;
     inMemoryBlockOnConsumed?: number;
     inMemoryBlockDuration?: number;
+    blockOnConsumed?: number;
     insuranceLimiter?: RateLimiterLike;
     dbName?: string;
     tableName?: string;
