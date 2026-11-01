@@ -270,6 +270,19 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
       });
   });
 
+  it('getTokensRemaining by key reflects points already consumed on the limiter', () => {
+    const rlMemory = new RateLimiterMemory({ points: 5, duration: 60 });
+    return rlMemory.consume('customkey', 3)
+      .then(() => {
+        // No internal queue exists for the key yet, e.g. a shared store or a restart
+        const rlQueue = new RateLimiterQueue(rlMemory);
+        return rlQueue.getTokensRemaining('customkey');
+      })
+      .then((tokensRemaining) => {
+        expect(tokensRemaining).to.equal(2);
+      });
+  });
+
   it('does not treat the key "KEY_DEFAULT" as the default key', () => {
     const rlMemory = new RateLimiterMemory({ points: 5, duration: 60 });
     const rlQueue = new RateLimiterQueue(rlMemory);
