@@ -3,6 +3,7 @@ const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const RateLimiterStoreAbstract = require('../lib/RateLimiterStoreAbstract');
 const RateLimiterRes = require('../lib/RateLimiterRes');
+const RateLimiterMemory = require('../lib/RateLimiterMemory');
 
 class RateLimiterStoreMemory extends RateLimiterStoreAbstract {
   constructor(opts) {
@@ -64,6 +65,43 @@ class RateLimiterStoreMemory extends RateLimiterStoreAbstract {
   }
 }
 
+// Same store, but honors forceExpire (used by _block) and counts how many blocks were set
+class RateLimiterStoreMemoryWithBlock extends RateLimiterStoreMemory {
+  constructor(opts) {
+    super(opts);
+    this.blockCalls = 0;
+  }
+
+  _upsert(rlKey, points, msDuration, forceExpire = false) {
+    if (forceExpire) {
+      this.blockCalls += 1;
+      this._inMemoryDataAsStorage[rlKey] = {
+        points,
+        expired: Date.now() + msDuration,
+      };
+      return Promise.resolve({ points, msBeforeNext: msDuration });
+    }
+
+    return super._upsert(rlKey, points, msDuration);
+  }
+}
+
+async function tryConsume(limiter, key) {
+  try {
+    return { ok: true, res: await limiter.consume(key, 1) };
+  } catch (res) {
+    return { ok: false, res };
+  }
+}
+
+async function consumeTimes(limiter, key, times) {
+  const results = [];
+  for (let i = 0; i < times; i++) {
+    results.push(await tryConsume(limiter, key)); // eslint-disable-line no-await-in-loop
+  }
+  return results;
+}
+
 describe('RateLimiterStoreAbstract with fixed window', () => {
   it('delete all in memory blocked keys', (done) => {
     const rateLimiter = new RateLimiterStoreMemory({
@@ -118,5 +156,152 @@ describe('RateLimiterStoreAbstract with fixed window', () => {
         done();
       });
     });
+  });
+});
+
+describe('RateLimiterStoreAbstract blockOnConsumed', () => {
+  const opts = {
+    points: 10,
+    duration: 10,
+    blockDuration: 60,
+    blockOnConsumed: 15,
+    keyPrefix: '',
+  };
+
+  it('resolves requests up to points', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock(opts);
+    const results = await consumeTimes(limiter, 'k', 10);
+
+    expect(results.every((r) => r.ok)).eq(true);
+    expect(limiter.blockCalls).eq(0);
+  });
+
+  it('rejects between points and blockOnConsumed without blocking, counter keeps growing', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock(opts);
+    const results = await consumeTimes(limiter, 'k', 14);
+    const rejected = results.slice(10);
+
+    expect(rejected.length).eq(4);
+    rejected.forEach((r) => {
+      expect(r.ok).eq(false);
+      expect(r.res.msBeforeNext).to.be.at.most(10000);
+    });
+    expect(limiter.blockCalls).eq(0);
+    expect(limiter._inMemoryDataAsStorage.k.points).eq(14);
+  });
+
+  it('blocks for blockDuration when consumed reaches blockOnConsumed', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock(opts);
+    const results = await consumeTimes(limiter, 'k', 15);
+
+    expect(results[14].ok).eq(false);
+    expect(results[14].res.msBeforeNext).eq(60000);
+    expect(limiter.blockCalls).eq(1);
+    expect(limiter._inMemoryDataAsStorage.k.points).eq(15);
+  });
+
+  it('does not block again or extend the block after the threshold', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock(opts);
+    await consumeTimes(limiter, 'k', 15);
+    const expiredBefore = limiter._inMemoryDataAsStorage.k.expired;
+    const results = await consumeTimes(limiter, 'k', 3);
+
+    results.forEach((r) => expect(r.ok).eq(false));
+    expect(limiter.blockCalls).eq(1);
+    expect(limiter._inMemoryDataAsStorage.k.expired).eq(expiredBefore);
+  });
+
+  it('blocks as soon as points are exceeded when blockOnConsumed is not set', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: 10,
+      duration: 10,
+      blockDuration: 60,
+      keyPrefix: '',
+    });
+    const results = await consumeTimes(limiter, 'k', 11);
+
+    expect(results[10].ok).eq(false);
+    expect(results[10].res.msBeforeNext).eq(60000);
+    expect(limiter.blockCalls).eq(1);
+  });
+
+  it('throws if blockOnConsumed is less than points', () => {
+    expect(() => new RateLimiterStoreMemoryWithBlock({
+      points: 10,
+      duration: 10,
+      blockDuration: 60,
+      blockOnConsumed: 5,
+    })).to.throw('blockOnConsumed option must be greater or equal "points" option');
+  });
+
+  it('manual block() stores the threshold, so later consumes do not re-block', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock(opts);
+    await limiter.block('k', 120);
+    const expiredBefore = limiter._inMemoryDataAsStorage.k.expired;
+
+    expect(limiter._inMemoryDataAsStorage.k.points).eq(15);
+
+    const results = await consumeTimes(limiter, 'k', 4);
+
+    results.forEach((r) => expect(r.ok).eq(false));
+    expect(limiter.blockCalls).eq(1);
+    expect(limiter._inMemoryDataAsStorage.k.expired).eq(expiredBefore);
+  });
+
+  it('keeps the original crossing condition for fractional points', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: 1.5,
+      duration: 10,
+      blockDuration: 60,
+      keyPrefix: '',
+    });
+    const results = await consumeTimes(limiter, 'k', 2);
+
+    expect(results[0].ok).eq(true);
+    expect(results[1].ok).eq(false);
+    expect(results[1].res.msBeforeNext).eq(60000);
+    expect(limiter.blockCalls).eq(1);
+  });
+    it('is a store limiter option only, RateLimiterMemory does not have it', () => {
+    const memory = new RateLimiterMemory({
+      points: 10,
+      duration: 10,
+      blockOnConsumed: 15,
+    });
+
+    expect(memory.blockOnConsumed).eq(undefined);
+    expect(new RateLimiterStoreMemoryWithBlock(opts).blockOnConsumed).eq(15);
+  });
+
+  it('behaves as the default when blockOnConsumed equals points', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: 10,
+      duration: 10,
+      blockDuration: 60,
+      blockOnConsumed: 10,
+      keyPrefix: '',
+    });
+    const results = await consumeTimes(limiter, 'k', 11);
+
+    expect(results[9].ok).eq(true);
+    expect(limiter.blockCalls).eq(1);
+    expect(results[10].ok).eq(false);
+    expect(results[10].res.msBeforeNext).eq(60000);
+  });
+
+  it('blocks at the configured threshold for fractional points', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: 1.5,
+      duration: 10,
+      blockDuration: 60,
+      blockOnConsumed: 2,
+      keyPrefix: '',
+    });
+    const results = await consumeTimes(limiter, 'k', 2);
+
+    expect(results[0].ok).eq(true);
+    expect(results[1].ok).eq(false);
+    expect(results[1].res.msBeforeNext).eq(60000);
+    expect(limiter.blockCalls).eq(1);
   });
 });
