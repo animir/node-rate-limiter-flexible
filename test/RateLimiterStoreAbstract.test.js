@@ -86,9 +86,9 @@ class RateLimiterStoreMemoryWithBlock extends RateLimiterStoreMemory {
   }
 }
 
-async function tryConsume(limiter, key) {
+async function tryConsume(limiter, key, points = 1) {
   try {
-    return { ok: true, res: await limiter.consume(key, 1) };
+    return { ok: true, res: await limiter.consume(key, points) };
   } catch (res) {
     return { ok: false, res };
   }
@@ -172,7 +172,7 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     const limiter = new RateLimiterStoreMemoryWithBlock(opts);
     const results = await consumeTimes(limiter, 'k', 10);
 
-    expect(results.every((r) => r.ok)).eq(true);
+    expect(results.every(r => r.ok)).eq(true);
     expect(limiter.blockCalls).eq(0);
   });
 
@@ -206,7 +206,7 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     const expiredBefore = limiter._inMemoryDataAsStorage.k.expired;
     const results = await consumeTimes(limiter, 'k', 3);
 
-    results.forEach((r) => expect(r.ok).eq(false));
+    results.forEach(r => expect(r.ok).eq(false));
     expect(limiter.blockCalls).eq(1);
     expect(limiter._inMemoryDataAsStorage.k.expired).eq(expiredBefore);
   });
@@ -243,7 +243,7 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
 
     const results = await consumeTimes(limiter, 'k', 4);
 
-    results.forEach((r) => expect(r.ok).eq(false));
+    results.forEach(r => expect(r.ok).eq(false));
     expect(limiter.blockCalls).eq(1);
     expect(limiter._inMemoryDataAsStorage.k.expired).eq(expiredBefore);
   });
@@ -262,7 +262,8 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     expect(results[1].res.msBeforeNext).eq(60000);
     expect(limiter.blockCalls).eq(1);
   });
-    it('is a store limiter option only, RateLimiterMemory does not have it', () => {
+
+  it('is a store limiter option only, RateLimiterMemory does not have it', () => {
     const memory = new RateLimiterMemory({
       points: 10,
       duration: 10,
@@ -302,6 +303,33 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     expect(results[0].ok).eq(true);
     expect(results[1].ok).eq(false);
     expect(results[1].res.msBeforeNext).eq(60000);
+    expect(limiter.blockCalls).eq(1);
+  });
+
+  it('manual block() stores points + 1 for negative points when blockOnConsumed is not set', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: -5,
+      duration: 10,
+      blockDuration: 60,
+      keyPrefix: '',
+    });
+    await limiter.block('k', 120);
+
+    expect(limiter._inMemoryDataAsStorage.k.points).eq(-4);
+  });
+
+  it('keeps the original crossing condition for negative points when blockOnConsumed is not set', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: -5,
+      duration: 10,
+      blockDuration: 60,
+      keyPrefix: '',
+    });
+    await limiter.reward('k', 10);
+    const result = await tryConsume(limiter, 'k', 6);
+
+    expect(result.ok).eq(false);
+    expect(result.res.msBeforeNext).eq(60000);
     expect(limiter.blockCalls).eq(1);
   });
 });

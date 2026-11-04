@@ -259,13 +259,13 @@ export class RateLimiterInsuredAbstract extends RateLimiterAbstract {
 
 export class RateLimiterStoreAbstract extends RateLimiterInsuredAbstract {
     constructor(opts: IRateLimiterStoreOptions);
-    
+
     /**
      * Number of consumed points at which the key is blocked in storage for blockDuration seconds.
      * Must be greater than or equal to points. 0 (default) blocks as soon as points are exceeded.
      */
     blockOnConsumed: number;
-    
+
     /**
      * Cleanup keys blocked in current process memory
      */
