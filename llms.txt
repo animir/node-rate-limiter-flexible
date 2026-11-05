@@ -16,6 +16,7 @@
 - `duration` (required): seconds before reset; 0 = never expire
 - `keyPrefix`: unique per limiter to avoid key collisions
 - `blockDuration`: block key for N seconds once exhausted
+- `blockOnConsumed`: store limiters only; block for `blockDuration` once this many points are consumed instead of right after `points`
 - `inMemoryBlockOnConsumed`: block in process memory for DoS protection (~7x faster)
 - `insuranceLimiter`: fallback limiter when store is down
 - Keys can be IP, user ID, auth token, API route, or any string

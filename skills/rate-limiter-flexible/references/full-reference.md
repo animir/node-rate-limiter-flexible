@@ -62,6 +62,7 @@ Options can be changed at runtime: `rateLimiter.points = 50`, `rateLimiter.durat
 | `duration` | **Required** | Seconds before points reset (from first consume). Must be >= 0. `0` = never expire. |
 | `keyPrefix` | `'rlflx'` | Unique prefix per limiter to avoid key collisions. For some stores, used as table/collection name. |
 | `blockDuration` | `0` | If >0, block key for this many seconds once points exhausted. |
+| `blockOnConsumed` | `0` | (Store limiters only) Block key in store for `blockDuration` seconds only once this many points are consumed. Actions over `points` are rejected, but the counter keeps growing. Must be >= `points`. `0` = block as soon as `points` are exceeded. |
 | `storeClient` | — | Required for store limiters. Accepts `@valkey/valkey-glide`, `iovalkey`, `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, Sequelize, TypeORM, Knex, or any related pool/connection. |
 | `inMemoryBlockOnConsumed` | `0` | Block key in process memory after this many points consumed (DoS protection). Should be >= `points`. |
 | `inMemoryBlockDuration` | `0` | Seconds to block in memory. Set same as `blockDuration` for consistency across processes. |
@@ -419,7 +420,7 @@ const rateLimiter = new RateLimiterRedis({
 // If Redis fails, RateLimiterMemory is used automatically
 ```
 
-Note: insurance limiter automatically inherits `blockDuration` and `execEvenly` from parent. Data is NOT copied between limiters when main store recovers.
+Note: insurance limiter automatically inherits `blockDuration` and `execEvenly` from parent, but not `blockOnConsumed`. Data is NOT copied between limiters when main store recovers.
 
 ### In-Memory Block Strategy (DoS mitigation)
 
