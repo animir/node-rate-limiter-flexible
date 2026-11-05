@@ -491,5 +491,39 @@ describe('RateLimiterInsuredAbstract - Backward Compatibility Tests', () => {
         });
     });
   });
+
+  it('insuranceLimiter falls back to points + 1 blocking, blockOnConsumed is not copied', async () => {
+    const insuranceLimiter = new RateLimiterMemory({
+      points: 10,
+      duration: 10,
+    });
+
+    const rateLimiter = new TestRateLimiterStoreMemory({
+      points: 10,
+      duration: 10,
+      blockDuration: 60,
+      blockOnConsumed: 15,
+      insuranceLimiter,
+    });
+
+    rateLimiter._upsert = () => Promise.reject(new Error('Store error'));
+
+    expect(insuranceLimiter.blockOnConsumed).to.equal(undefined);
+
+    for (let i = 0; i < 10; i++) {
+      await rateLimiter.consume('test-key'); // eslint-disable-line no-await-in-loop
+    }
+
+    let rejection = null;
+    try {
+      await rateLimiter.consume('test-key');
+    } catch (err) {
+      rejection = err;
+    }
+
+    expect(rejection).to.be.instanceOf(RateLimiterRes);
+    expect(rejection.consumedPoints).to.equal(11);
+    expect(rejection.msBeforeNext).to.equal(60000);
+  });
 });
 
