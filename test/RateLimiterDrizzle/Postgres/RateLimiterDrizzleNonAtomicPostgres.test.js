@@ -34,6 +34,20 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
     expect(record.points).to.equal(1);
   });
 
+  it('counts consumes with duration 0', async () => {
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 1,
+      duration: 0,
+    });
+
+    await rateLimiter.consume('forever');
+    const rejected = await rateLimiter.consume('forever').then(() => false, rej => rej.consumedPoints === 2);
+
+    expect(rejected).to.equal(true);
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterDrizzleNonAtomic({
