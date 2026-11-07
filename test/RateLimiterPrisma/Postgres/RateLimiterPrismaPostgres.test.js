@@ -39,6 +39,54 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     expect(record.points).to.equal(1);
   });
 
+  it('counts concurrent consumes on a new key', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1000,
+      duration: 5,
+    });
+
+    const results = await Promise.allSettled(Array.from({ length: 200 }, () => rateLimiter.consume('concurrent')));
+    const record = await prisma.rateLimiterFlexible.findUnique({
+      where: { key: rateLimiter.getKey('concurrent') },
+    });
+
+    expect(results.filter(x => x.status === 'fulfilled').length).to.equal(200);
+    expect(record.points).to.equal(200);
+  });
+
+  it('counts consumes with duration 0', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1,
+      duration: 0,
+    });
+
+    await rateLimiter.consume('forever');
+    const rejected = await rateLimiter.consume('forever').then(() => false, rej => rej.consumedPoints === 2);
+
+    expect(rejected).to.equal(true);
+  });
+
+  it('starts a new window after the key expired', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 5,
+      duration: 5,
+    });
+
+    await prisma.rateLimiterFlexible.create({
+      data: { key: rateLimiter.getKey('expired'), points: 5, expire: new Date(Date.now() - 1000) },
+    });
+    const res = await rateLimiter.consume('expired');
+
+    expect(res.consumedPoints).to.equal(1);
+    expect(res.msBeforeNext > 0).to.equal(true);
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterPrisma({
@@ -238,7 +286,7 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     });
 
     const rateLimiter = new RateLimiterPrisma({
-      storeClient: { $transaction: () => Promise.reject(new Error('PrismaClient error')) },
+      storeClient: { RateLimiterFlexible: { deleteMany: () => Promise.reject(new Error('PrismaClient error')) } },
       points: 1,
       duration: 1,
       insuranceLimiter: insuranceLimiter,

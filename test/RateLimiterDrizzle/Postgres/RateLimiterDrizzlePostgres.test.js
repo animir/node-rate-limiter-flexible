@@ -34,6 +34,53 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     expect(record.points).to.equal(1);
   });
 
+  it('counts concurrent consumes on a new key', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 1000,
+      duration: 5,
+    });
+
+    await Promise.all(Array.from({ length: 200 }, () => rateLimiter.consume('concurrent')));
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('concurrent')));
+
+    expect(record.points).to.equal(200);
+  });
+
+  it('counts consumes with duration 0', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 1,
+      duration: 0,
+    });
+
+    await rateLimiter.consume('forever');
+    const rejected = await rateLimiter.consume('forever').then(() => false, rej => rej.consumedPoints === 2);
+
+    expect(rejected).to.equal(true);
+  });
+
+  it('starts a new window after the key expired', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 5,
+      duration: 5,
+    });
+
+    await db.insert(rateLimiterFlexible).values({
+      key: rateLimiter.getKey('expired'),
+      points: 5,
+      expire: new Date(Date.now() - 1000),
+    });
+    const res = await rateLimiter.consume('expired');
+
+    expect(res.consumedPoints).to.equal(1);
+    expect(res.msBeforeNext > 0).to.equal(true);
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterDrizzle({
@@ -233,7 +280,13 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     });
 
     const rateLimiter = new RateLimiterDrizzle({
-      storeClient: { transaction: () => Promise.reject(new Error('DrizzleClient error')) },
+      storeClient: {
+        insert: () => ({
+          values: () => ({
+            onConflictDoUpdate: () => ({ returning: () => Promise.reject(new Error('DrizzleClient error')) }),
+          }),
+        }),
+      },
       points: 1,
       duration: 1,
       schema:rateLimiterFlexible,
