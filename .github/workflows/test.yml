@@ -58,6 +58,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      valkey:
+        image: valkey/valkey:${{ matrix.valkey-version }}
+        ports:
+          - 8080:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
 
     steps:
       - name: Checkout repository
@@ -74,12 +83,6 @@ jobs:
         uses: supercharge/redis-github-action@1.7.0
         with:
           redis-version: 7
-
-      - uses: shogo82148/actions-setup-redis@v1
-        with:
-          distribution: "valkey"
-          redis-version: ${{ matrix.valkey-version }}
-          redis-port: 8080
 
       - name: Start DynamoDB local
         uses: rrainn/dynamodb-action@v3.0.0
