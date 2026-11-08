@@ -39,6 +39,147 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     expect(record.points).to.equal(1);
   });
 
+  it('counts concurrent consumes on a new key', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1000,
+      duration: 5,
+    });
+
+    const results = await Promise.allSettled(Array.from({ length: 200 }, () => rateLimiter.consume('concurrent')));
+    const record = await prisma.rateLimiterFlexible.findUnique({
+      where: { key: rateLimiter.getKey('concurrent') },
+    });
+
+    expect(results.filter(x => x.status === 'fulfilled').length).to.equal(200);
+    expect(record.points).to.equal(200);
+  });
+
+  it('counts consumes with duration 0', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1,
+      duration: 0,
+    });
+
+    await rateLimiter.consume('forever');
+    const rejected = await rateLimiter.consume('forever').then(() => false, rej => rej.consumedPoints === 2);
+
+    expect(rejected).to.equal(true);
+  });
+
+  it('starts a new window after the key expired', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 5,
+      duration: 5,
+    });
+
+    await prisma.rateLimiterFlexible.create({
+      data: { key: rateLimiter.getKey('expired'), points: 5, expire: new Date(Date.now() - 1000) },
+    });
+    const res = await rateLimiter.consume('expired');
+
+    expect(res.consumedPoints).to.equal(1);
+    expect(res.msBeforeNext > 0).to.equal(true);
+  });
+
+  it('never expires a key consumed with duration 0', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1,
+      duration: 0,
+    });
+
+    const res = await rateLimiter.consume('forever');
+    const rej = await rateLimiter.consume('forever').then(() => null, r => r);
+
+    expect(res.msBeforeNext).to.equal(-1);
+    expect(rej.consumedPoints).to.equal(2);
+    expect(rej.msBeforeNext).to.equal(-1);
+  });
+
+  it('keeps a key blocked forever after consume', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 2,
+      duration: 5,
+    });
+
+    await rateLimiter.block('blockedForever', 0);
+    const rej = await rateLimiter.consume('blockedForever').then(() => null, r => r);
+
+    expect(rej).to.not.equal(null);
+    expect(rej.consumedPoints).to.equal(4);
+    expect(rej.msBeforeNext).to.equal(-1);
+  });
+
+  it('increments a key set forever without making it expire', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 10,
+      duration: 5,
+    });
+
+    await rateLimiter.set('setForever', 3, 0);
+    const res = await rateLimiter.consume('setForever');
+    const record = await prisma.rateLimiterFlexible.findUnique({
+      where: { key: rateLimiter.getKey('setForever') },
+    });
+
+    expect(res.consumedPoints).to.equal(4);
+    expect(res.msBeforeNext).to.equal(-1);
+    expect(record.expire).to.equal(null);
+  });
+
+  it('does not extend the window of a live key', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 10,
+      duration: 5,
+    });
+    const expire = new Date(Date.now() + 2000);
+
+    await prisma.rateLimiterFlexible.create({
+      data: { key: rateLimiter.getKey('live'), points: 1, expire },
+    });
+    const res = await rateLimiter.consume('live');
+    const record = await prisma.rateLimiterFlexible.findUnique({
+      where: { key: rateLimiter.getKey('live') },
+    });
+
+    expect(res.consumedPoints).to.equal(2);
+    expect(res.msBeforeNext <= 2000).to.equal(true);
+    expect(record.expire.getTime()).to.equal(expire.getTime());
+  });
+
+  it('counts concurrent consumes on an expired key', async () => {
+    const rateLimiter = new RateLimiterPrisma({
+      storeClient: prisma,
+      tableName: 'RateLimiterFlexible',
+      points: 1000,
+      duration: 5,
+    });
+
+    await prisma.rateLimiterFlexible.create({
+      data: { key: rateLimiter.getKey('expiredConcurrent'), points: 500, expire: new Date(Date.now() - 1000) },
+    });
+    await Promise.all(Array.from({ length: 100 }, () => rateLimiter.consume('expiredConcurrent')));
+    const record = await prisma.rateLimiterFlexible.findUnique({
+      where: { key: rateLimiter.getKey('expiredConcurrent') },
+    });
+
+    expect(record.points).to.equal(100);
+    expect(record.expire > new Date()).to.equal(true);
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterPrisma({
@@ -238,7 +379,7 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     });
 
     const rateLimiter = new RateLimiterPrisma({
-      storeClient: { $transaction: () => Promise.reject(new Error('PrismaClient error')) },
+      storeClient: { RateLimiterFlexible: { deleteMany: () => Promise.reject(new Error('PrismaClient error')) } },
       points: 1,
       duration: 1,
       insuranceLimiter: insuranceLimiter,
