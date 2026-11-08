@@ -85,7 +85,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       points: 1,
       duration: 5,
     });
@@ -118,7 +118,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const testKey = 'consumeEvenly';
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       points: 2,
       duration: 5,
       execEvenly: true,
@@ -140,7 +140,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const testKey = 'consumeEvenlyMinDelay';
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       points: 100,
       duration: 1,
       execEvenly: true,
@@ -160,7 +160,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const testKey = 'penalty1';
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       points: 3,
       duration: 5,
     });
@@ -177,7 +177,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
       points: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       duration: 5,
     });
 
@@ -195,7 +195,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       storeClient: db,
       points: 1,
       duration: 5,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       inMemoryBlockOnConsumed: 2,
       inMemoryBlockDuration: 10,
     });
@@ -213,7 +213,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
       points: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       duration: 5,
       inMemoryBlockOnConsumed: 1,
     });
@@ -232,7 +232,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
       points: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       duration: 5,
       inMemoryBlockOnConsumed: 1,
     });
@@ -252,7 +252,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       storeClient: db,
       points: 1,
       duration: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       inMemoryBlockOnConsumed: 2,
       inMemoryBlockDuration: 2,
     });
@@ -289,7 +289,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       },
       points: 1,
       duration: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       insuranceLimiter: insuranceLimiter,
     });
 
@@ -309,7 +309,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       storeClient: db,
       points: 1,
       duration: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       blockDuration: blockDuration,
     });
 
@@ -329,7 +329,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       storeClient: db,
       points: 1,
       duration: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       blockDuration: blockDuration,
     });
 
@@ -351,7 +351,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
       storeClient: db,
       points: 1,
       duration: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       blockDuration: blockDuration,
     });
 
@@ -377,7 +377,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
       points: totalPoints,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       duration: 1,
     });
 
@@ -390,7 +390,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
   });
 
   it('return correct data with _getRateLimiterRes', async () => {
-    const rateLimiter = new RateLimiterDrizzle({ points: 5, duration: 1, storeClient: db , schema:rateLimiterFlexible });
+    const rateLimiter = new RateLimiterDrizzle({ points: 5, duration: 1, storeClient: db , schema: rateLimiterFlexible });
     const now = new Date();
     const rateLimiterResponse = {
       points: 3,
@@ -418,7 +418,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
 
   it('delete key and return true', async () => {
     const testKey = 'deleteTrueTest';
-    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 2, duration: 1, schema:rateLimiterFlexible, });
+    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 2, duration: 1, schema: rateLimiterFlexible, });
 
     await db.insert(rateLimiterFlexible).values({ key: rateLimiter.getKey(testKey), points: 1, expire: new Date() })
 
@@ -433,7 +433,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const rateLimiter = new RateLimiterDrizzle({
       storeClient: db,
       points: 1,
-      schema:rateLimiterFlexible,
+      schema: rateLimiterFlexible,
       duration: 1,
     });
 
@@ -453,7 +453,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     const testKey = 'setForeverTest';
     const totalPoints = 12;
 
-    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 1, duration: 1, schema:rateLimiterFlexible, });
+    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 1, duration: 1, schema: rateLimiterFlexible, });
 
     const resSet = await rateLimiter.set(testKey, totalPoints, 0);
     const res = await rateLimiter.get(testKey);
@@ -470,7 +470,7 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
 
   it('get returns NULL if key is not set', async () => {
     const testKey = 'nonExistentKey';
-    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 1, duration: 1, schema:rateLimiterFlexible });
+    const rateLimiter = new RateLimiterDrizzle({ storeClient: db, points: 1, duration: 1, schema: rateLimiterFlexible });
 
     const res = await rateLimiter.get(testKey);
     expect(res).to.be.null;
