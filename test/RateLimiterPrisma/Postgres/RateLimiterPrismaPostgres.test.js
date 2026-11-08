@@ -583,5 +583,68 @@ describe('RateLimiterPrisma Postgres with fixed window', function RateLimiterPri
     expect(res).to.be.null;
   });
 
+  describe('clear expired by timeout', () => {
+    let clock;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sinon.restore();
+    });
+
+    it('does not schedule cleanup when clearExpiredByTimeout is false', async () => {
+      const deleteMany = sinon.stub().resolves({ count: 0 });
+      const rateLimiter = new RateLimiterPrisma({
+        storeClient: { RateLimiterFlexible: { deleteMany } },
+        points: 1,
+        duration: 1,
+        clearExpiredByTimeout: false,
+      });
+
+      await clock.tickAsync(300000);
+
+      expect(rateLimiter.clearExpiredByTimeout).to.equal(false);
+      expect(rateLimiter._clearExpiredTimeoutId).to.equal(undefined);
+      expect(deleteMany.called).to.equal(false);
+    });
+
+    it('schedules cleanup by default', async () => {
+      const deleteMany = sinon.stub().resolves({ count: 0 });
+      const rateLimiter = new RateLimiterPrisma({
+        storeClient: { RateLimiterFlexible: { deleteMany } },
+        points: 1,
+        duration: 1,
+      });
+
+      await clock.tickAsync(300000);
+
+      expect(rateLimiter.clearExpiredByTimeout).to.equal(true);
+      expect(deleteMany.calledOnce).to.equal(true);
+      clearTimeout(rateLimiter._clearExpiredTimeoutId);
+    });
+
+    it('keeps cleaning up after a failed cleanup', async () => {
+      const deleteMany = sinon.stub().rejects(new Error('PrismaClient error'));
+      const warn = sinon.stub(console, 'warn');
+      const rateLimiter = new RateLimiterPrisma({
+        storeClient: { RateLimiterFlexible: { deleteMany } },
+        points: 1,
+        duration: 1,
+      });
+
+      await clock.tickAsync(300000);
+      expect(deleteMany.calledOnce).to.equal(true);
+      expect(warn.calledOnce).to.equal(true);
+      expect(warn.firstCall.args[1].message).to.equal('PrismaClient error');
+
+      await clock.tickAsync(300000);
+      expect(deleteMany.calledTwice).to.equal(true);
+      clearTimeout(rateLimiter._clearExpiredTimeoutId);
+    });
+  });
+
 
 });
