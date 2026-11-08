@@ -48,6 +48,59 @@ describe('RateLimiterDrizzleNonAtomic Postgres with fixed window', function Rate
     expect(rejected).to.equal(true);
   });
 
+  it('starts a new window after the key expired', async () => {
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 5,
+      duration: 5,
+    });
+
+    await db.insert(rateLimiterFlexible).values({
+      key: rateLimiter.getKey('expired'),
+      points: 5,
+      expire: new Date(Date.now() - 1000),
+    });
+    const res = await rateLimiter.consume('expired');
+
+    expect(res.consumedPoints).to.equal(1);
+    expect(res.msBeforeNext > 0).to.equal(true);
+  });
+
+  it('increments a key set forever without making it expire', async () => {
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 10,
+      duration: 5,
+    });
+
+    await rateLimiter.set('setForever', 3, 0);
+    const res = await rateLimiter.consume('setForever');
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('setForever')));
+
+    expect(res.consumedPoints).to.equal(4);
+    expect(res.msBeforeNext).to.equal(-1);
+    expect(record.expire).to.equal(null);
+  });
+
+  it('does not extend the window of a live key', async () => {
+    const rateLimiter = new RateLimiterDrizzleNonAtomic({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 10,
+      duration: 5,
+    });
+    const expire = new Date(Date.now() + 2000);
+
+    await db.insert(rateLimiterFlexible).values({ key: rateLimiter.getKey('live'), points: 1, expire });
+    const res = await rateLimiter.consume('live');
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('live')));
+
+    expect(res.consumedPoints).to.equal(2);
+    expect(record.expire.getTime()).to.equal(expire.getTime());
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterDrizzleNonAtomic({

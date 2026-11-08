@@ -81,6 +81,93 @@ describe('RateLimiterDrizzle Postgres with fixed window', function RateLimiterDr
     expect(res.msBeforeNext > 0).to.equal(true);
   });
 
+  it('never expires a key consumed with duration 0', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 1,
+      duration: 0,
+    });
+
+    const res = await rateLimiter.consume('forever');
+    const rej = await rateLimiter.consume('forever').then(() => null, r => r);
+
+    expect(res.msBeforeNext).to.equal(-1);
+    expect(rej.consumedPoints).to.equal(2);
+    expect(rej.msBeforeNext).to.equal(-1);
+  });
+
+  it('keeps a key blocked forever after consume', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 2,
+      duration: 5,
+    });
+
+    await rateLimiter.block('blockedForever', 0);
+    const rej = await rateLimiter.consume('blockedForever').then(() => null, r => r);
+
+    expect(rej).to.not.equal(null);
+    expect(rej.consumedPoints).to.equal(4);
+    expect(rej.msBeforeNext).to.equal(-1);
+  });
+
+  it('increments a key set forever without making it expire', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 10,
+      duration: 5,
+    });
+
+    await rateLimiter.set('setForever', 3, 0);
+    const res = await rateLimiter.consume('setForever');
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('setForever')));
+
+    expect(res.consumedPoints).to.equal(4);
+    expect(res.msBeforeNext).to.equal(-1);
+    expect(record.expire).to.equal(null);
+  });
+
+  it('does not extend the window of a live key', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 10,
+      duration: 5,
+    });
+    const expire = new Date(Date.now() + 2000);
+
+    await db.insert(rateLimiterFlexible).values({ key: rateLimiter.getKey('live'), points: 1, expire });
+    const res = await rateLimiter.consume('live');
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('live')));
+
+    expect(res.consumedPoints).to.equal(2);
+    expect(res.msBeforeNext <= 2000).to.equal(true);
+    expect(record.expire.getTime()).to.equal(expire.getTime());
+  });
+
+  it('counts concurrent consumes on an expired key', async () => {
+    const rateLimiter = new RateLimiterDrizzle({
+      storeClient: db,
+      schema: rateLimiterFlexible,
+      points: 1000,
+      duration: 5,
+    });
+
+    await db.insert(rateLimiterFlexible).values({
+      key: rateLimiter.getKey('expiredConcurrent'),
+      points: 500,
+      expire: new Date(Date.now() - 1000),
+    });
+    await Promise.all(Array.from({ length: 100 }, () => rateLimiter.consume('expiredConcurrent')));
+    const [record] = await db.select().from(rateLimiterFlexible).where(eq(rateLimiterFlexible.key, rateLimiter.getKey('expiredConcurrent')));
+
+    expect(record.points).to.equal(100);
+    expect(record.expire > new Date()).to.equal(true);
+  });
+
   it('rejected when consume more than maximum points', async () => {
     const testKey = 'consume2';
     const rateLimiter = new RateLimiterDrizzle({
