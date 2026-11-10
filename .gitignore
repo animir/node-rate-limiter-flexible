@@ -8,3 +8,6 @@ nodes.conf
 data/
 drizzle
 bun.lock
+.claude/
+.agent/
+.agents/

@@ -13,3 +13,6 @@ img
 .nyc_output
 skills/
 llms.txt
+.claude/
+.agent/
+.agents/
