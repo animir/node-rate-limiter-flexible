@@ -507,6 +507,33 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
       });
   });
 
+  it('duration under 1 second expires after 1 second', async () => {
+    const testKey = 'subsecond';
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient, points: 1, duration: 0.5,
+    });
+    await rateLimiter.consume(testKey);
+    const rejRes = await rateLimiter.consume(testKey).catch(res => res);
+    expect(rejRes.consumedPoints).to.equal(2);
+    expect(rejRes.msBeforeNext).to.be.above(0).and.at.most(1000);
+    await new Promise(resolve => setTimeout(resolve, 1100));
+    const res = await rateLimiter.consume(testKey);
+    expect(res.consumedPoints).to.equal(1);
+  });
+
+  it('blockDuration under 1 second expires after 1 second', async () => {
+    const testKey = 'subsecondblock';
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient, points: 1, duration: 1, blockDuration: 0.5,
+    });
+    await rateLimiter.consume(testKey, 2).catch(res => res);
+    const blocked = await rateLimiter.get(testKey);
+    expect(blocked.msBeforeNext).to.be.above(0).and.at.most(1000);
+    await new Promise(resolve => setTimeout(resolve, 1100));
+    const res = await rateLimiter.consume(testKey);
+    expect(res.consumedPoints).to.equal(1);
+  });
+
   it('does not expire key if duration set to 0', (done) => {
     const testKey = 'neverexpire';
     const rateLimiter = new RateLimiterMemcache({ storeClient: memcacheMockClient, points: 2, duration: 0 });

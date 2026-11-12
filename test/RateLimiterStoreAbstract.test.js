@@ -332,4 +332,10 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     expect(result.res.msBeforeNext).eq(60000);
     expect(limiter.blockCalls).eq(1);
   });
+
+  it('_getSecDuration rounds durations under 1 second up to 1 and floors the rest', () => {
+    const limiter = new RateLimiterStoreMemory({ points: 1, duration: 1 });
+    expect([0, 1, 500, 999, 1000, 1500, 1999, 2000].map(ms => limiter._getSecDuration(ms)))
+      .to.deep.equal([0, 1, 1, 1, 1, 1, 1, 2]);
+  });
 });
