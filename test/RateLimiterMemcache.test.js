@@ -526,12 +526,25 @@ describe('RateLimiterMemcache', function RateLimiterMemcacheTest() {
     const rateLimiter = new RateLimiterMemcache({
       storeClient: memcacheMockClient, points: 1, duration: 1, blockDuration: 0.5,
     });
-    await rateLimiter.consume(testKey, 2).catch(res => res);
+    const rejected = await rateLimiter.consume(testKey, 2).catch(res => res);
+    expect(rejected.msBeforeNext).to.equal(1000);
     const blocked = await rateLimiter.get(testKey);
     expect(blocked.msBeforeNext).to.be.above(0).and.at.most(1000);
     await new Promise(resolve => setTimeout(resolve, 1100));
     const res = await rateLimiter.consume(testKey);
     expect(res.consumedPoints).to.equal(1);
+  });
+
+  it('block() and set() report the duration the key is stored for', async () => {
+    const testKey = 'storedduration';
+    const rateLimiter = new RateLimiterMemcache({
+      storeClient: memcacheMockClient, points: 1, duration: 1,
+    });
+    expect((await rateLimiter.block(testKey, 0.5)).msBeforeNext).to.equal(1000);
+    expect((await rateLimiter.block(testKey, 1.5)).msBeforeNext).to.equal(1000);
+    expect((await rateLimiter.set(testKey, 1, 0.5)).msBeforeNext).to.equal(1000);
+    const stored = await rateLimiter.get(testKey);
+    expect(stored.msBeforeNext).to.be.above(0).and.at.most(1000);
   });
 
   it('does not expire key if duration set to 0', (done) => {
