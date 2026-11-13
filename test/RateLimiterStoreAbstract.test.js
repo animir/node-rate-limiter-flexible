@@ -332,4 +332,20 @@ describe('RateLimiterStoreAbstract blockOnConsumed', () => {
     expect(result.res.msBeforeNext).eq(60000);
     expect(limiter.blockCalls).eq(1);
   });
+
+  it('_getSecDuration rounds durations under 1 second up to 1 and floors the rest', () => {
+    const limiter = new RateLimiterStoreMemory({ points: 1, duration: 1 });
+    expect([0, 1, 500, 999, 1000, 1500, 1999, 2000].map(ms => limiter._getSecDuration(ms)))
+      .to.deep.equal([0, 1, 1, 1, 1, 1, 1, 2]);
+  });
+
+  it('stores with millisecond expiry still report sub-second blocks as given', async () => {
+    const limiter = new RateLimiterStoreMemoryWithBlock({
+      points: 1, duration: 1, blockDuration: 0.5,
+    });
+    const rejected = await limiter.consume('k', 2).catch(res => res);
+    expect(rejected.msBeforeNext).eq(500);
+    expect((await limiter.block('b', 0.5)).msBeforeNext).eq(500);
+    expect((await limiter.set('s', 1, 0.5)).msBeforeNext).eq(500);
+  });
 });
