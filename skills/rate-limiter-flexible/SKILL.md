@@ -69,9 +69,9 @@ const headers = {
 | Option | Default | Notes |
 |--------|---------|-------|
 | `points` | **Required** | Max consumable over `duration` |
-| `duration` | **Required** | Seconds before reset; `0` = never expire |
+| `duration` | **Required** | Seconds before reset; `0` = never expire. Use whole seconds: Redis, Valkey and Memcache round values between 0 and 1 up to 1s and round fractional values above 1 down. For "1 per 200ms" use `points: 5, duration: 1`, add `execEvenly` if actions must be spaced out |
 | `keyPrefix` | `'rlflx'` | Must be unique per limiter |
-| `blockDuration` | `0` | Seconds to block after points exhausted |
+| `blockDuration` | `0` | Whole seconds to block after points exhausted |
 
 ## Links
 

@@ -59,9 +59,9 @@ Options can be changed at runtime: `rateLimiter.points = 50`, `rateLimiter.durat
 | Option | Default | Description |
 |--------|---------|-------------|
 | `points` | **Required** | Max points consumable over `duration`. Must be a number. |
-| `duration` | **Required** | Seconds before points reset (from first consume). Must be >= 0. `0` = never expire. |
+| `duration` | **Required** | Seconds before points reset (from first consume). Must be >= 0. `0` = never expire. Use whole seconds: Redis, Valkey, Valkey Glide and Memcache round values between 0 and 1 up to 1s and round fractional values above 1 down (since 11.5.0). For sub-second rates, scale `points` instead, e.g. `points: 5, duration: 1` rather than `points: 1, duration: 0.2`. |
 | `keyPrefix` | `'rlflx'` | Unique prefix per limiter to avoid key collisions. For some stores, used as table/collection name. |
-| `blockDuration` | `0` | If >0, block key for this many seconds once points exhausted. |
+| `blockDuration` | `0` | If >0, block key for this many seconds once points exhausted. Whole seconds; same rounding as `duration`. |
 | `blockOnConsumed` | `0` | (Store limiters only) Block key in store for `blockDuration` seconds only once this many points are consumed. Actions over `points` are rejected, but the counter keeps growing. Must be >= `points`. `0` = block as soon as `points` are exceeded. |
 | `storeClient` | — | Required for store limiters. Accepts `@valkey/valkey-glide`, `iovalkey`, `redis`, `ioredis`, `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, Sequelize, TypeORM, Knex, or any related pool/connection. |
 | `inMemoryBlockOnConsumed` | `0` | Block key in process memory after this many points consumed (DoS protection). Should be >= `points`. |
@@ -110,8 +110,8 @@ All methods return Promises.
 |--------|-------------|
 | `consume(key, points = 1, options = {})` | Consume points. Resolves with `RateLimiterRes`, rejects when limit reached. |
 | `get(key)` | Get current `RateLimiterRes` for key without consuming. Returns `null` if no record. |
-| `set(key, points, secDuration)` | Set consumed points and duration for a key. |
-| `block(key, secDuration)` | Block key for `secDuration` seconds. |
+| `set(key, points, secDuration)` | Set consumed points and duration for a key. On whole-second stores (Redis, Valkey, Memcache), returned `msBeforeNext` is the stored duration, e.g. `set(key, 1, 0.5)` returns `msBeforeNext: 1000`. |
+| `block(key, secDuration)` | Block key for `secDuration` seconds. On whole-second stores (Redis, Valkey, Memcache), returned `msBeforeNext` is the stored duration, e.g. `block(key, 0.5)` returns `msBeforeNext: 1000`. |
 | `delete(key)` | Delete key and return `true`/`false`. |
 | `deleteInMemoryBlockedAll()` | Clear all in-memory blocked keys. |
 | `penalty(key, points = 1)` | Add penalty points (same as consume but semantic). |
