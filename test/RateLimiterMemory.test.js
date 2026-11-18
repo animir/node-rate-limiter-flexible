@@ -459,6 +459,27 @@ describe('RateLimiterMemory with fixed window', function RateLimiterMemoryTest()
       });
   });
 
+  it('set points by key for duration if secDuration is not set', (done) => {
+    const testKey = 'setduration';
+    const rateLimiter = new RateLimiterMemory({ points: 10, duration: 1 });
+    rateLimiter.set(testKey, 12)
+      .then(() => {
+        setTimeout(() => {
+          rateLimiter.get(testKey)
+            .then((res) => {
+              expect(res).to.equal(null);
+              done();
+            })
+            .catch((err) => {
+              done(err);
+            });
+        }, 1100);
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
   it('set points by key forever', (done) => {
     const testKey = 'setforever';
     const rateLimiter = new RateLimiterMemory({ points: 10, duration: 1 });
