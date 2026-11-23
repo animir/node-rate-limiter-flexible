@@ -83,6 +83,7 @@
     "sqlite3": "^5.1.7"
   },
   "browser": {
+    "async_hooks": false,
     "cluster": false,
     "crypto": false
   }
