@@ -315,5 +315,37 @@ describe('RateLimiterCluster', function RateLimiterClusterTest() {
         done(rej);
       });
   });
+
+  it('worker does not repeat a request after its caller got a timeout, if master restarts', (done) => {
+    const key = 'masterRestartsNearDeadline';
+    // Shorter than the 30 ms wait before a request is repeated
+    const rateLimiterCluster = new RateLimiterCluster({
+      points: 5, duration: 5, keyPrefix: key, timeoutMs: 10,
+    });
+    // Past the interval between 'init' messages, so 'reinit' sends 'init' at once
+    new Promise((resolve) => {
+      setTimeout(resolve, 120);
+    })
+      .then(() => {
+        delete rateLimiterClusterMaster._rateLimiters[key];
+        return rateLimiterCluster.consume(key)
+          .then(() => {
+            throw new Error('must time out');
+          }, (err) => {
+            expect(err.message).to.equal('RateLimiterCluster timeout: no answer from master in time');
+          });
+      })
+      .then(() => new Promise((resolve) => {
+        setTimeout(resolve, 60);
+      }))
+      .then(() => rateLimiterCluster.get(key))
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+  });
 });
 
