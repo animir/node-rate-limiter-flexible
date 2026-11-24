@@ -225,5 +225,127 @@ describe('RateLimiterCluster', function RateLimiterClusterTest() {
         done(rej);
       });
   });
+
+  it('worker sends init again and processes request, if master starts later', (done) => {
+    const key = 'masterStartsLater';
+    const sendToMaster = process.send;
+    // Messages are lost until master starts
+    process.send = () => {};
+
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
+    rateLimiterCluster.consume(key)
+      .then((res) => {
+        expect(res.remainingPoints).to.equal(1);
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+
+    setTimeout(() => {
+      process.send = sendToMaster;
+    }, 150);
+  });
+
+  it('worker limits how often it sends init and rejects by timeout, if master does not start', (done) => {
+    const key = 'masterNeverStarts';
+    const sendToMaster = process.send;
+    let initsSent = 0;
+    process.send = (msg) => {
+      if (msg.type === 'init') {
+        initsSent += 1;
+      }
+    };
+
+    const rateLimiterCluster = new RateLimiterCluster({
+      points: 2, duration: 5, keyPrefix: key, timeoutMs: 350,
+    });
+    Promise.all([rateLimiterCluster.consume(key), rateLimiterCluster.consume(key)])
+      .then(() => {
+        process.send = sendToMaster;
+        done(new Error('must not resolve'));
+      })
+      .catch((err) => {
+        process.send = sendToMaster;
+        expect(err.message).to.equal('RateLimiterCluster timeout: no answer from master in time');
+        expect(initsSent >= 2 && initsSent <= 4).to.equal(true);
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+  });
+
+  it('worker creates rate limiter again and repeats request, if master restarts', (done) => {
+    const key = 'masterRestarts';
+    const rateLimiterCluster = new RateLimiterCluster({ points: 2, duration: 5, keyPrefix: key });
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        delete rateLimiterClusterMaster._rateLimiters[key];
+        return rateLimiterCluster.consume(key);
+      })
+      .then((res) => {
+        expect(res.remainingPoints).to.equal(1);
+        expect(typeof rateLimiterClusterMaster._rateLimiters[key]).to.equal('object');
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+  });
+
+  it('worker repeats every request sent during master restart only once', (done) => {
+    const key = 'masterRestartsManyRequests';
+    const rateLimiterCluster = new RateLimiterCluster({ points: 5, duration: 5, keyPrefix: key });
+    rateLimiterCluster.consume(key)
+      .then(() => {
+        delete rateLimiterClusterMaster._rateLimiters[key];
+        return Promise.all([
+          rateLimiterCluster.consume(key),
+          rateLimiterCluster.consume(key),
+          rateLimiterCluster.consume(key),
+        ]);
+      })
+      .then(() => rateLimiterCluster.get(key))
+      .then((res) => {
+        expect(res.consumedPoints).to.equal(3);
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+  });
+
+  it('worker does not repeat a request after its caller got a timeout, if master restarts', (done) => {
+    const key = 'masterRestartsNearDeadline';
+    // Shorter than the 30 ms wait before a request is repeated
+    const rateLimiterCluster = new RateLimiterCluster({
+      points: 5, duration: 5, keyPrefix: key, timeoutMs: 10,
+    });
+    // Past the interval between 'init' messages, so 'reinit' sends 'init' at once
+    new Promise((resolve) => {
+      setTimeout(resolve, 120);
+    })
+      .then(() => {
+        delete rateLimiterClusterMaster._rateLimiters[key];
+        return rateLimiterCluster.consume(key)
+          .then(() => {
+            throw new Error('must time out');
+          }, (err) => {
+            expect(err.message).to.equal('RateLimiterCluster timeout: no answer from master in time');
+          });
+      })
+      .then(() => new Promise((resolve) => {
+        setTimeout(resolve, 60);
+      }))
+      .then(() => rateLimiterCluster.get(key))
+      .then((res) => {
+        expect(res).to.equal(null);
+        done();
+      })
+      .catch((rej) => {
+        done(rej);
+      });
+  });
 });
 
