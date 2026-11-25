@@ -374,3 +374,34 @@ describe('RateLimiterDynamo with fixed window', function RateLimiterDynamoTest()
     });
 
 });
+
+describe('RateLimiterDynamo setup errors', () => {
+    const ttlError = new Error('AccessDeniedException');
+    const stubClient = () => ({
+        createTable: () => Promise.resolve({}),
+        describeTimeToLive: () => Promise.reject(ttlError),
+    });
+
+    it('passes a TTL error to the callback when the table already exists', (done) => {
+        new RateLimiterDynamo({
+            storeClient: stubClient(),
+            points: 1,
+            duration: 1,
+            tableCreated: true,
+        }, (err) => {
+            expect(err).to.equal(ttlError);
+            done();
+        });
+    });
+
+    it('passes a TTL error to the callback after creating the table', (done) => {
+        new RateLimiterDynamo({
+            storeClient: stubClient(),
+            points: 1,
+            duration: 1,
+        }, (err) => {
+            expect(err).to.equal(ttlError);
+            done();
+        });
+    });
+});
