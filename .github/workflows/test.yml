@@ -84,6 +84,9 @@ jobs:
         with:
           redis-version: 7
 
+      - name: Start Upstash Redis HTTP
+        run: docker run -d -p 8079:80 --add-host=host.docker.internal:host-gateway -e SRH_MODE=env -e SRH_TOKEN=example_token -e SRH_CONNECTION_STRING=redis://host.docker.internal:6379 hiett/serverless-redis-http:latest
+
       - name: Start DynamoDB local
         uses: rrainn/dynamodb-action@v3.0.0
 

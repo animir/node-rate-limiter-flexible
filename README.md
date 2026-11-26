@@ -143,6 +143,7 @@ Copy/paste examples on Wiki:
 * [Prisma](https://github.com/animir/node-rate-limiter-flexible/wiki/Prisma)
 * [Redis](https://github.com/animir/node-rate-limiter-flexible/wiki/Redis) Atomic and non-atomic counters.
 * [SQLite](https://github.com/animir/node-rate-limiter-flexible/wiki/SQLite)
+* [Upstash Redis](https://upstash.com/docs/redis/overall/getstarted) with [`@upstash/redis`](https://github.com/upstash/redis-js) HTTP client
 * Valkey: [iovalkey](https://github.com/animir/node-rate-limiter-flexible/wiki/IoValkey) or [ValkeyGlide](https://github.com/animir/node-rate-limiter-flexible/wiki/Valkey-Glide)
 * [RateLimiterCluster](https://github.com/animir/node-rate-limiter-flexible/wiki/Cluster) ([PM2 cluster docs read here](https://github.com/animir/node-rate-limiter-flexible/wiki/PM2-cluster))
 * [BurstyRateLimiter](https://github.com/animir/node-rate-limiter-flexible/wiki/BurstyRateLimiter) Traffic burst support
