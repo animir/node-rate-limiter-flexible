@@ -412,17 +412,6 @@ export class RateLimiterValkey extends RateLimiterStoreAbstract {
 /**
  * Rate limiter for [Upstash Redis](https://upstash.com/docs/redis/overall/getstarted).
  * The option "storeClient" needs to be a `Redis` client from [`@upstash/redis`](https://github.com/upstash/redis-js).
- *
- * @example
- * ```typescript
- * import { Redis } from '@upstash/redis';
- *
- * const rateLimiter = new RateLimiterUpstash({
- *   storeClient: Redis.fromEnv(),
- *   points: 5,
- *   duration: 1
- * });
- * ```
  */
 export class RateLimiterUpstash extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterUpstashOptions);

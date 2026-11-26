@@ -6,11 +6,13 @@ services:
       - 6379:6379
 
   upstash-redis-http:
-    image: hiett/serverless-redis-http:latest
+    image: hiett/serverless-redis-http:0.0.10
     environment:
       SRH_MODE: env
       SRH_TOKEN: example_token
       SRH_CONNECTION_STRING: redis://redis:6379
+    depends_on:
+      - redis
     ports:
       - 8079:80
 
