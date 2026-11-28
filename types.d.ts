@@ -329,6 +329,10 @@ interface IRateLimiterValkeyOptions extends IRateLimiterStoreOptions {
     rejectIfValkeyNotReady?: boolean;
 }
 
+interface IRateLimiterUpstashOptions extends IRateLimiterStoreOptions {
+    customIncrTtlLuaScript?: string;
+}
+
 interface ICallbackReady {
     (error?: Error): void;
 }
@@ -403,6 +407,14 @@ export class RateLimiterRedisNonAtomic extends RateLimiterStoreAbstract {
 
 export class RateLimiterValkey extends RateLimiterStoreAbstract {
     constructor(opts: IRateLimiterValkeyOptions);
+}
+
+/**
+ * Rate limiter for [Upstash Redis](https://upstash.com/docs/redis/overall/getstarted).
+ * The option "storeClient" needs to be a `Redis` client from [`@upstash/redis`](https://github.com/upstash/redis-js).
+ */
+export class RateLimiterUpstash extends RateLimiterStoreAbstract {
+    constructor(opts: IRateLimiterUpstashOptions);
 }
 
 export interface IRateLimiterMongoFunctionOptions {

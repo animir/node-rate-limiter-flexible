@@ -12,7 +12,7 @@
 
 **rate-limiter-flexible** counts and limits the number of events and protects from DoS and brute force attacks at any scale.
 
-It works with _Valkey_, _Redis_, _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
+It works with _Valkey_, _Redis_, [_Upstash Redis_](https://upstash.com/docs/redis/overall/getstarted), _Prisma_, _DynamoDB_, process _Memory_, _Cluster_ or _PM2_, _Memcached_, _MongoDB_, _MySQL_, _SQLite_, and _PostgreSQL_.
 
 Memory limiter also works in the browser.
 
@@ -176,7 +176,7 @@ See [releases](https://github.com/animir/node-rate-limiter-flexible/releases) fo
 
     `Required for store limiters` 
 
-    Must be pool or connection created with store client packages, e.g. `@valkey/valkey-glide`, `ioredis`, `iovalkey`, `redis`,  `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, etc.
+    Must be pool or connection created with store client packages, e.g. `@valkey/valkey-glide`, `ioredis`, `iovalkey`, `redis`, [`@upstash/redis`](https://github.com/upstash/redis-js), `memcached`, `mongodb`, `pg`, `mysql2`, `mysql`, etc.
 
 ### Other options on Wiki:
 * [keyPrefix](https://github.com/animir/node-rate-limiter-flexible/wiki/Options#keyprefix) Make keys unique among different limiters.
