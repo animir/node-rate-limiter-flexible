@@ -1,3 +1,4 @@
+const { AsyncLocalStorage, createHook } = require('async_hooks');
 const { describe, it, beforeEach } = require('mocha');
 const { expect } = require('chai');
 const MemoryStorage = require('../../../lib/component/MemoryStorage/MemoryStorage');
@@ -56,6 +57,47 @@ describe('MemoryStorage', function MemoryStorageTest() {
 
   it('return false, if there is no record to delete', () => {
     expect(storage.delete(testKey)).to.equal(false);
+  });
+
+  it('should create expiry timers outside the async context of the caller', () => {
+    const requestStorage = new AsyncLocalStorage();
+    const timerStores = [];
+    const hook = createHook({
+      init(asyncId, type) {
+        if (type === 'Timeout') {
+          timerStores.push(requestStorage.getStore());
+        }
+      },
+    }).enable();
+    try {
+      requestStorage.run({ request: 1 }, () => {
+        storage.set(testKey, val, 5);
+        storage._restoreRecord('restored', val, Date.now() + 5000);
+      });
+    } finally {
+      hook.disable();
+    }
+    expect(timerStores).to.deep.equal([undefined, undefined]);
+  });
+
+  it('should not retain the async context active during construction', () => {
+    const requestStorage = new AsyncLocalStorage();
+    const timerStores = [];
+    const hook = createHook({
+      init(asyncId, type) {
+        if (type === 'Timeout') {
+          timerStores.push(requestStorage.getStore());
+        }
+      },
+    }).enable();
+    try {
+      const lazyStorage = requestStorage.run({ request: 'construct' }, () => new MemoryStorage());
+      lazyStorage.set(testKey, val, 5);
+      lazyStorage._restoreRecord('restored', val, Date.now() + 5000);
+    } finally {
+      hook.disable();
+    }
+    expect(timerStores).to.deep.equal([undefined, undefined]);
   });
 
   it('should not fail in the absence of Timeout::unref', (done) => {
