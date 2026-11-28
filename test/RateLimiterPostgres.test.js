@@ -389,6 +389,26 @@ describe('RateLimiterPostgres with fixed window', function RateLimiterPostgresTe
     });
   });
 
+  it('names prepared statements per schema and per exact table name', (done) => {
+    const names = [];
+    const client = { query: (q) => { names.push(q.name); return Promise.resolve({ rows: [{ points: 1, expire: null }] }); } };
+    const limiters = [
+      { schemaName: 'tenant_a', tableName: 'limits' },
+      { schemaName: 'tenant_b', tableName: 'limits' },
+      { tableName: 'limits' },
+      { tableName: 'Limits' },
+    ].map(opts => new RateLimiterPostgres({
+      storeClient: client, storeType: 'client', tableCreated: true, clearExpiredByTimeout: false, points: 2, duration: 5, ...opts,
+    }));
+
+    Promise.all(limiters.map(limiter => limiter.consume('test')))
+      .then(() => {
+        expect(new Set(names).size).to.equal(4);
+        done();
+      })
+      .catch(done);
+  });
+
   it('set client type to "client" by constructor name for Client', (done) => {
     class Client {
       Client() {}
