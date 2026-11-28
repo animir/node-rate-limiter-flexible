@@ -404,4 +404,20 @@ describe('RateLimiterQueue with FIFO queue', function RateLimiterQueueTest() {
         done(err);
       });
   });
+
+  it('takes a key with the name of an Object.prototype member', (done) => {
+    const limiter = new RateLimiterMemory({ points: 2, duration: 1 });
+    const limiterQueue = new RateLimiterQueue(limiter);
+
+    limiterQueue.removeTokens(1, 'constructor')
+      .then((remaining) => {
+        expect(remaining).to.equal(1);
+        return limiterQueue.getTokensRemaining('toString');
+      })
+      .then((remaining) => {
+        expect(remaining).to.equal(2);
+        done();
+      })
+      .catch(done);
+  });
 });
